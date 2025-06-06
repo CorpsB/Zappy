@@ -5,11 +5,10 @@
 ** Button
 */
 
-#pragma once
+#ifndef BUTTON_HPP
+    #define BUTTON_HPP
 
-#include <iostream>
-
-#include "../Sprite/Sprite.hpp"
+#include "../../include/Header.hpp"
 
 class IButton {
     public:
@@ -21,3 +20,5 @@ class IButton {
 
         virtual void action() = 0;
 };
+
+#endif

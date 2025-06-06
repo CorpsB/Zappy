@@ -5,13 +5,10 @@
 ** Sprite
 */
 
-#pragma once
+#ifndef SPRITE_HPP
+    #define SPRITE_HPP
 
-#include <iostream>
-
-#include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
-#include <SFML/System.hpp>
+#include "../../include/Header.hpp"
 
 class Sprite {
     public:
@@ -23,7 +20,12 @@ class Sprite {
         void setTexture(const std::string &textureFileName);
 
         void draw(sf::RenderWindow &window);
+        
+        void setPosition(int x, int y);
+
     private:
         sf::Sprite _sprite;
         sf::Texture _texture;
 };
+
+#endif
