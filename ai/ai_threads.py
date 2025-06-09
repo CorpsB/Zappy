@@ -7,8 +7,8 @@
 
 import threading
 import time
-import ai_print as ap
-import ai_run as ar
+from . import ai_print as ap
+from . import ai_run as ar
 
 EXIT_EVENT = threading.Event()
 

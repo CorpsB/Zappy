@@ -8,9 +8,13 @@
 .PHONY: all clean fclean re
 
 all:
-	cp main.py ../zappy_ai
+	cp zappy_ai.sh ../zappy_ai
 
 clean:
+	rm -rf __pycache__
+	rm -rf bot/__pycache__
+	rm -rf bot/helper/__pycache__
+	rm -rf network/__pycache__
 
 fclean:	clean
 	rm ../zappy_ai

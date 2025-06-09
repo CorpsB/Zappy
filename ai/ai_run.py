@@ -9,12 +9,12 @@ import random
 import threading
 import time
 import traceback
-import ai_threads as at
-import ai_print as ap
-from network import ai_socket as aso
-from network import ai_initialize as ain
-from bot import ai_goal as ag
-from bot import ai_inventory as aiv
+from . import ai_threads as at
+from . import ai_print as ap
+from .network import ai_socket as aso
+from .network import ai_initialize as ain
+from .bot import ai_goal as ag
+from .bot import ai_inventory as aiv
 
 def handle_starvation_check(food_level, thread_name):
     """Checks if the bot has starved."""

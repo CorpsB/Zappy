@@ -8,14 +8,14 @@
 .PHONY: all clean fclean re zappy_ai
 
 zappy_ai:
-	make -C AI
+	make -C ai
 
 all: zappy_ai
 
 clean:
-	make clean -C AI
+	make clean -C ai
 
 fclean:	clean
-	make fclean -C AI
+	make fclean -C ai
 
 re:	fclean all

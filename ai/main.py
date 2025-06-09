@@ -8,8 +8,8 @@
 
 import argparse
 import sys
-import ai_threads as at
-import ai_print as ap
+from . import ai_threads as at
+from . import ai_print as ap
 
 def init_parser():
     """Configures and returns the argument parser."""

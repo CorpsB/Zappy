@@ -5,8 +5,8 @@
 ## ai_goal
 ##
 
-import ai_moves as am
-from helper import find_item as fi
+from . import ai_moves as am
+from .helper import find_item as fi
 from .. import ai_print as ap
 from ..network import ai_socket as aso
 

@@ -6,7 +6,7 @@
 ##
 
 import socket
-import ai_socket as ais
+from . import ai_socket as ais
 from .. import ai_print as ap
 
 def initialize_connection(team_name, host, port, thread_name):
