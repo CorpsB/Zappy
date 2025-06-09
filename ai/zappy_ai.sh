@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python3 -m ai.main
+python3 -m ai.main "$@"
