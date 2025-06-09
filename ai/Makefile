@@ -8,7 +8,7 @@
 .PHONY: all clean fclean re
 
 all:
-	cp zappy_ai.py ../zappy_ai
+	cp main.py ../zappy_ai
 
 clean:
 

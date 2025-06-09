@@ -2,16 +2,30 @@
 ## EPITECH PROJECT, 2025
 ## B-YEP-400-STG-4-1-zappy-noe.carabin
 ## File description:
-## moves
+## ai_moves
 ##
+
+import time
+from ..network import ai_socket as aso
+from .. import ai_print as ap
+from .. import ai_threads as at
+
+ACTION_DELAY = 0.2
 
 def get_moves_to_tile_level1_vision(tile_index):
     """Returns a basic move list for level 1 vision (tiles 0-3)."""
-    if tile_index == 0: return []
-    if tile_index == 1: return ["Forward", "Left", "Forward"]
-    if tile_index == 2: return ["Forward"]
-    if tile_index == 3: return ["Forward", "Right", "Forward"]
-    return None
+
+    match tile_index:
+        case 0:
+            return []
+        case 1:
+            return ["Forward", "Left", "Forward"]
+        case 2:
+            return ["Forward"]
+        case 3:
+            return ["Forward", "Right", "Forward"]
+        case _:
+            return None
 
 def get_moves_towards_sound_direction(k_direction):
     """
@@ -19,23 +33,38 @@ def get_moves_towards_sound_direction(k_direction):
     K is relative to player's current facing.
     K=0: current tile, K=1: front, K=2: front-left, ..., K=8: front-right.
     """
-    if k_direction == 0: return []
-    if k_direction == 1: return ["Forward"]
-    if k_direction == 2: return ["Forward", "Left", "Forward"]
-    if k_direction == 3: return ["Left", "Forward"]
-    if k_direction == 4: return ["Left", "Left", "Forward"]
-    if k_direction == 5: return ["Left", "Left", "Forward"]
-    if k_direction == 6: return ["Right", "Right", "Forward"]
-    if k_direction == 7: return ["Right", "Forward"]
-    if k_direction == 8: return ["Forward", "Right", "Forward"]
-    return ["Forward"]
+
+    match k_direction:
+        case 0:
+            return []
+        case 1:
+            return ["Forward"]
+        case 2:
+            return ["Forward", "Left", "Forward"]
+        case 3:
+            return ["Left", "Forward"]
+        case 4:
+            return ["Left", "Left", "Forward"]
+        case 5:
+            return ["Left", "Left", "Forward"]
+        case 6:
+            return ["Right", "Right", "Forward"]
+        case 7:
+            return ["Right", "Forward"]
+        case 8:
+            return ["Forward", "Right", "Forward"]
+        case _:
+            return ["Forward"]
 
 def execute_moves(sock, reader, moves, thread_name):
     """Executes a list of moves, checking for 'dead' after each."""
+
     for move in moves:
-        if exit_event.is_set(): return False
-        response = do_action(sock, reader, move, thread_name)
-        if response == "dead": return False
+        if at.EXIT_EVENT.is_set():
+            return False
+        response = aso.do_action(sock, reader, move, thread_name)
+        if response == "dead":
+            return False
         time.sleep(ACTION_DELAY)
     return True
 
@@ -59,5 +88,5 @@ def execute_spiral_move(sock, reader, bot_spiral_state, thread_name):
             bot_spiral_state["leg_max_steps"] += 1
             bot_spiral_state["legs_completed_at_current_length"] = 0
 
-    safe_print(f"[{thread_name}] Food Search Spiral: Action: {action_to_take}. State: {bot_spiral_state}")
-    return do_action(sock, reader, action_to_take, thread_name) != "dead"
+    ap.safe_print(f"[{thread_name}] Food Search Spiral: Action: {action_to_take}. State: {bot_spiral_state}")
+    return aso.do_action(sock, reader, action_to_take, thread_name) != "dead"
