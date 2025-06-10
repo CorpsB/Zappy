@@ -5,7 +5,8 @@
 ** main graphic
 */
 
-#include "../include/Header.hpp"
+#include "./Window/Window.hpp"
+#include "./Event/Event.hpp"
 
 int main()
 {

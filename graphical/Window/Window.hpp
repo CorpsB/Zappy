@@ -8,9 +8,11 @@
 #ifndef WINDOW_HPP_
     #define WINDOW_HPP_
 
-#define FRAMERATE 60
+    #define FRAMERATE 60
 
-#include "../../include/Header.hpp"
+#include <SFML/System.hpp>
+#include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
 
 class Window {
     public:

@@ -8,7 +8,11 @@
 #ifndef BUTTON_HPP
     #define BUTTON_HPP
 
-#include "../../include/Header.hpp"
+#include <SFML/System.hpp>
+#include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
+
+#include "../Sprite/Sprite.hpp"
 
 class IButton {
     public:

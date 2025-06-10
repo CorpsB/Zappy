@@ -8,7 +8,9 @@
 #ifndef EVENT_HPP_
     #define EVENT_HPP_
 
-#include "../../include/Header.hpp"
+#include <SFML/System.hpp>
+#include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
 
 //-Cette classe sera utilisée pour gérer les différentes instructions du serveur
 //-Il y aura probablement besoin de faire un enum avec toutes les instructions possibles

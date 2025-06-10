@@ -8,7 +8,9 @@
 #ifndef SPRITE_HPP
     #define SPRITE_HPP
 
-#include "../../include/Header.hpp"
+#include <SFML/System.hpp>
+#include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
 
 class Sprite {
     public:
