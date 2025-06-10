@@ -107,6 +107,8 @@ struct server {
     unsigned int eggs_count;
     /// Total number of active players currently in the game.
     unsigned int player_count;
+    /// Total number of active teams currently in the game.
+    unsigned int teams_count;
 
     /// 2D array representing the game map, each tile containing resources.
     resources_t **map;
