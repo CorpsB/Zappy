@@ -5,8 +5,7 @@
 ** Button
 */
 
-#ifndef BUTTON_HPP
-    #define BUTTON_HPP
+#pragma once
 
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
@@ -24,5 +23,3 @@ class IButton {
 
         virtual void action() = 0;
 };
-
-#endif

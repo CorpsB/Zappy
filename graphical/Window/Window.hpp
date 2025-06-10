@@ -5,10 +5,9 @@
 ** Window
 */
 
-#ifndef WINDOW_HPP_
-    #define WINDOW_HPP_
+#pragma once
 
-    #define FRAMERATE 60
+#define FRAMERATE 60
 
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
@@ -28,5 +27,3 @@ class Window {
     private:
         sf::RenderWindow _window;
 };
-
-#endif

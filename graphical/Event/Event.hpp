@@ -5,8 +5,7 @@
 ** Event
 */
 
-#ifndef EVENT_HPP_
-    #define EVENT_HPP_
+#pragma once
 
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
@@ -24,5 +23,3 @@ class Event {
     private:
         sf::Event _event;
 };
-
-#endif

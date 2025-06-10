@@ -5,8 +5,7 @@
 ** Sprite
 */
 
-#ifndef SPRITE_HPP
-    #define SPRITE_HPP
+#pragma once
 
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
@@ -29,5 +28,3 @@ class Sprite {
         sf::Sprite _sprite;
         sf::Texture _texture;
 };
-
-#endif

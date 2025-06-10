@@ -5,8 +5,7 @@
 ** AButton
 */
 
-#ifndef ABUTTON_HPP
-    #define ABUTTON_HPP
+#pragma once
 
 #include "IButton.hpp"
 
@@ -26,5 +25,3 @@ class AButton : public IButton {
         
         bool _hasTexture;
 };
-
-#endif
