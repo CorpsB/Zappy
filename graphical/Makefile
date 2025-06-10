@@ -5,11 +5,9 @@
 ## Makefile
 ##
 
-SRC	=	main.cpp	\
-		Window/Window.cpp	\
-		Sprite/Sprite.cpp	\
-		Button/AButton.cpp	\
-		Event/Event.cpp	\
+SRC	= main.cpp	\
+	Client/Client.cpp	\
+	Client/Config/NetConfig.cpp	\
 
 OBJ	=	$(SRC:.cpp=.o)
 

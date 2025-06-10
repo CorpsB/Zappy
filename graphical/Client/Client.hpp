@@ -14,7 +14,16 @@ class Client {
         Client() {};
         ~Client() = default;
 
-        const NetConfig &getConfig();
+        static Client &GetInstance();
+
+        void initSocket();
+        void closeSocket();
+        std::string readSocket() const;
+
+        bool connectToServer();
+        void run();
+
+        NetConfig &getConfig();
     private:
         NetConfig _config;
 

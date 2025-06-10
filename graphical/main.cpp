@@ -5,22 +5,36 @@
 ** main graphic
 */
 
-#include "./Window/Window.hpp"
-#include "./Event/Event.hpp"
+#include "Window/Window.hpp"
+#include "Event/Event.hpp"
+#include "Client/Client.hpp"
 
-int main()
+#include <thread>
+#include <chrono>
+
+void runDisplay()
 {
-    Window win;
-    Event event;
+    // A faire
+}
 
-    win.init();
-    while (true) {
-        if (event.getEvent(win.getWindow()) == -1) {
-            win.stop();
-            return 0;
-        }
-        win.clear();
-        win.display();
-    }
+void runNetwork()
+{
+    Client &client = Client::GetInstance();
+
+    client.initSocket();
+    while (!client.connectToServer())
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    client.run();
+    client.closeSocket();
+}
+
+int main(int ac, char **av)
+{
+    Client &client = Client::GetInstance();
+
+    if (client.getConfig().parseArgs(ac - 1, av + 1))
+        return 84;
+    std::thread networkInstance(runNetwork);
+    networkInstance.join();
     return 0;
 }
