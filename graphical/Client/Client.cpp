@@ -42,7 +42,7 @@ std::string Client::readSocket() const
     if (rd > 0)
         return std::string(buffer.data(), rd);
     else if (rd == 0)
-        std::cerr << "Socket closed by peer." << std::endl;
+        std::cerr << "Server closed." << std::endl;
     else
         std::cerr << "Read failure." << std::endl;
     return "";
@@ -76,7 +76,7 @@ void Client::run()
                 closeSocket();
                 break;
             }
-            // Update de l'affichage
+            std::cerr << data << std::endl;
         }
     }
 }
