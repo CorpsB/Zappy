@@ -9,12 +9,13 @@
     #define INCLUDE_H_
 
     //All the poll and server include needed by the project
-    #include <sys/types.h>
-    #include <sys/socket.h>
-    #include <netinet/in.h>
-    #include <arpa/inet.h>
-    #include <unistd.h>
-    #include <poll.h>
+    #include <sys/socket.h>    // pour socket(), bind(), accept(), struct sockaddr
+    #include <arpa/inet.h>     // pour htons(), htonl(), inet_ntoa(), etc.
+    #include <unistd.h>        // pour close()
+    #include <string.h>        // pour memset() si tu l’utilises
+    #include <stdio.h>         // pour perror(), printf(), etc.
+    #include <stdlib.h>        // pour exit()
+    #include <poll.h>    
 
     //Write include
     #include <unistd.h>

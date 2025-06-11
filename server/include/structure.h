@@ -59,6 +59,8 @@ typedef struct resources resources_t;
 typedef struct teams teams_t;
 typedef struct player player_t;
 typedef struct eggs eggs_t;
+typedef struct client client_t;
+typedef struct poll poll_t;
 
 /**
  * @enum direction_t
@@ -80,6 +82,19 @@ typedef enum direction {
     WEST = 4   /**< Facing left on the map (west). */
 } direction_t;
 
+typedef enum whoAmI {
+    PLAYER,
+    GUI,
+    LISTEN
+} whoAmI_t;
+
+struct poll {
+    int socket;
+    struct sockaddr_in sockaddr;
+    int client_index;
+    struct pollfd *pollfds;
+    client_t *client_list;
+};
 
 /**
  * @struct server_t
@@ -114,6 +129,8 @@ struct server {
     bool debug;
     /// File descriptor used to write debug logs when debug mode is enabled.
     int debug_fd;
+
+    poll_t poll;
 
     /// 2D array representing the game map, each tile containing resources.
     resources_t **map;
@@ -232,6 +249,11 @@ struct eggs {
 
     /// Pointer to the next egg in the team's linked list.
     struct eggs *next;
+};
+
+struct client {
+    player_t *player;
+    whoAmI_t whoAmI;
 };
 
 #endif /* !STRUCTURE_H_ */

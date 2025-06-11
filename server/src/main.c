@@ -80,5 +80,5 @@ int main(int ac, char **av)
     if (server->debug)
         server->debug_fd = open("debug.log", O_WRONLY | O_CREAT | O_TRUNC, 0644);
     see_server(server);
-    run_server();
+    run_server(server);
 }

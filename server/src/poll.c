@@ -1,0 +1,99 @@
+/*
+** EPITECH PROJECT, 2025
+** B-YEP-400-STG-4-1-zappy-noe.carabin
+** File description:
+** poll
+*/
+
+#include "include/include.h"
+#include "include/function.h"
+#include "include/structure.h"
+
+
+static void init_server(server_t *server)
+{
+    socklen_t size = sizeof(struct sockaddr_in);
+
+    server->poll.socket = socket(AF_INET, SOCK_STREAM, 0);
+    if (server->poll.socket== -1) {
+        perror("socket");
+        exit(84);
+    }
+    memset(&server->poll.sockaddr, 0, size);
+    server->poll.sockaddr.sin_family = AF_INET;
+    server->poll.sockaddr.sin_port = htons(server->port);
+    server->poll.sockaddr.sin_addr.s_addr = INADDR_ANY;
+    if (bind(server->poll.socket, (struct sockaddr *)&server->poll.sockaddr,
+        size) == -1) {
+        printf("bind socket\n");
+        exit(84);
+    }
+    if (listen(server->poll.socket, 200) == -1) {
+        perror("listen");
+        exit(84);
+    }
+}
+
+static void add_client(server_t *server, int socket, whoAmI_t state, player_t *player)
+{
+    server->poll.pollfds = realloc(
+        server->poll.pollfds,
+        sizeof(struct pollfd) * (server->poll.client_index + 1));
+    server->poll.client_list = realloc(
+        server->poll.client_list,
+        sizeof(client_t) * (server->poll.client_index + 1));
+    if (!server->poll.pollfds || !server->poll.client_list) {
+        perror("[ERROR] - realloc");
+        exit(84);
+    }
+    server->poll.pollfds[server->poll.client_index].fd = socket;
+    server->poll.pollfds[server->poll.client_index].events = POLLIN;
+    server->poll.pollfds[server->poll.client_index].revents = 0;
+    server->poll.client_list[server->poll.client_index].whoAmI = state;
+    if (state == PLAYER && player && player != NULL)
+        server->poll.client_list[server->poll.client_index].player = player;
+    server->poll.client_index++;
+}
+
+static bool is_game_over(server_t *server)
+{
+    for (teams_t *teams = server->teams; teams != NULL; teams = teams->next) {
+        if (teams->win)
+            return true;
+    }
+    return false;
+}
+
+static void poll_func(server_t *server)
+{
+    int bytes;
+    char cmd[1024];
+
+    if (poll(server->poll.pollfds, server->poll.client_index, -1) == -1) { ///<= Bloquant à revoir
+        perror("[ERROR] - poll");
+        exit(84);
+    }
+    for (int i = 0; i < server->poll.client_index; i++) {
+        if (server->poll.pollfds[i].revents & POLLIN) {
+            if (server->poll.client_list[i].whoAmI == LISTEN)
+                add_client();
+            bytes = read(server->poll.pollfds[i].fd, cmd, sizeof(cmd));
+            if (bytes <= 0) {
+                close(server->poll.pollfds[i].fd);
+                //Supprimer le client de la liste et sa structure fd;
+            }
+            cmd[bytes] = '\0';
+            cmd_parser(server, i, cmd);
+        }
+    }
+}
+
+void run_server(server_t *server)
+{
+    init_server(server);
+    server->poll.client_index = 0;
+    add_client(server, server->poll.socket, LISTEN, NULL);
+    for(; !is_game_over(server);) {
+        poll_func(server);
+    }
+}
