@@ -9,16 +9,16 @@ SRC	= main.cpp	\
 	Client/Client.cpp	\
 	Client/Config/NetConfig.cpp	\
 
-OBJ	=	$(SRC:.cpp=.o)
+OBJ	= $(SRC:.cpp=.o)
 
 CXXFLAGS = -std=c++20 -Wall -Wextra -Werror -g -lsfml-graphics  \
-            -lsfml-window -lsfml-system
+    -lsfml-window -lsfml-system
 
-NAME	=	graphic
+NAME = graphic
 
-all:	$(NAME)
+all: $(NAME)
 
-$(NAME):	$(OBJ)
+$(NAME): $(OBJ)
 	g++ -o $(NAME) $(OBJ) $(CXXFLAGS)
 
 clean:
