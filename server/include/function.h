@@ -32,5 +32,7 @@ int parse_client(char *str, server_t *server, int i);
 int parse_frequency(char *str, server_t *server, int i);
 int parse_teams(char **av, server_t *server, int i);
 
+//logs
+void log(server_t *server, char *message);
 
 #endif /* !FUCNTION_H_ */

@@ -43,6 +43,8 @@ int parser_detector(int i, char **av, server_t *server)
         i = parse_client(av[i + 1], server, i);
     if (av[i] && strncmp(av[i], "-f", 2) == 0 && av[i + 1])
         i = parse_frequency(av[i + 1], server, i);
+    if (av[i] && strncmp(av[i], "-d", 2) == 0)
+
     return i;
 }
 
@@ -75,5 +77,8 @@ int main(int ac, char **av)
     if (!parse_and_find_error(ac, av, server))
         return print_help();
     srand(time(NULL));
+    if (server->debug)
+        server->debug_fd = open("debug.log", O_WRONLY | O_CREAT | O_TRUNC, 0644);
     see_server(server);
+    run_server();
 }

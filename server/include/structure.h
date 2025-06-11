@@ -110,6 +110,11 @@ struct server {
     /// Total number of active teams currently in the game.
     unsigned int teams_count;
 
+    /// Enables or disables debug mode. When true, logs are written to a file.
+    bool debug;
+    /// File descriptor used to write debug logs when debug mode is enabled.
+    int debug_fd;
+
     /// 2D array representing the game map, each tile containing resources.
     resources_t **map;
     /// Linked list of all teams participating in the game.

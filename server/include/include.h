@@ -29,4 +29,10 @@
     //time -> srand -> random
     #include <time.h>
 
+    //log (open, perm, ...)
+    #include <fcntl.h>    // pour open() et les flags O_*
+    #include <sys/types.h> // recommandé pour certains types comme mode_t
+    #include <sys/stat.h>  // pour les permissions (ex: 0644)
+    #include <unistd.h>    // pour close(), write(), etc.
+
 #endif /* !INCLUDE_H_ */
