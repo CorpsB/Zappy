@@ -21,6 +21,51 @@ void see_teams(teams_t *teams);
 //player
 void add_player(server_t *server, int socket, teams_t *teams);
 
+//EGGS
+
+/**
+ * @brief Allocate a new egg and insert it at the head of a team list.
+ *
+ * @param server      Pointer to the global server structure.
+ * @param creator_id  ID of the player who laid the egg (for logs/debug).
+ * @param teams       Pointer to the team that owns the egg.
+ *
+ * @pre  @p server and @p teams are non-NULL.
+ * @post
+ *  - `teams->egg` points to the newly created egg.
+ *  - `server->eggs_count` is incremented.
+ *
+ * @throw Exits the program with code 84 if memory allocation fails.
+ *
+ * @details
+ *  - Initial position is chosen randomly within the map bounds.
+ *  - Runs in O(1) time (head insertion).
+*/
+void add_eggs(server_t *server, unsigned int creator_id, teams_t *teams);
+
+/**
+ * @brief Walk through and display an egg linked list.
+ *
+ * If the list is empty, prints “\[NO EGGS]”; otherwise calls
+ * see_one_egg() for each node.
+ *
+ * @param eggs Head of the egg list (may be NULL).
+ *
+ * @details Complexity : O(n) where n is the number of eggs.
+*/
+void see_eggs(eggs_t *head);
+
+/**
+ * @brief Search an egg by its id
+ *
+ * @param server  Server structure pointer.
+ * @param id      Id of the eggs that we need.
+ *
+ * @return        A pointer on the structure 'eggs_t' if find, else NULL.
+ */
+eggs_t *search_egg_by_id(server_t *server, unsigned int id);
+
+
 //resources
 resources_t create_resources(void);
 
