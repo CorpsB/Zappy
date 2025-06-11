@@ -6,6 +6,7 @@
 ##
 
 import time
+from .helper import collect_item as ci
 from ..network import ai_socket as aso
 from .. import ai_print as ap
 from .. import ai_threads as at
@@ -56,12 +57,15 @@ def get_moves_towards_sound_direction(k_direction):
         case _:
             return ["Forward"]
 
-def execute_moves(sock, reader, moves, thread_name):
+def execute_moves(look_string, sock, reader, food_level, inventory, level, recipes, moves, thread_name):
     """Executes a list of moves, checking for 'dead' after each."""
 
     for move in moves:
         if at.EXIT_EVENT.is_set():
             return False
+        if not ci.collect_all_items(look_string, sock, reader, food_level, inventory, level, recipes, thread_name):
+            return False
+        time.sleep(ACTION_DELAY)
         response = aso.do_action(sock, reader, move, thread_name)
         if response == "dead":
             return False

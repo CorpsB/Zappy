@@ -38,14 +38,14 @@ def perform_wander_action(sock, reader, thread_name, preferred_moves=None):
     ap.safe_print(f"[{thread_name}] Wandering: {action}.")
     return aso.do_action(sock, reader, action, thread_name) != "dead"
 
-def perform_action_goal(current_goal, level, inventory, client_socket, reader, look_str, bot_spiral_state, thread_name):
+def perform_action_goal(current_goal, level, food_level, inventory, client_socket, reader, look_str, bot_spiral_state, thread_name):
     """Perform an action based on the current goal."""
 
     if current_goal == 'FOOD':
-        return ag.handle_goal('food', client_socket, reader, look_str, bot_spiral_state, thread_name)
+        return ag.handle_goal('food', client_socket, reader, look_str, bot_spiral_state, thread_name, food_level, inventory, level, ag.ELEVATION_RECIPES)
     if current_goal == 'GATHER':
         rarest_missing_stone = ag.determine_rarest_missing_stone(level, inventory)
-        return ag.handle_goal(rarest_missing_stone, client_socket, reader, look_str, bot_spiral_state, thread_name)
+        return ag.handle_goal(rarest_missing_stone, client_socket, reader, look_str, bot_spiral_state, thread_name, food_level, inventory, level, ag.ELEVATION_RECIPES)
     ap.safe_print(f"[{thread_name}] No specific action for current goal '{current_goal}' (Lvl {level}). Wandering.")
     return perform_wander_action(client_socket, reader, thread_name)
 
@@ -92,7 +92,7 @@ def run_ai(team_name, host, port, bot_id):
                     at.trigger_exit(f"{thread_name} LookDead")
                 break
 
-            if not perform_action_goal(current_goal, level, inventory, client_socket, reader, look_str, bot_spiral_state, thread_name):
+            if not perform_action_goal(current_goal, level, food_level, inventory, client_socket, reader, look_str, bot_spiral_state, thread_name):
                 if not at.EXIT_EVENT.is_set():
                     ap.safe_print(f"[{thread_name}] Action failed or led to 'dead' state. Terminating.")
                     at.trigger_exit(f"{thread_name} ActionFailure")

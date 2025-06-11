@@ -63,7 +63,7 @@ def determine_goal(level, food_level, inventory, last_heard_meetup_k):
         return 'MEETUP'
     return 'GATHER'
 
-def handle_goal(goal, sock, reader, look_str, bot_spiral_state, thread_name):
+def handle_goal(goal, sock, reader, look_str, bot_spiral_state, thread_name, food_level, inventory, level, recipes):
     """
     Attempts to find and take a resource. If the resource not seen, executes a spiral move.
     Uses and potentially updates bot_spiral_state.
@@ -78,7 +78,7 @@ def handle_goal(goal, sock, reader, look_str, bot_spiral_state, thread_name):
         moves = am.get_moves_to_tile_level1_vision(res_tile_idx)
         if moves:
             ap.safe_print(f"[{thread_name}] {goal} on tile {res_tile_idx}. Moving to take.")
-            if not am.execute_moves(sock, reader, moves, thread_name):
+            if not am.execute_moves(look_str, sock, reader, food_level, inventory, level, recipes, moves, thread_name):
                 return False
             return aso.do_action(sock, reader, f"Take {goal}", thread_name) != "dead"
         else:
