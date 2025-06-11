@@ -15,15 +15,16 @@
 
 class Window {
     public:
-        Window();
-        ~Window();
+        Window() {};
+        ~Window() {};
+
+        sf::RenderWindow &getWindow();
+        void setWindowSize(unsigned int x, unsigned int y);
 
         void init();
         void stop();
         void clear();
         void display();
-        sf::RenderWindow &getWindow();
-        void setSizeWindow(unsigned int x, unsigned int y);
     private:
         sf::RenderWindow _window;
 };
