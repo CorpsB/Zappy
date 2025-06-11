@@ -20,7 +20,10 @@ SRC	=	src/main.c				\
 		src/utils/player/search_player.c	\
 		src/utils/player/see_player.c		\
 		src/utils/inventory/add_ressources.c	\
-		src/utils/inventory/see_inventory.c
+		src/utils/inventory/see_inventory.c		\
+		src/utils/eggs/add_eggs.c	\
+		src/utils/search_eggs.c	\
+		src/utils/see_eggs.c
 
 
 OBJ	=	$(SRC:.c=.o)
