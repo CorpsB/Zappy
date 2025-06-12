@@ -16,5 +16,6 @@ const command_t command_table[] = {
     {"right", cmd_right},
     {"left", cmd_left},
     {"take_object", cmd_take_object},
+    {"set_object", cmd_set_object},
     {NULL, NULL}
 };

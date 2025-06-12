@@ -29,4 +29,16 @@ void cmd_left(server_t *server, int index, const char *args);
 */
 void cmd_take_object(server_t *server, int index, const char *args);
 
+
+/**
+ * @brief Handle the “Set <object>” player command (drop one unit).
+ *
+ * Moves one unit of the requested resource from the player’s inventory
+ * onto the current map position, if the player owns at least one unit.
+ * @param server Global server pointer.
+ * @param index  Index of the client inside server->poll.client_list.
+ * @param args   Null-terminated resource name.
+*/
+void cmd_set_object(server_t *server, int index, const char *args);
+
 #endif /* !CMD_H_ */

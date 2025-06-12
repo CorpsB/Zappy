@@ -17,7 +17,7 @@
  * @param src Pointer to the source counter (will be decremented).
  * @param dst Pointer to the destination counter (will be incremented).
 */
-static void transfert_one_unit(unsigned int *src, unsigned int *dst)
+static void transfer_one_unit(unsigned int *src, unsigned int *dst)
 {
     if (*src == 0)
         return;
