@@ -12,6 +12,9 @@
     #include "include/function.h"
     #include "include/structure.h"
 
-void cmd_test(server_t *server, int index, const char *args);
+void cmd_forward(server_t *server, int index, const char *args);
+void cmd_right(server_t *server, int index, const char *args);
+void cmd_left(server_t *server, int index, const char *args);
+void cmd_look(server_t *server, int index, const char *args);
 
 #endif /* !CMD_H_ */
