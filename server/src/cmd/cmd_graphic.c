@@ -12,7 +12,8 @@
 void cmd_graphic(server_t *server, int index, const char *args)
 {
     if (server->poll.client_list[index].whoAmI == UNKNOWN) {
-        server->poll.client_list[index].whoAmI == GUI;
+        server->poll.client_list[index].whoAmI = GUI;
+        dprintf(server->poll.pollfds[index].fd, "ok\n");
     } else {
         dprintf(server->poll.pollfds[index].fd, "ko\n");
     }

@@ -12,7 +12,6 @@
 #include "include/cmd_parser_table.h"
 
 const command_t command_table[] = {
-    {"GRAPHIC", cmd_graphic},
     {"Forward", cmd_forward},
     {"Right", cmd_right},
     {"Left", cmd_left},
