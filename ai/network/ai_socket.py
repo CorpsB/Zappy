@@ -19,6 +19,7 @@ class SocketReader:
         self.buffer = b""
         self.thread_name = thread_name
         self.last_heard_meetup_k = -1
+        self.last_heard_player_k = -1
 
     def _handle_buffered_data(self):
         """Processes the current buffer to extract one line."""
@@ -54,7 +55,7 @@ class SocketReader:
                 return "dead"
         return "ok"
 
-    def _process_server_message(self, decoded_line):
+    def _process_server_message(self, level, decoded_line):
         """Handles server-initiated messages like broadcasts or ejections."""
 
         if decoded_line == "dead":
@@ -66,8 +67,10 @@ class SocketReader:
             k = int(msg_match.group(1))
             text = msg_match.group(2).strip()
             ap.safe_print(f"[{self.thread_name}] Heard broadcast (K={k}): {text}")
-            if "MEETUP_L3" in text:
+            if f"MEETUP_{level}" in text:
                 self.last_heard_meetup_k = k
+            elif f"EVOLVE_{level}" in text:
+                self.last_heard_player_k = k
             return "broadcast", False
 
         if decoded_line.startswith("eject:"):
@@ -75,7 +78,7 @@ class SocketReader:
             return "eject", False
         return decoded_line, True
 
-    def receive_line(self, timeout = 180.0): #SOCKET_TIMEOUT = 180.0
+    def receive_line(self, level, timeout = 180.0): #SOCKET_TIMEOUT = 180.0
         """Receives data until a newline, handling buffering, broadcasts, and timeouts."""
 
         if at.EXIT_EVENT.is_set():
@@ -90,11 +93,11 @@ class SocketReader:
             ap.safe_print(f"[{self.thread_name}] Error: No line after successful receive.")
             return "dead"
 
-        processed_message, is_final = self._process_server_message(decoded_line)
+        processed_message, is_final = self._process_server_message(level, decoded_line)
         if processed_message == "dead":
             return "dead"
         if not is_final:
-            return self.receive_line(timeout)
+            return self.receive_line(level, timeout)
         return processed_message
 
 def send_command(sock, command, thread_name):
@@ -112,9 +115,9 @@ def send_command(sock, command, thread_name):
         at.trigger_exit(f"{thread_name} SendError")
         return False
 
-def do_action(sock, reader, command, thread_name):
+def do_action(sock, reader, command, thread_name, level = 1):
     """Sends a command and reads its single response."""
 
     if not send_command(sock, command, thread_name):
         return "dead"
-    return reader.receive_line()
+    return reader.receive_line(level)

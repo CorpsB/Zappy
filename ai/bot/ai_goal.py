@@ -7,6 +7,7 @@
 
 from . import ai_moves as am
 from .helper import find_item as fi
+from .helper import count_player as cp
 from .. import ai_print as ap
 from ..network import ai_socket as aso
 
@@ -52,14 +53,19 @@ def determine_rarest_missing_stone(level, inventory):
         return 'deraumere'
     return 'linemate'
 
-def determine_goal(level, food_level, inventory, last_heard_meetup_k):
+def determine_goal(level, food_level, inventory, last_heard_meetup_k, look_str, thread_name, recipes):
     """Determines the bot's next goal based on its state."""
 
-    if food_level < 6.0: #FOOD_THRESHOLD = 6.0
+    if food_level < 8.0: #FOOD_THRESHOLD = 6.0
         return 'FOOD'
     if level == 8:
         return 'WANDER'
-    if has_enough_rocks(level, inventory) and last_heard_meetup_k != -1:
+    enough_rock = has_enough_rocks(level, inventory)
+    if cp.count_players_on_tile(look_str, 0, thread_name) >= recipes[level - 1]['player'] and enough_rock:
+        return 'INCANT'
+    if last_heard_meetup_k != -1:
+        return 'EVOLVE'
+    if enough_rock:
         return 'MEETUP'
     return 'GATHER'
 
