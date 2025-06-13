@@ -12,8 +12,11 @@
     //position[0] = x droite gauche
     //positon[1] = y haut bas
 
-void cmd_forward(server_t *server, int index, char **/*args*/)
+void cmd_forward(server_t *server, int index, char **args)
 {
+    (void)args;
+    if (check_autorized(server, index) != 0)
+        return;
     if (server->poll.client_list[index].player->direction == NORTH)
     server->poll.client_list[index].player->position[1] =
         (server->poll.client_list[index].player->position[1] + 1)

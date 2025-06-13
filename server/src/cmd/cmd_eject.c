@@ -56,17 +56,25 @@ static unsigned eject_team(teams_t *team, const player_t *agressor,
     return pushed;
 }
 
-void cmd_eject(server_t *server, int index, char **/*args*/)
+void cmd_eject(server_t *server, int index, const char **args)
 {
+    client_t *cl;
     player_t *aggressor;
     unsigned total = 0;
+    int fd;
 
+    (void)args;
     if (!server || !server->poll.client_list ||
-        index < 0 || index >= server->poll.client_index ||
-        !server->poll.client_list[index].player)
+        index < 0 || index >= server->poll.client_index)
         return;
-    aggressor = server->poll.client_list[index].player;
+    cl = &server->poll.client_list[index];
+    fd = server->poll.pollfds[index].fd;
+    if (cl->whoAmI != PLAYER || !cl->player) {
+        dprintf(fd, "ko\n");
+        return;
+    }
+    aggressor = cl->player;
     for (teams_t *t = server->teams; t; t = t->next)
-    eject_team(t, aggressor, server->width, server->height);
+        total += eject_team(t, aggressor, server->width, server->height);
     dprintf(aggressor->socket_fd, total ? "ok\n" : "ko\n");
 }

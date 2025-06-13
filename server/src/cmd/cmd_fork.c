@@ -35,12 +35,15 @@ static void add_egg_at(server_t *server, const player_t *pl, unsigned int x,
     server->eggs_count++;
 }
 
-void cmd_fork(server_t *server, int index, char **)
+void cmd_fork(server_t *server, int index, char **args)
 {
     player_t *pl;
 
+    (void)args;
     if (!server || !server->poll.client_list ||
-        !server->poll.client_list[index].player)
+        index < 0 || index >= server->poll.client_index)
+        return;
+    if (check_autorized(server, index) != 0)
         return;
     pl = server->poll.client_list[index].player;
     add_egg_at(server, pl, pl->position[0], pl->position[1]);

@@ -11,6 +11,15 @@
     #include "include/structure.h"
 
 //utils
+/**
+ * @brief Function that check if the client is a PLAYER.
+ *
+ * @param server Global server pointer (for id & counters).
+ * @param index The index of the player.
+ * @return return 1 if the client is not a PLAYER (GRAPHICAL, LISTEN, UNKNOW)
+ * return 0 if the client is a PLAYER.
+*/
+int check_autorized(server_t *server, int index);
 //server
 server_t *add_server(void);
 void see_server(server_t *server);

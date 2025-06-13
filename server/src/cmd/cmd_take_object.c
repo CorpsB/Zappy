@@ -156,7 +156,10 @@
 //         is_ok == 0 ? "ok\n" : "ko\n");
 // }
 
-void cmd_take_object(server_t *server, int index, char **/*args*/)
+void cmd_take_object(server_t *server, int index, char **args)
 {
+    (void)args;
+    if (check_autorized(server, index) != 0)
+        return;
     dprintf(server->poll.pollfds[index].fd, "Coming soon\n");
 }

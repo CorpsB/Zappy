@@ -74,4 +74,11 @@ void cmd_eject(server_t *srv, int idx, char **args);
 */
 void cmd_fork(server_t *server, int index, char **args);
 
+/**
+ * @brief Handle “Connect_nbr”: send remaining free slots for the team.
+ *
+ * Format de réponse : "<number>\n".
+*/
+void cmd_connect_nbr(server_t *server, int index, char **args);
+
 #endif /* !CMD_H_ */

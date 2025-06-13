@@ -9,8 +9,11 @@
 #include "include/function.h"
 #include "include/structure.h"
 
-void cmd_left(server_t *server, int index, char **/*ags*/)
+void cmd_left(server_t *server, int index, char **args)
 {
+    (void)args;
+    if (check_autorized(server, index) != 0)
+        return;
     switch (server->poll.client_list[index].player->direction) {
         case NORTH:
             server->poll.client_list[index].player->direction = WEST;
