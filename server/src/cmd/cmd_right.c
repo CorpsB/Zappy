@@ -9,10 +9,8 @@
 #include "include/function.h"
 #include "include/structure.h"
 
-void cmd_right(server_t *server, int index, const char *args)
+void cmd_right(server_t *server, int index, char **/*args*/)
 {
-    player_t *pl;
-
     switch (server->poll.client_list[index].player->direction) {
         case NORTH:
             server->poll.client_list[index].player->direction = EAST;
@@ -29,5 +27,5 @@ void cmd_right(server_t *server, int index, const char *args)
         default:
             break;
     }
-    dprintf(pl->socket_fd, "ok\n");
+    dprintf(server->poll.pollfds[index].fd, "ok\n");
 }

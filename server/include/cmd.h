@@ -12,12 +12,12 @@
     #include "include/function.h"
     #include "include/structure.h"
 
-void cmd_forward(server_t *server, int index, const char *args);
-void cmd_right(server_t *server, int index, const char *args);
-void cmd_left(server_t *server, int index, const char *args);
+void cmd_forward(server_t *server, int index, char **args);
+void cmd_right(server_t *server, int index, char **args);
+void cmd_left(server_t *server, int index, char **args);
 void cmd_player(server_t *server, int index, teams_t *teams);
 
-void cmd_graphic(server_t *server, int index, const char *args); //=> special
+void cmd_graphic(server_t *server, int index, char **args); //=> special
 
 /**
  * @brief Handle the Zappy “Take <object>” command.
@@ -29,7 +29,7 @@ void cmd_graphic(server_t *server, int index, const char *args); //=> special
  * @param index     Index of the client in @c s->poll.client_list.
  * @param args      Null-terminated resource name sent by the client.
 */
-void cmd_take_object(server_t *server, int index, const char *args);
+void cmd_take_object(server_t *server, int index, char **args);
 
 
 /**
@@ -41,7 +41,7 @@ void cmd_take_object(server_t *server, int index, const char *args);
  * @param index  Index of the client inside server->poll.client_list.
  * @param args   Null-terminated resource name.
 */
-void cmd_set_object(server_t *server, int index, const char *args);
+void cmd_set_object(server_t *server, int index, char **args);
 
 
 /**
@@ -51,7 +51,7 @@ void cmd_set_object(server_t *server, int index, const char *args);
  *   [ food N , linemate N , deraumere N , sibur N ,
  *     mendiane N , phiras N , thystame N , time N ]\n
 */
-void cmd_inventory(server_t *server, int index, const char *args);
+void cmd_inventory(server_t *server, int index, char **args);
 
 
 /**
@@ -61,7 +61,7 @@ void cmd_inventory(server_t *server, int index, const char *args);
  * Sends no protocol reply here; add your own "ok/ko" & GUI messages
  * after the push_player() calls if required by your project.
 */
-void cmd_eject(server_t *srv, int idx, const char *args);
+void cmd_eject(server_t *srv, int idx, char **args);
 
 /**
  * @brief Handle the “Fork” command: lay an egg on the player’s tile.
@@ -71,6 +71,6 @@ void cmd_eject(server_t *srv, int idx, const char *args);
  * - Updates server->eggs_count (done inside add_egg).
  * - Sends “ok\n” (success) or “ko\n” (failure) to the player.
 */
-void cmd_fork(server_t *server, int index, const char *args);
+void cmd_fork(server_t *server, int index, char **args);
 
 #endif /* !CMD_H_ */

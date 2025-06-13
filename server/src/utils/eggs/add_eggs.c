@@ -18,8 +18,9 @@ void add_eggs(server_t *server, unsigned int creator_id, teams_t *teams)
         exit(84);
     }
     node->id = server->eggs_count;
-    node->position[0] = rand() % server->width;
-    node->position[1] = rand() % server->height;
+    node->position[0] = rand() % server->width; //=> A changer
+    node->position[1] = rand() % server->height; //=> A changer
+    node->creator_id = creator_id;
     node->next = teams->egg;
     teams->egg = node;
     server->eggs_count++;

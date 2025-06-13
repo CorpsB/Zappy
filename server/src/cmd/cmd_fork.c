@@ -35,7 +35,7 @@ static void add_egg_at(server_t *server, const player_t *pl, unsigned int x,
     server->eggs_count++;
 }
 
-void cmd_fork(server_t *server, int index, const char *args)
+void cmd_fork(server_t *server, int index, char **)
 {
     player_t *pl;
 

@@ -48,14 +48,15 @@ static unsigned eject_team(teams_t *team, const player_t *agressor,
         if (p == agressor)
             continue;
         if (p->position[0] == agressor->position[0] &&
-            p->position[1] == agressor->position[1])
+            p->position[1] == agressor->position[1]) {
             push_player(p, agressor->direction, width, height);
             pushed++;
+        }
     }
     return pushed;
 }
 
-void cmd_eject(server_t *server, int index, const char *args)
+void cmd_eject(server_t *server, int index, char **/*args*/)
 {
     player_t *aggressor;
     unsigned total = 0;

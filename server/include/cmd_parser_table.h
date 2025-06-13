@@ -10,7 +10,7 @@
 
 #include "structure.h"
 
-typedef void (*command_func_t)(server_t *server, int client_index, const char *args);
+typedef void (*command_func_t)(server_t *server, int client_index, char **args);
 
 typedef struct {
     const char *name;

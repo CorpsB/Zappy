@@ -13,6 +13,7 @@ SRC	=	src/main.c								\
 		src/cmd_parser/parser_table.c			\
 		src/cmd_parser/str_to_array.c			\
 		src/cmd/cmd_eject.c						\
+		src/cmd/cmd_fork.c						\
 		src/cmd/cmd_forward.c					\
 		src/cmd/cmd_graphic.c					\
 		src/cmd/cmd_inventory.c					\

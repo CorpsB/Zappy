@@ -9,7 +9,7 @@
 #include "include/function.h"
 #include "include/structure.h"
 
-void cmd_inventory(server_t *server, int index, const char *args)
+void cmd_inventory(server_t *server, int index, char **/*args*/)
 {
     player_t *player;
     char buf[160];

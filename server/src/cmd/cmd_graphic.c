@@ -9,7 +9,7 @@
 #include "include/function.h"
 #include "include/structure.h"
 
-void cmd_graphic(server_t *server, int index, const char *args)
+void cmd_graphic(server_t *server, int index, char **/*args*/)
 {
     if (server->poll.client_list[index].whoAmI == UNKNOWN) {
         server->poll.client_list[index].whoAmI = GUI;
