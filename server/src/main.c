@@ -15,7 +15,8 @@ int print_help(void)
     write(1, "./zappy_server -p port -x width -y height -n name1 name2\n", 57);
     write(1, "\n", 1);
     write(1, "DESCRIPTION:\n", 13);
-    write(1, "  -p port        Port number for the server to listen on.\n", 57);
+    write(1, "  -p port        Port number for the server to listen on", 55);
+    write(1, ".\n", 2);
     write(1, "  -x width       Width of the world (min 10).\n", 45);
     write(1, "  -y height      Height of the world (min 10).\n", 46);
     write(1, "  -n nameX [...] Names of the teams (at least 1).\n", 50);
@@ -81,7 +82,8 @@ int main(int ac, char **av)
         return print_help();
     srand(time(NULL));
     if (server->debug)
-        server->debug_fd = open("debug.log", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+        server->debug_fd = open("debug.log",
+            O_WRONLY | O_CREAT | O_TRUNC, 0644);
     see_server(server);
     run_server(server);
 }

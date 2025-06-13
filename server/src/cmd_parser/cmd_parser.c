@@ -11,26 +11,39 @@
 #include "include/cmd.h"
 #include "include/cmd_parser_table.h"
 
+static bool is_new_player(server_t *server, int index, char *cmd)
+{
+    for (teams_t *team = server->teams; team != NULL; team = team->next)
+        if (strncmp(cmd, team->name, strlen(team->name)) == 0) {
+            cmd_player(server, index, team);
+            return true;
+        }
+    return false;
+}
+
+static bool unknown_client(server_t *server, int index, char *cmd)
+{
+    if (strncmp(cmd, "GRAPHIC", 7) == 0) {
+        cmd_graphic(server, index, NULL);
+        return true;
+    }
+    if (is_new_player(server, index, cmd))
+        return true;
+    return false;
+}
+
 void cmd_parser(server_t *server, int index, char *cmd)
 {
     char **args = str_to_array(cmd, " ");
-    
+
     if (server->poll.client_list[index].whoAmI == UNKNOWN) {
-        if (strncmp(cmd, "GRAPHIC", 7) == 0) {
-            cmd_graphic(server, index, NULL);
-            return;
-        } else {
-            for (teams_t *team = server->teams; team != NULL; team = team->next)
-                if (strncmp(cmd, team->name, strlen(team->name)) == 0) {
-                    cmd_player(server, index, team);
-                    return;
-                }
-        }
-        dprintf(server->poll.pollfds[index].fd, "ko\n");
+        if (!unknown_client(server, index, cmd))
+            dprintf(server->poll.pollfds[index].fd, "ko\n");
         return;
     }
     for (int i = 0; command_table[i].name != NULL; i++) {
-        if (server->poll.client_list[index].whoAmI != UNKNOWN && strncmp(cmd, command_table[i].name, strlen(command_table[i].name)) == 0) {
+        if (strncmp(cmd, command_table[i].name,
+            strlen(command_table[i].name)) == 0) {
             command_table[i].func(server, index, args);
             return;
         }

@@ -49,5 +49,4 @@ void cmd_fork(server_t *server, int index, char **args)
     add_egg_at(server, pl, pl->position[0], pl->position[1]);
     pl->team->slots_used++;
     dprintf(pl->socket_fd, "ok\n");
-    //envoyer à la GUI ?
 }

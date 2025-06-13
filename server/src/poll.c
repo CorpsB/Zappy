@@ -15,7 +15,7 @@ static void init_server(server_t *server)
     socklen_t size = sizeof(struct sockaddr_in);
 
     server->poll.socket = socket(AF_INET, SOCK_STREAM, 0);
-    if (server->poll.socket== -1) {
+    if (server->poll.socket == -1) {
         perror("socket");
         exit(84);
     }
@@ -63,31 +63,39 @@ static bool is_game_over(server_t *server)
     return false;
 }
 
-static void poll_func(server_t *server)
+static bool event_detector(server_t *server, int i)
 {
     int bytes;
     int client_fd;
     char cmd[1024];
 
-    if (poll(server->poll.pollfds, server->poll.client_index, -1) == -1) { ///<= Bloquant à revoir
+    if (server->poll.pollfds[i].revents & POLLIN) {
+        if (server->poll.client_list[i].whoAmI == LISTEN) {
+            client_fd = accept(server->poll.pollfds[i].fd, NULL, NULL);
+            add_client(server, client_fd, UNKNOWN);
+            return true;
+        }
+        bytes = read(server->poll.pollfds[i].fd, cmd, sizeof(cmd));
+        if (bytes <= 0) {
+            close(server->poll.pollfds[i].fd);
+            //Supprimer le client de la liste et sa structure fd;
+        }
+        cmd[bytes] = '\0';
+        cmd_parser(server, i, cmd);
+        return true;
+    }
+    return false;
+}
+
+static void poll_func(server_t *server)
+{
+    if (poll(server->poll.pollfds, server->poll.client_index, -1) == -1) {
         perror("[ERROR] - poll");
         exit(84);
     }
     for (int i = 0; i < server->poll.client_index; i++) {
-        if (server->poll.pollfds[i].revents & POLLIN) {
-            if (server->poll.client_list[i].whoAmI == LISTEN) {
-                client_fd = accept(server->poll.pollfds[i].fd, NULL, NULL);
-                add_client(server, client_fd, UNKNOWN);
-                return;
-            }
-            bytes = read(server->poll.pollfds[i].fd, cmd, sizeof(cmd));
-            if (bytes <= 0) {
-                close(server->poll.pollfds[i].fd);
-                //Supprimer le client de la liste et sa structure fd;
-            }
-            cmd[bytes] = '\0';
-            cmd_parser(server, i, cmd);
-        }
+        if (event_detector(server, i))
+            return;
     }
 }
 
@@ -96,7 +104,7 @@ void run_server(server_t *server)
     init_server(server);
     server->poll.client_index = 0;
     add_client(server, server->poll.socket, LISTEN);
-    for(; !is_game_over(server);) {
+    for (; !is_game_over(server);) {
         poll_func(server);
     }
 }

@@ -56,7 +56,8 @@ void cmd_parser(server_t *server, int index, char *cmd);
  *  - Initial position is chosen randomly within the map bounds.
  *  - Runs in O(1) time (head insertion).
 */
-void add_eggs(server_t *server, unsigned int creator_id, teams_t *teams);
+void add_eggs(server_t *server, unsigned int creator_id, teams_t *teams,
+    int *pos);
 
 /**
  * @brief Walk through and display an egg linked list.

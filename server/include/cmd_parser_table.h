@@ -8,9 +8,9 @@
 #ifndef CMD_PARSER_TABLE_H_
     #define CMD_PARSER_TABLE_H_
 
-#include "structure.h"
+    #include "structure.h"
 
-typedef void (*command_func_t)(server_t *server, int client_index, char **args);
+typedef void (*command_func_t)(server_t *server, int index, char **args);
 
 typedef struct {
     const char *name;

@@ -22,7 +22,8 @@ SRC	=	src/main.c								\
 		src/cmd/cmd_right.c						\
 		src/cmd/cmd_set_object.c				\
 		src/cmd/cmd_take_object.c				\
-		src/cmd/test.c							\
+		src/cmd/cmd_test.c						\
+		src/cmd/cmd_connect_nbr.c				\
 		src/utils/server/add_server.c			\
 		src/utils/server/free_server.c			\
 		src/utils/server/see_server.c			\
