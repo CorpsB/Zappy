@@ -13,10 +13,8 @@ void add_teams(server_t *server, char *name)
 {
     teams_t *node = malloc(sizeof(*node));
 
-    if (!node) {
-        perror("[ERROR] - malloc");
-        exit(84);
-    }
+    if (!node)
+        logger(server, "MALLOC", PERROR, true);
     node->name = strdup(name);
     node->id = server->teams_count;
     node->slots_used = 0;

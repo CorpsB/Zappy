@@ -89,6 +89,13 @@ typedef enum whoAmI {
     UNKNOWN
 } whoAmI_t;
 
+typedef enum logs {
+    ERROR,
+    PERROR,
+    DEBUG,
+    INFO
+} logs_t;
+
 struct poll {
     int socket;
     struct sockaddr_in sockaddr;

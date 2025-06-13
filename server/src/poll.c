@@ -15,23 +15,17 @@ static void init_server(server_t *server)
     socklen_t size = sizeof(struct sockaddr_in);
 
     server->poll.socket = socket(AF_INET, SOCK_STREAM, 0);
-    if (server->poll.socket == -1) {
-        perror("socket");
-        exit(84);
-    }
+    if (server->poll.socket == -1)
+        logger(server, "SOCKET", PERROR, true);
     memset(&server->poll.sockaddr, 0, size);
     server->poll.sockaddr.sin_family = AF_INET;
     server->poll.sockaddr.sin_port = htons(server->port);
     server->poll.sockaddr.sin_addr.s_addr = INADDR_ANY;
     if (bind(server->poll.socket, (struct sockaddr *)&server->poll.sockaddr,
-        size) == -1) {
-        printf("bind socket\n");
-        exit(84);
-    }
-    if (listen(server->poll.socket, 200) == -1) {
-        perror("listen");
-        exit(84);
-    }
+        size) == -1)
+        logger(server, "SOCKET BIND", PERROR, true);
+    if (listen(server->poll.socket, 200) == -1)
+        logger(server, "LISTEN", PERROR, true);
 }
 
 static void add_client(server_t *server, int socket, whoAmI_t state)
@@ -42,10 +36,8 @@ static void add_client(server_t *server, int socket, whoAmI_t state)
     server->poll.client_list = realloc(
         server->poll.client_list,
         sizeof(client_t) * (server->poll.client_index + 1));
-    if (!server->poll.pollfds || !server->poll.client_list) {
-        perror("[ERROR] - realloc");
-        exit(84);
-    }
+    if (!server->poll.pollfds || !server->poll.client_list)
+        logger(server, "REALLOC", PERROR, true);
     server->poll.pollfds[server->poll.client_index].fd = socket;
     server->poll.pollfds[server->poll.client_index].events = POLLIN;
     server->poll.pollfds[server->poll.client_index].revents = 0;
@@ -89,10 +81,8 @@ static bool event_detector(server_t *server, int i)
 
 static void poll_func(server_t *server)
 {
-    if (poll(server->poll.pollfds, server->poll.client_index, -1) == -1) {
-        perror("[ERROR] - poll");
-        exit(84);
-    }
+    if (poll(server->poll.pollfds, server->poll.client_index, -1) == -1)
+        logger(server, "POLL", PERROR, true);
     for (int i = 0; i < server->poll.client_index; i++) {
         if (event_detector(server, i))
             return;

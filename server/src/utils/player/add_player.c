@@ -13,10 +13,8 @@ void add_player(server_t *server, int socket, teams_t *teams)
 {
     player_t *node = malloc(sizeof(*node));
 
-    if (!node) {
-        perror("[ERROR] - malloc");
-        exit(84);
-    }
+    if (!node)
+        logger(server, "MALLOC", PERROR, true);
     node->id = server->player_count;
     node->position[0] = rand() % server->width;
     node->position[1] = rand() % server->height;

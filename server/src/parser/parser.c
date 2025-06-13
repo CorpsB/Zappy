@@ -14,7 +14,7 @@ int parse_port(char *str, server_t *server, int i)
     int nbr = atoi(str);
 
     if (nbr <= 0) {
-        write(2, "[ERROR] - A port cannot be NULL or negative.\n", 45);
+        logger(server, "A port cannot be NULL or negative.", ERROR, false);
         return -1;
     }
     server->port = nbr;
@@ -26,7 +26,7 @@ int parse_width(char *str, server_t *server, int i)
     int nbr = atoi(str);
 
     if (nbr <= 0) {
-        write(2, "[ERROR] - Width cannot be NULL or negative.\n", 45);
+        logger(server, "Width cannot be NULL or negative.", ERROR, false);
         return -1;
     }
     server->width = nbr;
@@ -38,7 +38,7 @@ int parse_height(char *str, server_t *server, int i)
     int nbr = atoi(str);
 
     if (nbr <= 0) {
-        write(2, "[ERROR] - Height cannot be NULL or negative.\n", 45);
+        logger(server, "Height cannot be NULL or negative.", ERROR, false);
         return -1;
     }
     server->height = nbr;
@@ -50,7 +50,8 @@ int parse_client(char *str, server_t *server, int i)
     int nbr = atoi(str);
 
     if (nbr <= 0) {
-        write(2, "[ERROR] - Client limit cannot be NULL or negative.\n", 45);
+        logger(server, "Client limit cannot be NULL or negative.",
+            ERROR, false);
         return -1;
     }
     server->max_connections_per_team = nbr;
@@ -62,7 +63,7 @@ int parse_frequency(char *str, server_t *server, int i)
     int nbr = atoi(str);
 
     if (nbr <= 0) {
-        write(2, "[ERROR] - Frequency cannot be NULL or negative.\n", 45);
+        logger(server, "Frequency cannot be NULL or negative.", ERROR, false);
         return -1;
     }
     server->frequency = nbr;

@@ -34,21 +34,19 @@ int print_help(void)
 int parser_detector(int i, char **av, server_t *server)
 {
     if (av[i] && strncmp(av[i], "-p", 2) == 0 && av[i + 1])
-        i = parse_port(av[i + 1], server, i);
+        return parse_port(av[i + 1], server, i);
     if (av[i] && strncmp(av[i], "-x", 2) == 0 && av[i + 1])
-        i = parse_width(av[i + 1], server, i);
+        return parse_width(av[i + 1], server, i);
     if (av[i] && strncmp(av[i], "-y", 2) == 0 && av[i + 1])
-        i = parse_height(av[i + 1], server, i);
+        return parse_height(av[i + 1], server, i);
     if (av[i] && strncmp(av[i], "-n", 2) == 0 && av[i + 1])
-        i = parse_teams(av, server, i);
+        return parse_teams(av, server, i);
     if (av[i] && strncmp(av[i], "-c", 2) == 0 && av[i + 1])
-        i = parse_client(av[i + 1], server, i);
+        return parse_client(av[i + 1], server, i);
     if (av[i] && strncmp(av[i], "-f", 2) == 0 && av[i + 1])
-        i = parse_frequency(av[i + 1], server, i);
-    if (av[i] && strncmp(av[i], "-d", 2) == 0) {
-        server->debug = true;
+        return parse_frequency(av[i + 1], server, i);
+    if (av[i] && strncmp(av[i], "-d", 2) == 0)
         i++;
-    }
     return i;
 }
 
@@ -57,7 +55,7 @@ bool parse_and_find_error(int ac, char **av, server_t *server)
     for (int i = 0; i < ac; i++) {
         i = parser_detector(i, av, server);
         if (i < 0) {
-            write(2, "[ERROR] - Parser error found. Please try -h.\n", 45);
+            logger(server, "Parser error found. Please try -h.", ERROR, false);
             return false;
         }
     }
@@ -72,18 +70,28 @@ bool parse_and_find_error(int ac, char **av, server_t *server)
     return true;
 }
 
+static void need_debug(server_t *server, char **av)
+{
+    for (int i = 0; av[i] != NULL; i++) {
+        if (strncmp(av[i], "-d", 2) == 0) {
+            server->debug = true;
+            server->debug_fd = open("debug.log",
+                O_WRONLY | O_CREAT | O_TRUNC, 0644);
+            return;
+        }
+    }
+}
+
 int main(int ac, char **av)
 {
     server_t *server = add_server();
 
     if (ac == 1 || (ac == 2 && strncmp(av[1], "-h", 2) == 0))
         return print_help();
+    need_debug(server, av);
     if (!parse_and_find_error(ac, av, server))
         return print_help();
     srand(time(NULL));
-    if (server->debug)
-        server->debug_fd = open("debug.log",
-            O_WRONLY | O_CREAT | O_TRUNC, 0644);
     see_server(server);
     run_server(server);
 }

@@ -22,10 +22,8 @@ static void add_egg_at(server_t *server, const player_t *pl, unsigned int x,
 {
     eggs_t *node = malloc(sizeof(*node));
 
-    if (!node) {
-        perror("[ERROR] - malloc");
-        exit(84);
-    }
+    if (!node)
+        logger(server, "MALLOC", PERROR, true);
     node->id = server->eggs_count;
     node->creator_id = pl->id;
     node->position[0] = x;

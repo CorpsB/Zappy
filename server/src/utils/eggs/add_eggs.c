@@ -14,10 +14,8 @@ void add_eggs(server_t *server, unsigned int creator_id, teams_t *teams,
 {
     eggs_t *node = malloc(sizeof(*node));
 
-    if (!node) {
-        perror("[ERROR] - malloc");
-        exit(84);
-    }
+    if (!node)
+        logger(server, "MALLOC", PERROR, true);
     node->id = server->eggs_count;
     node->position[0] = pos[0];
     node->position[1] = pos[1];

@@ -9,13 +9,12 @@
 #include "include/function.h"
 #include "include/structure.h"
 
-void cmd_connect_nbr(server_t *server, int index, char **args)
+void cmd_connect_nbr(server_t *server, int index, char **)
 {
     player_t *pl;
     teams_t *team;
     int free_slots;
 
-    (void)args;
     if (!server || !server->poll.client_list ||
         index < 0 || index >= server->poll.client_index)
         return;

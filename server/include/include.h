@@ -16,7 +16,9 @@
     #include <stdio.h>
     #include <stdlib.h>
     #include <poll.h>
-    #include <math.h>    
+    #include <math.h>
+    #include <errno.h>
+  
 
     //Write include
     #include <unistd.h>

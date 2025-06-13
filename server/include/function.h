@@ -94,6 +94,6 @@ int parse_frequency(char *str, server_t *server, int i);
 int parse_teams(char **av, server_t *server, int i);
 
 //logs
-void logger(server_t *server, char *message);
+void logger(server_t *server, char *message, logs_t log, bool is_end);
 
 #endif /* !FUCNTION_H_ */

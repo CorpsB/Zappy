@@ -13,10 +13,8 @@ server_t *add_server(void)
 {
     server_t *server = malloc(sizeof(server_t));
 
-    if (!server) {
-        perror("[ERROR] - malloc");
-        exit(84);
-    }
+    if (!server)
+        logger(server, "MALLOC", PERROR, true);
     server->teams = NULL;
     server->map = NULL;
     server->teams_count = 0;
