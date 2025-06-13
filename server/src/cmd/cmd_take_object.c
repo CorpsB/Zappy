@@ -138,6 +138,9 @@ void cmd_take_object(server_t *server, int index, const char *args)
     unsigned int *src;
     unsigned int *dst;
 
+    if (!server || !server->poll.client_list
+        || !server->poll.client_list[index].player)
+        return;
     pos = &server->map[
         server->poll.client_list[index].player->position[1]]
         [server->poll.client_list[index].player->position[0]];

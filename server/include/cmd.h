@@ -41,4 +41,24 @@ void cmd_take_object(server_t *server, int index, const char *args);
 */
 void cmd_set_object(server_t *server, int index, const char *args);
 
+
+/**
+ * @brief Handle the “Inventory” command.
+ *
+ * Format sent to the client:
+ *   [ food N , linemate N , deraumere N , sibur N ,
+ *     mendiane N , phiras N , thystame N , time N ]\n
+*/
+void cmd_inventory(server_t *server, int index, const char *args);
+
+
+/**
+ * @brief Handle the “Eject” command: push all other players
+ *        one tile away in the caster's facing direction.
+ *
+ * Sends no protocol reply here; add your own "ok/ko" & GUI messages
+ * after the push_player() calls if required by your project.
+*/
+void cmd_eject(server_t *srv, int idx, const char *args);
+
 #endif /* !CMD_H_ */

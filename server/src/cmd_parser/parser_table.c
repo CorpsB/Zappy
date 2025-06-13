@@ -12,10 +12,12 @@
 #include "include/cmd_parser_table.h"
 
 const command_t command_table[] = {
-    {"forward", cmd_forward},
-    {"right", cmd_right},
-    {"left", cmd_left},
-    {"take_object", cmd_take_object},
-    {"set_object", cmd_set_object},
+    {"Forward", cmd_forward},
+    {"Right", cmd_right},
+    {"Left", cmd_left},
+    {"Take object", cmd_take_object},
+    {"Set object", cmd_set_object},
+    {"Inventory", cmd_inventory},
+    {"Eject", cmd_eject},
     {NULL, NULL}
 };
