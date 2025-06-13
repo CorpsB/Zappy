@@ -250,8 +250,13 @@ namespace Renderer {
         window->display();
     }
 
-
     bool getIsRunning() {
+        sf::Event event;
+
+        while (window->pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                return false;
+        }
         return window && window->isOpen();
     }
 
