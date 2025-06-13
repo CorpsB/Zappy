@@ -27,6 +27,7 @@ void cmd_parser(server_t *server, int index, char *cmd)
                 }
         }
         dprintf(server->poll.pollfds[index].fd, "ko\n");
+        return;
     }
     for (int i = 0; command_table[i].name != NULL; i++) {
         if (server->poll.client_list[index].whoAmI != UNKNOWN && strncmp(cmd, command_table[i].name, strlen(command_table[i].name)) == 0) {

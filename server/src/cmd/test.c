@@ -9,7 +9,7 @@
 #include "include/function.h"
 #include "include/structure.h"
 
-void test(server_t *server, int index, char **/*args*/)
+void cmd_test(server_t *server, int index, char **/*args*/)
 {
     dprintf(server->poll.pollfds[index].fd, "Jason a dit WALLAHHHHHHHHHHH\n");
 }
