@@ -21,6 +21,10 @@ void see_teams(teams_t *teams);
 //player
 void add_player(server_t *server, int socket, teams_t *teams);
 
+//cmd parser
+char **str_to_array(char *str, char *separator);
+
+
 //EGGS
 
 /**

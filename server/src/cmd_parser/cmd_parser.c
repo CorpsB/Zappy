@@ -13,10 +13,13 @@
 
 void cmd_parser(server_t *server, int index, char *cmd)
 {
+    char **args = str_to_array(cmd, ' ');
+
     for (int i = 0; command_table[i].name != NULL; i++) {
-        if (strncmp(cmd, command_table[i].name, strlen(command_table[i].name))) {
+        if (strncmp(cmd, command_table[i].name, strlen(command_table[i].name)) == 0) {
             command_table[i].func(server, index, args);
+            return;
         }
     }
-    //=> Logique de commande non trouvée.
+    dprintf(server->poll.pollfds[index].fd, "ko\n");
 }
