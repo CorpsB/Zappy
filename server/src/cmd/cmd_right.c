@@ -11,6 +11,8 @@
 
 void cmd_right(server_t *server, int index, const char *args)
 {
+    player_t *pl;
+
     switch (server->poll.client_list[index].player->direction) {
         case NORTH:
             server->poll.client_list[index].player->direction = EAST;
@@ -27,4 +29,5 @@ void cmd_right(server_t *server, int index, const char *args)
         default:
             break;
     }
+    dprintf(pl->socket_fd, "ok\n");
 }

@@ -39,21 +39,26 @@ static void push_player(player_t *pl, direction_t dir,
  * @brief Push every player of @p team that shares the tile (x,y)
  *        with @p agressor, except @p agressor itself.
 */
-static void eject_team(teams_t *team, const player_t *agressor,
+static unsigned eject_team(teams_t *team, const player_t *agressor,
     unsigned int width, unsigned int height)
 {
+    unsigned pushed = 0;
+
     for (player_t *p = team->player; p; p = p->next) {
         if (p == agressor)
             continue;
         if (p->position[0] == agressor->position[0] &&
             p->position[1] == agressor->position[1])
             push_player(p, agressor->direction, width, height);
+            pushed++;
     }
+    return pushed;
 }
 
 void cmd_eject(server_t *server, int index, const char *args)
 {
     player_t *aggressor;
+    unsigned total = 0;
 
     if (!server || !server->poll.client_list ||
         index < 0 || index >= server->poll.client_index ||
@@ -61,5 +66,6 @@ void cmd_eject(server_t *server, int index, const char *args)
         return;
     aggressor = server->poll.client_list[index].player;
     for (teams_t *t = server->teams; t; t = t->next)
-        eject_team(t, aggressor, server->width, server->height);
+    eject_team(t, aggressor, server->width, server->height);
+    dprintf(aggressor->socket_fd, total ? "ok\n" : "ko\n");
 }

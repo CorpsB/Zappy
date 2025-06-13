@@ -16,13 +16,15 @@
  *
  * @param src Pointer to the source counter (will be decremented).
  * @param dst Pointer to the destination counter (will be incremented).
+ * @return 0 on success (unit transferred), 1 on failure (src==0).
 */
-static void transfer_one_unit(unsigned int *src, unsigned int *dst)
+static int transfer_one_unit(unsigned int *src, unsigned int *dst)
 {
     if (*src == 0)
-        return;
+        return 1;
     (*src)--;
     (*dst)++;
+    return 0;
 }
 
 void cmd_set_object(server_t *server, int index, const char *args)
@@ -31,6 +33,7 @@ void cmd_set_object(server_t *server, int index, const char *args)
     resources_t *inv;
     unsigned int *src;
     unsigned int *dst;
+    int is_ok;
 
     if (!server || !server->poll.client_list
         || !server->poll.client_list[index].player || !args)
@@ -42,5 +45,7 @@ void cmd_set_object(server_t *server, int index, const char *args)
     src = select_src(args, pos, inv, &dst);
     if (!src)
         return;
-    transfer_one_unit(dst, src);
+    is_ok = transfer_one_unit(dst, src);
+    dprintf(server->poll.client_list[index].player->socket_fd,
+        is_ok == 0 ? "ok\n" : "ko\n");
 }
