@@ -20,5 +20,6 @@ const command_t command_table[] = {
     {"Set object", cmd_set_object},
     {"Inventory", cmd_inventory},
     {"Eject", cmd_eject},
+    {"Fork", cmd_fork},
     {NULL, NULL}
 };

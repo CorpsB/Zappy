@@ -63,4 +63,14 @@ void cmd_inventory(server_t *server, int index, const char *args);
 */
 void cmd_eject(server_t *srv, int idx, const char *args);
 
+/**
+ * @brief Handle the “Fork” command: lay an egg on the player’s tile.
+ *
+ * - Creates a new egg (add_egg_at) at the player’s current position.
+ * - Increments team->slots_used so a future client may connect.
+ * - Updates server->eggs_count (done inside add_egg).
+ * - Sends “ok\n” (success) or “ko\n” (failure) to the player.
+*/
+void cmd_fork(server_t *server, int index, const char *args);
+
 #endif /* !CMD_H_ */
