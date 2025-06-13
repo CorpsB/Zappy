@@ -15,7 +15,9 @@
 void cmd_forward(server_t *server, int index, const char *args);
 void cmd_right(server_t *server, int index, const char *args);
 void cmd_left(server_t *server, int index, const char *args);
+void cmd_player(server_t *server, int index, const char *args);
 
+void cmd_graphic(server_t *server, int index, const char *args); //=> special
 
 /**
  * @brief Handle the Zappy “Take <object>” command.

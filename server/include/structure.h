@@ -85,7 +85,8 @@ typedef enum direction {
 typedef enum whoAmI {
     PLAYER,
     GUI,
-    LISTEN
+    LISTEN,
+    UNKNOWN
 } whoAmI_t;
 
 struct poll {
