@@ -9,7 +9,7 @@
 #include "include/function.h"
 #include "include/structure.h"
 
-void log(server_t *server, char *message)
+void logger(server_t *server, char *message)
 {
     write(2, message, strlen(message));
     if (server->debug_fd != -1) {

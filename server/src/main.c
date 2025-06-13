@@ -22,7 +22,7 @@ int print_help(void)
     write(1, "  -c clientsNb   Number of authorized clients per team.\n", 55);
     write(1, "  -f freq        Server frequency in ticks per second ", 53);
     write(1, "(2 <= f <= 10000).\n", 19);
-    write(1, "  -d             Enable debug mod.\n", 55);
+    write(1, "  -d             Enable debug mod.\n", 35);
     write(1, "\n", 1);
     write(1, "Example:\n", 9);
     write(1, "  ./zappy_server -p 4242 -x 20 -y 20", 36);
@@ -44,8 +44,10 @@ int parser_detector(int i, char **av, server_t *server)
         i = parse_client(av[i + 1], server, i);
     if (av[i] && strncmp(av[i], "-f", 2) == 0 && av[i + 1])
         i = parse_frequency(av[i + 1], server, i);
-    if (av[i] && strncmp(av[i], "-d", 2) == 0)
-
+    if (av[i] && strncmp(av[i], "-d", 2) == 0) {
+        server->debug = true;
+        i++;
+    }
     return i;
 }
 

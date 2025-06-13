@@ -15,7 +15,8 @@
     #include <string.h>        // pour memset() si tu l’utilises
     #include <stdio.h>         // pour perror(), printf(), etc.
     #include <stdlib.h>        // pour exit()
-    #include <poll.h>    
+    #include <poll.h>
+    #include <math.h>    
 
     //Write include
     #include <unistd.h>

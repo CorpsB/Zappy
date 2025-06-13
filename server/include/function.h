@@ -24,6 +24,8 @@ void add_player(server_t *server, int socket, teams_t *teams);
 //cmd parser
 char **str_to_array(char *str, char *separator);
 
+void run_server(server_t *server);
+void cmd_parser(server_t *server, int index, char *cmd);
 
 //EGGS
 
@@ -82,6 +84,6 @@ int parse_frequency(char *str, server_t *server, int i);
 int parse_teams(char **av, server_t *server, int i);
 
 //logs
-void log(server_t *server, char *message);
+void logger(server_t *server, char *message);
 
 #endif /* !FUCNTION_H_ */

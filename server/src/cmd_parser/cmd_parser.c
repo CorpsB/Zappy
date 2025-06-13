@@ -13,7 +13,7 @@
 
 void cmd_parser(server_t *server, int index, char *cmd)
 {
-    char **args = str_to_array(cmd, ' ');
+    char **args = str_to_array(cmd, " ");
     
     if (server->poll.client_list[index].whoAmI == UNKNOWN) {
         if (strncmp(cmd, "GRAPHIC", 7) == 0) {
