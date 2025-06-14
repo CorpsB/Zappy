@@ -9,7 +9,8 @@
 
 #include <string>
 
-namespace ai::parser {
+namespace ai::parser
+{
     struct Config {
         int port = -1;
         std::string name;

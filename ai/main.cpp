@@ -6,6 +6,7 @@
 */
 
 #include "parser/parser.hpp"
+#include "entity/AI.hpp"
 #include <vector>
 #include <thread>
 
@@ -20,6 +21,9 @@ int main(int ac, char **av)
     std::vector<std::thread> threads;
 
     const auto worker = [&](unsigned threadId) {
+        ai::entity::AI bot(threadId);
+
+        bot.run(config);
     };
 
     threads.reserve(nthreads);

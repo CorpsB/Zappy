@@ -6,12 +6,22 @@
 */
 
 #include "AI.hpp"
+#include "../network/Socket.hpp"
 
-ai::entity::AI::AI(parser::Config &config, int id)
+ai::entity::AI::AI(int id)
 {
-    _config = std::make_shared<ai::parser::Config>(config);
     _id = id;
     _level = 1;
-    _food_level = 0;
+    _food_level = 1;
     _goal = FOOD;
+    _name = std::string("[Bot ") + std::to_string(id) + std::string("]");
+}
+
+void ai::entity::AI::run(const ai::parser::Config &config)
+{
+    network::Socket socket(_name, config.name);
+
+    socket.initSocket(config.port, config.host);
+    socket.connectServer();
+    socket.greetsServer();
 }

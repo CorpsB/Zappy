@@ -9,15 +9,18 @@
 
 #include <string>
 #include <iostream>
+#include "exception/Error.hpp"
 
 namespace ai::utils
 {
-    namespace validation {
+    namespace validation
+    {
         bool integer(int val, const std::string &str_val);
         bool ipv4(const std::string &ip);
     }
 
-    namespace random {
+    namespace random
+    {
         unsigned int number(unsigned int minimum, unsigned int maximum);
     }
 }

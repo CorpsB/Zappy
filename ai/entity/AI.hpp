@@ -12,7 +12,8 @@
 #include "persona/Persona.hpp"
 #include "../parser/parser.hpp"
 
-namespace ai::entity {
+namespace ai::entity
+{
     enum Goal {
         FOOD,
         STONE,
@@ -22,11 +23,13 @@ namespace ai::entity {
 
     class AI {
         public:
-            AI(parser::Config &config, int id);
+            AI(int id);
             ~AI() = default;
 
+            void run(const ai::parser::Config &config);
+
         private:
-            std::shared_ptr<parser::Config> _config;
+            std::string _name;
             unsigned _id;
             unsigned _level;
             unsigned _food_level;

@@ -9,7 +9,8 @@
 
 #include <string>
 
-namespace ai::entity {
+namespace ai::entity
+{
     class Persona {
         public:
             Persona();
