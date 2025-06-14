@@ -7,9 +7,9 @@
 
 #include "Window.hpp"
 
-void Window::init()
+void Window::init(unsigned int width, unsigned int height)
 {
-    _window.create(sf::VideoMode({1920, 1080}), "Zappy");
+    _window.create(sf::VideoMode({width, height}), "Zappy");
     _window.setFramerateLimit(FRAMERATE);
 }
 

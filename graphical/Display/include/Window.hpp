@@ -21,7 +21,7 @@ class Window {
         sf::RenderWindow &getWindow();
         void setWindowSize(unsigned int x, unsigned int y);
 
-        void init();
+        void init(unsigned int width, unsigned int height);
         void stop();
         void clear();
         void display();
