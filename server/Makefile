@@ -29,6 +29,8 @@ SRC	=	src/main.c								\
 		src/utils/server/see_server.c			\
 		src/utils/teams/add_teams.c				\
 		src/utils/teams/free_teams.c			\
+		src/utils/eggs/free_eggs.c				\
+		src/utils/player/free_player.c			\
 		src/utils/teams/search_teams.c			\
 		src/utils/teams/see_teams.c				\
 		src/utils/player/add_player.c			\
@@ -40,8 +42,8 @@ SRC	=	src/main.c								\
 		src/utils/eggs/add_eggs.c				\
 		src/utils/eggs/search_eggs.c			\
 		src/utils/eggs/see_eggs.c				\
-		src/utils/loger/log.c
-
+		src/utils/loger/log.c					\
+		src/utils/poll/see_poll.c				\
 
 
 OBJ	=	$(SRC:.c=.o)

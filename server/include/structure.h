@@ -86,7 +86,8 @@ typedef enum whoAmI {
     PLAYER,
     GUI,
     LISTEN,
-    UNKNOWN
+    UNKNOWN,
+    END_OF_TABLE
 } whoAmI_t;
 
 typedef enum logs {

@@ -23,13 +23,16 @@ int check_autorized(server_t *server, int index);
 //server
 server_t *add_server(void);
 void see_server(server_t *server);
+void free_server(server_t *server);
+void see_poll(poll_t poll);
 //teams
 void add_teams(server_t *server, char *name);
 void see_one_team(teams_t *team);
 void see_teams(teams_t *teams);
+void free_all_teams(teams_t *teams);
 //player
 void add_player(server_t *server, int socket, teams_t *teams);
-
+void free_all_player(player_t *player);
 //cmd parser
 char **str_to_array(char *str, char *separator);
 
@@ -37,7 +40,7 @@ void run_server(server_t *server);
 void cmd_parser(server_t *server, int index, char *cmd);
 
 //EGGS
-
+void free_all_egs(eggs_t *eggs);
 /**
  * @brief Allocate a new egg and insert it at the head of a team list.
  *

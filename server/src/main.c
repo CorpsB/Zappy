@@ -64,9 +64,8 @@ bool parse_and_find_error(int ac, char **av, server_t *server)
         server->width == 0 ||
         server->max_connections_per_team == 0 ||
         server->port == 0 ||
-        server->teams == NULL) {
+        server->teams == NULL)
             return false;
-        }
     return true;
 }
 
@@ -94,4 +93,6 @@ int main(int ac, char **av)
     srand(time(NULL));
     see_server(server);
     run_server(server);
+    free_server(server);
+    return 0;
 }

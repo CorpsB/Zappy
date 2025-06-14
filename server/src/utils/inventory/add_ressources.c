@@ -22,3 +22,5 @@ resources_t create_resources(void)
     result.thystame = 0;
     return result;
 }
+
+

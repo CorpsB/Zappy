@@ -15,5 +15,5 @@ int parse_teams(char **av, server_t *server, int i)
 
     for (; av[j] && av[j][0] != '-'; j++)
         add_teams(server, av[j]);
-    return j;
+    return j - 1;
 }
