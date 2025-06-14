@@ -13,6 +13,7 @@ SRC	=	main.cpp	\
 		network/Socket.cpp	\
 		parser/parser.cpp	\
 		parser/help.cpp	\
+		utils/debug/Logger.cpp	\
 		utils/exception/Error.cpp	\
 		utils/random/number.cpp	\
 		utils/validation/integer.cpp	\

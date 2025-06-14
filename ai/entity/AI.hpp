@@ -11,6 +11,8 @@
 #include <memory>
 #include "persona/Persona.hpp"
 #include "../parser/parser.hpp"
+#include "../utils/utils.hpp"
+#include "../network/Socket.hpp"
 
 namespace ai::entity
 {
@@ -26,14 +28,19 @@ namespace ai::entity
             AI(int id);
             ~AI() = default;
 
+            void start(const ai::parser::Config &config);
             void run(const ai::parser::Config &config);
+            void stop();
 
         private:
-            std::string _name;
             unsigned _id;
             unsigned _level;
             unsigned _food_level;
             Goal _goal;
             Persona _persona;
+
+            std::string _thread_name;
+            utils::debug::Logger _logger;
+            network::Socket _socket;
     };
 }

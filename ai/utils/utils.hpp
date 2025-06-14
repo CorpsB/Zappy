@@ -10,6 +10,7 @@
 #include <string>
 #include <iostream>
 #include "exception/Error.hpp"
+#include "debug/Logger.hpp"
 
 namespace ai::utils
 {

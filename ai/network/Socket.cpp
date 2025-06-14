@@ -13,7 +13,14 @@
 #include <chrono>
 #include <cstring>
 
-ai::network::Socket::Socket(const std::string &thread_name, const std::string &team_name)
+ai::network::Socket::Socket()
+{
+    _thread_name = "";
+    _team_name = "";
+    _buffer = "";
+}
+
+void ai::network::Socket::setup(const std::string &thread_name, const std::string &team_name)
 {
     _thread_name = thread_name;
     _team_name = team_name;
@@ -42,8 +49,8 @@ bool ai::network::Socket::readSocket()
         const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
 
         if (duration.count() > READ_TIMEOUT) {
-            std::cerr << _thread_name << " Socket receive timeout ({timeout}s)." << std::endl;
-            return false;
+            closeSocket();
+            throw utils::exception::Error("CONNECTION", _thread_name + " Socket receive timeout (" + std::to_string(READ_TIMEOUT) + "s).");
         }
         if (!isServerReadable())
             continue;
@@ -51,7 +58,7 @@ bool ai::network::Socket::readSocket()
         rd = read(_fds.fd, local_buffer, READ_BUFFER_SIZE);
         if (rd < 0) {
             closeSocket();
-            throw utils::exception::Error("CONNECTION", "Read failure.");
+            throw utils::exception::Error("CONNECTION", _thread_name + " Read failure.");
         }
         _buffer.append(local_buffer, rd);
     }
@@ -88,7 +95,7 @@ bool ai::network::Socket::isServerReadable()
     const int queue = poll((struct pollfd *)&_fds, 1, 0);
 
     if (queue < 0)
-        throw utils::exception::Error("CONNECTION", "Poll failure.");
+        throw utils::exception::Error("CONNECTION", _thread_name + " Poll failure.");
     if (queue == 0)
         return false;
     if (_fds.revents & POLLIN)
@@ -99,47 +106,46 @@ bool ai::network::Socket::isServerReadable()
 void ai::network::Socket::connectServer()
 {
     if (connect(_fds.fd, (struct sockaddr*)&_socket, sizeof(_socket)) < 0)
-        throw utils::exception::Error("CONNECTION", "Failed to join the server.");
+        throw utils::exception::Error("CONNECTION", _thread_name + " Failed to join the server.");
 }
 
 void ai::network::Socket::greetsServer()
 {
     const std::string welcome_msg = readSocketBuffer();
     if (welcome_msg != "WELCOME")
-        throw utils::exception::Error("CONNECTION", "The server didn't greet us. What a bad guy.");
-    
-    if (!sendCommand(_team_name))
-        throw utils::exception::Error("CONNECTION", "Failed to send team name.");
+        throw utils::exception::Error("CONNECTION", _thread_name + " The server didn't greet us. What a bad guy.");
+
+    try {
+        sendCommand(_team_name);
+    } catch (std::exception e) {
+        throw utils::exception::Error("CONNECTION", _thread_name + " Failed to send team name.");
+    }
 
     const std::string client_num = readSocketBuffer();
     if (client_num == "dead")
-        throw utils::exception::Error("CONNECTION", "Failed receiving client slot info.");
+        throw utils::exception::Error("CONNECTION", _thread_name + " Failed receiving client slot info.");
     if (client_num == "ko")
-        throw utils::exception::Error("CONNECTION", "Team name rejected or team full : " + client_num);
+        throw utils::exception::Error("CONNECTION", _thread_name + " Team name rejected or team full : " + client_num);
 
     const int available_slots = std::atoi(client_num.c_str());
     if (!utils::validation::integer(available_slots, client_num))
-        throw utils::exception::Error("CONNECTION", "Expected client slots (number) or 'ko', got '" + client_num + "'");
+        throw utils::exception::Error("CONNECTION", _thread_name + " Expected client slots (number) or 'ko', got '" + client_num + "'");
 
     const std::string world_size = readSocketBuffer();
     if (world_size == "dead")
-        throw utils::exception::Error("CONNECTION", "Failed to receive world size.");
+        throw utils::exception::Error("CONNECTION", _thread_name + " Failed to receive world size.");
 }
 
-bool ai::network::Socket::sendCommand(const std::string &cmd)
+void ai::network::Socket::sendCommand(const std::string &cmd)
 {
     const std::string cmd_final = cmd + "\n";
 
-    if (write(_fds.fd, cmd_final.c_str(), cmd_final.size()) < 0) {
-        std::cerr << _thread_name << "Socket error while sending '" << cmd << "'" << std::endl;
-        return false;
-    }
-    return true;
+    if (write(_fds.fd, cmd_final.c_str(), cmd_final.size()) < 0)
+        throw utils::exception::Error("CONNECTION", _thread_name + " Socket error while sending '" + cmd + "'");
 }
 
 std::string ai::network::Socket::doAction(const std::string &cmd)
 {
-    if (!sendCommand(cmd))
-        return "dead";
+    sendCommand(cmd);
     return readSocketBuffer();
 }

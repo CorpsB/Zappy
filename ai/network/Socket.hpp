@@ -21,9 +21,10 @@ namespace ai::network
 {
     class Socket {
         public:
-            Socket(const std::string &thread_name, const std::string &team_name);
+            Socket();
             ~Socket() = default;
 
+            void setup(const std::string &thread_name, const std::string &team_name);
             void initSocket(int port, const std::string &ip);
             bool readSocket();
             std::string readSocketBuffer();
@@ -33,7 +34,7 @@ namespace ai::network
             void connectServer();
             void greetsServer();
 
-            bool sendCommand(const std::string &cmd);
+            void sendCommand(const std::string &cmd);
             std::string doAction(const std::string &cmd);
 
         private:
