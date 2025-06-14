@@ -16,4 +16,8 @@ namespace ai::utils
         bool integer(int val, const std::string &str_val);
         bool ipv4(const std::string &ip);
     }
+
+    namespace random {
+        unsigned int number(unsigned int minimum, unsigned int maximum);
+    }
 }

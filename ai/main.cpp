@@ -6,6 +6,8 @@
 */
 
 #include "parser/parser.hpp"
+#include <vector>
+#include <thread>
 
 int main(int ac, char **av)
 {
@@ -13,6 +15,17 @@ int main(int ac, char **av)
 
     if (!ai::parser::parse(ac, av, config) && !config.help)
         return 84;
-    printf("ok\n");
+
+    const unsigned int nthreads = std::thread::hardware_concurrency();
+    std::vector<std::thread> threads;
+
+    const auto worker = [&](unsigned threadId) {
+    };
+
+    threads.reserve(nthreads);
+    for (size_t i = 0; i < nthreads; ++i)
+        threads.emplace_back(worker, i);
+    for (auto &t : threads)
+        t.join();
     return 0;
 }

@@ -8,8 +8,11 @@
 FLAGS	= -std=c++20 -Wall -Wextra -Werror -g
 
 SRC	=	main.cpp	\
+		entity/AI.cpp	\
+		entity/persona/Persona.cpp	\
 		parser/parser.cpp	\
 		parser/help.cpp	\
+		utils/random/number.cpp	\
 		utils/validation/integer.cpp	\
 		utils/validation/ipv4.cpp
 
