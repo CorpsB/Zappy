@@ -1,22 +1,34 @@
 ##
-## EPITECH PROJECT, 2023
-## MAKEFILE MAIN
+## EPITECH PROJECT, 2025
+## B-OOP-400-STG-4-1-tekspice-noe.carabin
 ## File description:
-## A program that do simple operation.
+## Makefile
 ##
 
-.PHONY: all clean fclean re
+FLAGS	= -std=c++20 -Wall -Wextra -Werror -g
 
-all:
-	cp zappy_ai.sh ../zappy_ai
+SRC	=	main.cpp	\
+		parser/parse_args.cpp	\
+		parser/help.cpp	\
+		utils/validation/integer.cpp	\
+		utils/validation/ipv4.cpp
+
+OBJ	=	$(SRC:.cpp=.o)
+
+NAME	=	zappy_ai
+
+all: $(NAME)
+
+$(NAME): $(OBJ)
+	g++ -o $(NAME) $(OBJ) $(FLAGS)
+	mv $(NAME) ..
 
 clean:
-	rm -rf __pycache__
-	rm -rf bot/__pycache__
-	rm -rf bot/helper/__pycache__
-	rm -rf network/__pycache__
+	rm -f $(OBJ)
 
-fclean:	clean
-	rm ../zappy_ai
+fclean: clean
+	rm -f ../$(NAME)
 
-re:	fclean all
+re: fclean all
+
+.PHONY: all clean fclean re
