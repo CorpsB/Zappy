@@ -9,6 +9,7 @@
 
 #include <string>
 #include <iostream>
+#include <vector>
 #include "exception/Error.hpp"
 #include "debug/Logger.hpp"
 
@@ -23,5 +24,10 @@ namespace ai::utils
     namespace random
     {
         unsigned int number(unsigned int minimum, unsigned int maximum);
+    }
+
+    namespace string
+    {
+        std::vector<std::string> split(const std::string &str, char delim);
     }
 }

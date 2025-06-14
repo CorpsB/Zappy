@@ -117,7 +117,7 @@ void ai::network::Socket::greetsServer()
 
     try {
         sendCommand(_team_name);
-    } catch (std::exception e) {
+    } catch (...) {
         throw utils::exception::Error("CONNECTION", _thread_name + " Failed to send team name.");
     }
 

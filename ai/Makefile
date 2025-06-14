@@ -9,13 +9,18 @@ FLAGS	= -std=c++20 -Wall -Wextra -Werror -g
 
 SRC	=	main.cpp	\
 		entity/AI.cpp	\
+		entity/bot/helper/count_player.cpp	\
+		entity/bot/goal.cpp	\
+		entity/inventory/Inventory.cpp	\
 		entity/persona/Persona.cpp	\
+		entity/sound/SoundSystem.cpp	\
 		network/Socket.cpp	\
 		parser/parser.cpp	\
 		parser/help.cpp	\
 		utils/debug/Logger.cpp	\
 		utils/exception/Error.cpp	\
 		utils/random/number.cpp	\
+		utils/string/split.cpp	\
 		utils/validation/integer.cpp	\
 		utils/validation/ipv4.cpp
 
