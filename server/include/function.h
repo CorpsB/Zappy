@@ -41,6 +41,7 @@ void cmd_parser(server_t *server, int index, char *cmd);
 
 //EGGS
 void free_all_egs(eggs_t *eggs);
+void see_all_eggs(eggs_t *eggs);
 /**
  * @brief Allocate a new egg and insert it at the head of a team list.
  *

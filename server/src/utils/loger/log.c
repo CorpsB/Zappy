@@ -13,7 +13,7 @@ static void need_stop(server_t *server, bool is_end)
 {
     if (is_end) {
         logger(server, "END DUE TO LOGGER GOODBYE.", DEBUG, false);
-        // free_server(server);
+        free_server(server);
         exit(84);
     }
 }

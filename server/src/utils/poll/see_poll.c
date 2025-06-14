@@ -15,13 +15,11 @@ void see_a_pollfd(struct pollfd *pollfd, int index)
         dprintf(2, "PollFD #%d: NULL\n", index);
         return;
     }
-
     dprintf(2, "PollFD #%d:\n", index);
     dprintf(2, "  fd      : %d\n", pollfd->fd);
     dprintf(2, "  events  : %d\n", pollfd->events);
     dprintf(2, "  revents : %d\n", pollfd->revents);
 }
-
 
 void see_pollfds(struct pollfd *pollfds, int size)
 {
@@ -38,10 +36,14 @@ void see_a_client(client_t *client)
         dprintf(2, "  [NULL client]\n");
         return;
     }
-    dprintf(2, "  Type        : %s\n",
-        client->whoAmI == PLAYER ? "PLAYER" :
-        client->whoAmI == GUI    ? "GUI" :
-        client->whoAmI == LISTEN ? "LISTEN" : "UNKNOWN");
+    if (client->whoAmI == PLAYER)
+        dprintf(2, "  Type        : PLAYER\n");
+    if (client->whoAmI == GUI)
+        dprintf(2, "  Type        : GUI\n");
+    if (client->whoAmI == LISTEN)
+        dprintf(2, "  Type        : LISTEN\n");
+    if (client->whoAmI == UNKNOWN)
+        dprintf(2, "  Type        : UNKNOWN\n");
     if (client->player) {
         dprintf(2, "  Player ID   : %u\n", client->player->id);
     } else {
@@ -74,15 +76,13 @@ void see_poll(poll_t poll)
     } else {
         dprintf(2, "Client list         : %p\n", (void *)poll.client_list);
     }
-
     if (poll.pollfds == NULL) {
         dprintf(2, "pollfds             : (null)\n");
     } else {
         dprintf(2, "pollfds             : %p\n", (void *)poll.pollfds);
     }
-
     dprintf(2, "Sockaddr.sin_family : %d\n", poll.sockaddr.sin_family);
     dprintf(2, "Sockaddr.sin_port   : %d\n", ntohs(poll.sockaddr.sin_port));
-    dprintf(2, "Sockaddr.sin_addr   : %s\n", inet_ntoa(poll.sockaddr.sin_addr));
-    dprintf(2, "==========================\n");
+    dprintf(2, "Sockaddr.sin_addr   : %s\n",
+        inet_ntoa(poll.sockaddr.sin_addr));
 }
