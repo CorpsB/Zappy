@@ -20,6 +20,8 @@
  * return 0 if the client is a PLAYER.
 */
 int check_autorized(server_t *server, int index);
+void see_inventory(resources_t inv);
+void see_all_players(player_t *players);
 //server
 server_t *add_server(void);
 void see_server(server_t *server);
