@@ -8,7 +8,7 @@
 FLAGS	= -std=c++20 -Wall -Wextra -Werror -g
 
 SRC	=	main.cpp	\
-		parser/parse_args.cpp	\
+		parser/parser.cpp	\
 		parser/help.cpp	\
 		utils/validation/integer.cpp	\
 		utils/validation/ipv4.cpp

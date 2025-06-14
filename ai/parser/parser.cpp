@@ -9,7 +9,8 @@
 #include "../utils/utils.hpp"
 #include <iostream>
 
-static bool parse_port(Config &config, const std::string &arg, int ac, char **av, int &i)
+static bool parse_port(ai::parser::Config &config, const std::string &arg, int ac,
+    char **av, int &i)
 {
     if (ac < i + 1) {
         std::cerr << "Error: Missing value for " << arg << std::endl;
@@ -26,7 +27,8 @@ static bool parse_port(Config &config, const std::string &arg, int ac, char **av
     return true;
 }
 
-static bool parse_name(Config &config, const std::string &arg, int ac, char **av, int &i)
+static bool parse_name(ai::parser::Config &config, const std::string &arg, int ac,
+    char **av, int &i)
 {
     if (ac < i + 1) {
         std::cerr << "Error: Missing value for " << arg << std::endl;
@@ -41,7 +43,8 @@ static bool parse_name(Config &config, const std::string &arg, int ac, char **av
     return true;
 }
 
-static bool parse_host(Config &config, const std::string &arg, int ac, char **av, int &i)
+static bool parse_host(ai::parser::Config &config, const std::string &arg, int ac,
+    char **av, int &i)
 {
     if (ac < i + 1) {
         std::cerr << "Error: Missing value for " << arg << std::endl;
@@ -54,7 +57,8 @@ static bool parse_host(Config &config, const std::string &arg, int ac, char **av
     return true;
 }
 
-static bool parse_count(Config &config, const std::string &arg, int ac, char **av, int &i)
+static bool parse_count(ai::parser::Config &config, const std::string &arg, int ac,
+    char **av, int &i)
 {
     if (ac < i + 1) {
         std::cerr << "Error: Missing value for " << arg << std::endl;
@@ -71,7 +75,7 @@ static bool parse_count(Config &config, const std::string &arg, int ac, char **a
     return true;
 }
 
-bool parse_args(int ac, char **av, Config &config)
+bool ai::parser::parse(int ac, char **av, ai::parser::Config &config)
 {
     for (int i = 1; i < ac; ++i) {
         std::string arg = av[i];

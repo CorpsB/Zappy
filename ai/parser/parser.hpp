@@ -9,14 +9,17 @@
 
 #include <string>
 
-struct Config {
-    int port = -1;
-    std::string name;
-    std::string host = "127.0.0.1";
-    int count = 1;
-    bool debug = false;
-    bool help = false;
-};
+namespace ai::parser {
+    struct Config {
+        int port = -1;
+        std::string name;
+        std::string host = "127.0.0.1";
+        int count = 1;
+        bool debug = false;
+        bool help = false;
+    };
+
+    bool parse(int ac, char **av, Config &config);
+}
 
 void print_help_message();
-bool parse_args(int ac, char **av, Config &config);

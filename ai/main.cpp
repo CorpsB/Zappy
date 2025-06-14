@@ -9,9 +9,9 @@
 
 int main(int ac, char **av)
 {
-    Config config;
+    ai::parser::Config config;
 
-    if (!parse_args(ac, av, config) && !config.help)
+    if (!ai::parser::parse(ac, av, config) && !config.help)
         return 84;
     printf("ok\n");
     return 0;
