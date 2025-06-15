@@ -28,6 +28,4 @@ class Game {
         Event _event;
 
         sf::Clock _clock;
-
-        std::vector<int> _entitiesId;
 };
