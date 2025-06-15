@@ -8,6 +8,7 @@
 SRC	= main.cpp	\
 	Display/Window/Window.cpp	\
 	Display/Event/Event.cpp	\
+	Display/Game/Game.cpp	\
 	Client/Client.cpp	\
 	Client/Config/NetConfig.cpp	\
 	3DRenderer/src/Camera.cpp \
@@ -21,7 +22,7 @@ SRC	= main.cpp	\
 
 OBJ	= $(SRC:.cpp=.o)
 
-CXXFLAGS = -std=c++20 -Wall -Wextra -Werror -g -I3DRenderer/include -IDisplay/include -O3 -march=native
+CXXFLAGS = -std=c++20 -Wall -Wextra -Werror -g -I3DRenderer/include -O3 -march=native
 LDFLAGS = -lsfml-graphics -lsfml-window -lsfml-system
 
 NAME = graphic

@@ -5,42 +5,24 @@
 ** main graphic
 */
 
-#include "Window.hpp"
-#include "Event.hpp"
+#include "Display/Window/Window.hpp"
+#include "Display/Event/Event.hpp"
 #include "Client/Client.hpp"
+#include "Display/Game/Game.hpp"
 
 #include <thread>
 #include <chrono>
 
-#include "3DRenderer/include/Renderer.hpp"
 #include <SFML/System/Clock.hpp>
 #include <iostream>
 
 void runDisplay()
 {
-    Window window;
-    Event event;
-    
-    window.init(1280, 720);
-    if (!Renderer::initRenderer(window.getWindow())) {
-        std::cerr << "Failed to initialize renderer" << std::endl;
-        return;
-    }
+    Game &game = Game::GetInstance();
 
-    // Spawn un golem Bricien
-    Renderer::rotatingEntityId = Renderer::spawn(Renderer::EntityType::STL,
-        {0.0f, 0.0f, 5.0f}, sf::Color::Cyan, "./Assets/body_golem.stl");
-
-    sf::Clock clock;
-    while (event.getEvent(window.getWindow()) != -1) {
-        float dt = clock.restart().asSeconds();
-        if (dt <= 0) continue;
-        window.clear();
-        Renderer::update(dt);
-        Renderer::render(dt, window.getWindow());
-        window.display();
-    }
-    window.stop();
+    game.init();
+    game.run();
+    game.stop();
 }
 
 void runNetwork()
@@ -62,7 +44,8 @@ int main()
     // if (client.getConfig().parseArgs(ac - 1, av + 1))
     //     return 84;
     // std::thread networkInstance(runNetwork);
+    std::thread displayInstance(runDisplay);
     // networkInstance.join();
-    runDisplay();
+    displayInstance.join();
     return 0;
 }
