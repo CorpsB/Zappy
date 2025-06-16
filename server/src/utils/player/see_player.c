@@ -9,49 +9,49 @@
 #include "include/function.h"
 #include "include/structure.h"
 
-void see_direction(direction_t dir)
+void see_direction(direction_t dir, int fd)
 {
-    dprintf(2, "  Direction        : ");
+    dprintf(fd, "  Direction        : ");
     if (dir == NORTH)
-        dprintf(2, "NORTH\n");
+        dprintf(fd, "NORTH\n");
     if (dir == EAST)
-        dprintf(2, "EAST\n");
+        dprintf(fd, "EAST\n");
     if (dir == SOUTH)
-        dprintf(2, "SOUTH\n");
+        dprintf(fd, "SOUTH\n");
     if (dir == WEST)
-        dprintf(2, "WEST\n");
+        dprintf(fd, "WEST\n");
 }
 
-void see_a_player(player_t *player)
+void see_a_player(player_t *player, int fd)
 {
     if (!player) {
-        dprintf(2, "  [NULL player]\n");
+        dprintf(fd, "  [NULL player]\n");
         return;
     }
-    dprintf(2, "  ID               : %u\n", player->id);
-    dprintf(2, "  Position         : (%u, %u)\n",
+    dprintf(fd, "  ID               : %u\n", player->id);
+    dprintf(fd, "  Position         : (%u, %u)\n",
         player->position[0], player->position[1]);
-    dprintf(2, "  Level            : %u\n", player->lvl);
-    dprintf(2, "  Cycles to death  : %u\n", player->cycle_before_death);
-    dprintf(2, "  Socket FD        : %d\n", player->socket_fd);
-    see_direction(player->direction);
+    dprintf(fd, "  Level            : %u\n", player->lvl);
+    dprintf(fd, "  Cycles to death  : %u\n", player->cycle_before_death);
+    dprintf(fd, "  Socket FD        : %d\n", player->socket_fd);
+    see_direction(player->direction, fd);
     if (player->team && player->team->name)
-        dprintf(2, "  Team name        : %s\n", player->team->name);
+        dprintf(fd, "  Team name        : %s\n", player->team->name);
     else
-        dprintf(2, "  Team name        : (null)\n");
-    see_inventory(player->inventory);
+        dprintf(fd, "  Team name        : (null)\n");
+    see_inventory(player->inventory, fd);
 }
 
-void see_all_players(player_t *players)
+void see_all_players(player_t *players, int fd)
 {
     int i = 0;
 
-    dprintf(2, "===== PLAYERS =====\n");
+    dprintf(fd, "===== PLAYERS =====\n");
     while (players) {
-        dprintf(2, "Player #%d:\n", i);
-        see_a_player(players);
+        dprintf(fd, "Player #%d:\n", i);
+        see_a_player(players, fd);
         players = players->next;
         i++;
     }
-    dprintf(2, "===================\n");
+    dprintf(fd, "===================\n");
 }

@@ -20,17 +20,18 @@
  * return 0 if the client is a PLAYER.
 */
 int check_autorized(server_t *server, int index);
-void see_inventory(resources_t inv);
-void see_all_players(player_t *players);
+void see_inventory(resources_t inv, int fd);
+void see_all_players(player_t *players, int fd);
 //server
 server_t *add_server(void);
-void see_server(server_t *server);
+void see_server(server_t *server, int fd);
 void free_server(server_t *server);
-void see_poll(poll_t poll);
+void see_poll(poll_t poll, int fd, int size);
+void debug_server(server_t *server);
 //teams
 void add_teams(server_t *server, char *name);
-void see_one_team(teams_t *team);
-void see_teams(teams_t *teams);
+void see_one_team(teams_t *team, int fd);
+void see_teams(teams_t *teams, int fd);
 void free_all_teams(teams_t *teams);
 //player
 void add_player(server_t *server, int socket, teams_t *teams);
@@ -43,7 +44,7 @@ void cmd_parser(server_t *server, int index, char *cmd);
 
 //EGGS
 void free_all_egs(eggs_t *eggs);
-void see_all_eggs(eggs_t *eggs);
+void see_all_eggs(eggs_t *eggs, int fd);
 /**
  * @brief Allocate a new egg and insert it at the head of a team list.
  *
@@ -69,13 +70,13 @@ void add_eggs(server_t *server, unsigned int creator_id, teams_t *teams,
  * @brief Walk through and display an egg linked list.
  *
  * If the list is empty, prints “\[NO EGGS]”; otherwise calls
- * see_one_egg() for each node.
+ * see_one_egg() for, each node.
  *
  * @param eggs Head of the egg list (may be NULL).
  *
  * @details Complexity : O(n) where n is the number of eggs.
 */
-void see_eggs(eggs_t *head);
+void see_eggs(eggs_t *head, int fd);
 
 /**
  * @brief Search an egg by its id

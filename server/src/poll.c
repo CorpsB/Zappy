@@ -21,6 +21,8 @@ static void init_server(server_t *server)
     server->poll.sockaddr.sin_family = AF_INET;
     server->poll.sockaddr.sin_port = htons(server->port);
     server->poll.sockaddr.sin_addr.s_addr = INADDR_ANY;
+    server->poll.connected_client = 0;
+    server->poll.client_index = 0;
     if (bind(server->poll.socket, (struct sockaddr *)&server->poll.sockaddr,
         size) == -1)
         logger(server, "SOCKET BIND", PERROR, true);
@@ -44,6 +46,7 @@ static void add_client(server_t *server, int socket, whoAmI_t state)
     server->poll.client_list[server->poll.client_index].whoAmI = state;
     server->poll.client_list[server->poll.client_index].player = NULL;
     server->poll.client_index++;
+    server->poll.connected_client++;
 }
 
 static bool is_game_over(server_t *server)
@@ -92,7 +95,6 @@ static void poll_func(server_t *server)
 void run_server(server_t *server)
 {
     init_server(server);
-    server->poll.client_index = 0;
     add_client(server, server->poll.socket, LISTEN);
     for (; !is_game_over(server);) {
         poll_func(server);

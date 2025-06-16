@@ -18,19 +18,19 @@
  * @param egg Constant pointer to the #eggs_t structure to display.
  *
 */
-static void see_one_egg(const eggs_t *egg)
+static void see_one_egg(const eggs_t *egg, int fd)
 {
-    printf("\t[EGG] id=%u | creator=%u | pos=(%u,%u)\n",
+    dprintf(fd, "\t[EGG] id=%u | creator=%u | pos=(%u,%u)\n",
         egg->id, egg->creator_id, egg->position[0], egg->position[1]);
 }
 
-void see_all_eggs(eggs_t *eggs)
+void see_all_eggs(eggs_t *eggs, int fd)
 {
     if (!eggs) {
-        printf("\t\t[NO EGGS]\n");
+        dprintf(fd, "\t\t[NO EGGS]\n");
         return;
     }
-    printf("\t\t[EGGS]:\n");
+    dprintf(fd, "\t\t[EGGS]:\n");
     for (eggs_t *cur = eggs; cur; cur = cur->next)
-        see_one_egg(cur);
+        see_one_egg(cur, fd);
 }

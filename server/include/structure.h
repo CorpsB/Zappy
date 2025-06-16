@@ -86,8 +86,7 @@ typedef enum whoAmI {
     PLAYER,
     GUI,
     LISTEN,
-    UNKNOWN,
-    END_OF_TABLE
+    UNKNOWN
 } whoAmI_t;
 
 typedef enum logs {
@@ -101,6 +100,7 @@ struct poll {
     int socket;
     struct sockaddr_in sockaddr;
     int client_index;
+    int connected_client;
     struct pollfd *pollfds;
     client_t *client_list;
 };

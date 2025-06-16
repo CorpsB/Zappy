@@ -91,7 +91,7 @@ int main(int ac, char **av)
     if (!parse_and_find_error(ac, av, server))
         return print_help();
     srand(time(NULL));
-    see_server(server);
+    debug_server(server);
     run_server(server);
     free_server(server);
     return 0;
