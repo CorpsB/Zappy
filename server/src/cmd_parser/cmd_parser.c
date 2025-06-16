@@ -34,6 +34,7 @@ static bool unknown_client(server_t *server, int index, char *cmd)
 
 void cmd_parser(server_t *server, int index, char *cmd)
 {
+    //=> Leak
     char **args = str_to_array(cmd, " ");
 
     if (server->poll.client_list[index].whoAmI == UNKNOWN) {

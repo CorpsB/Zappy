@@ -139,6 +139,9 @@ struct server {
     /// File descriptor used to write debug logs when debug mode is enabled.
     int debug_fd;
 
+    resources_t goal;
+    resources_t actual_map_inventory;
+
     poll_t poll;
 
     /// 2D array representing the game map, each tile containing resources.

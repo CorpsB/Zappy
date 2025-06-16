@@ -63,7 +63,7 @@ static bool is_game_over(server_t *server)
     return false;
 }
 
-static void del_client(server_t *server, int index)
+static bool del_client(server_t *server, int index)
 {
     close(server->poll.pollfds[index].fd);
     for (int i = 0; i < server->poll.connected_client; i++) {
@@ -78,6 +78,7 @@ static void del_client(server_t *server, int index)
     server->poll.pollfds = realloc(server->poll.pollfds, sizeof(struct pollfd) * server->poll.connected_client);
     if (!server->poll.pollfds || !server->poll.client_list)
         logger(server, "REALLOC", PERROR, true);
+    return true;
 }
 
 static bool event_detector(server_t *server, int i)
@@ -93,11 +94,8 @@ static bool event_detector(server_t *server, int i)
             return true;
         }
         bytes = read(server->poll.pollfds[i].fd, cmd, sizeof(cmd));
-        if (bytes <= 0) {
-            close(server->poll.pollfds[i].fd);
-            del_client(server, i);
-            return true;
-        }
+        if (bytes <= 0)
+            return del_client(server, i);
         cmd[bytes] = '\0';
         cmd_parser(server, i, cmd);
         return true;
