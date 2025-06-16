@@ -45,9 +45,13 @@ static void add_client(server_t *server, int socket, whoAmI_t state)
     server->poll.pollfds[server->poll.client_index].revents = 0;
     server->poll.client_list[server->poll.client_index].whoAmI = state;
     server->poll.client_list[server->poll.client_index].player = NULL;
+    if (state == UNKNOWN)
+        dprintf(server->poll.pollfds[server->poll.client_index].fd,
+            "WELCOME\n");
     server->poll.client_index++;
     server->poll.connected_client++;
     logger(server, "AJOUT D'UN CLIENT", DEBUG, false);
+    see_poll(server->poll, 2, server->poll.connected_client);
 }
 
 static bool is_game_over(server_t *server)
@@ -61,6 +65,7 @@ static bool is_game_over(server_t *server)
 
 static void del_client(server_t *server, int index)
 {
+    close(server->poll.pollfds[index].fd);
     for (int i = 0; i < server->poll.connected_client; i++) {
         if (i > index) {
             server->poll.client_list[i - 1] = server->poll.client_list[i];
@@ -68,6 +73,7 @@ static void del_client(server_t *server, int index)
         }
     }
     server->poll.connected_client--;
+    server->poll.client_index--;
     server->poll.client_list = realloc(server->poll.client_list, sizeof(client_t) * server->poll.connected_client);
     server->poll.pollfds = realloc(server->poll.pollfds, sizeof(struct pollfd) * server->poll.connected_client);
     if (!server->poll.pollfds || !server->poll.client_list)
@@ -90,6 +96,7 @@ static bool event_detector(server_t *server, int i)
         if (bytes <= 0) {
             close(server->poll.pollfds[i].fd);
             del_client(server, i);
+            return true;
         }
         cmd[bytes] = '\0';
         cmd_parser(server, i, cmd);
@@ -114,5 +121,6 @@ void run_server(server_t *server)
     add_client(server, server->poll.socket, LISTEN);
     for (; !is_game_over(server);) {
         poll_func(server);
+        see_poll(server->poll, server->debug_fd, server->poll.connected_client);
     }
 }
