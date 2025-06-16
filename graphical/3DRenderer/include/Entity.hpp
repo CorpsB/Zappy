@@ -7,9 +7,12 @@
 
 namespace Renderer {
     enum class EntityType { CUBE, SPHERE, STL };
+    enum class PartType { BODY, EYES, GROUND };
 
     struct Entity {
         int id;
+        PartType type;
+        int clientId;
         Mesh mesh;
         Vec3 position;
         Vec3 rotation;
@@ -21,5 +24,5 @@ namespace Renderer {
     extern int rotatingEntityId;
 
     // Création d'entités
-    int spawn(EntityType type, const Vec3& pos, const sf::Color& c, const std::string& filepath = "");
+    int spawn(EntityType type, PartType partType, int clientId, const Vec3& pos, const sf::Color& c, const std::string& filepath = "");
 }

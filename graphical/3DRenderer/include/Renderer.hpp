@@ -12,9 +12,9 @@
 namespace Renderer {
     // Initialisation et boucle
     bool initRenderer(sf::RenderWindow &window);
+    Vec3 rotateY(const Vec3& v, float angleDegrees);
     void update(float dt);
     void render(float dt, sf::RenderWindow &window);
-
     // bool getIsRunning();
     // void shutdownRenderer();
 }

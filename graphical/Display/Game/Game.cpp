@@ -14,16 +14,29 @@ Game &Game::GetInstance()
     return _game;
 }
 
+// One piece of ground has sides of about 55 px
 void Game::init()
 {
+    int size_grid = 3;
+    float start = -55 * (size_grid / 2);
+
     _window.init(1280, 720);
     if (!Renderer::initRenderer(_window.getWindow())) {
         std::cerr << "Failed to initialize renderer" << std::endl;
         return;
     }
     // Spawn un golem Bricien
-    Renderer::rotatingEntityId = Renderer::spawn(Renderer::EntityType::STL,
-        {0.0f, 0.0f, 25.0f}, sf::Color::Cyan, "./Assets/body_golem.stl");
+    Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::BODY, 4040,
+        {0.0f, -25.0f, 0.0f}, sf::Color::Cyan, "./Assets/body_golem.stl");
+    //4040 = client id
+    Renderer::rotatingEntityId = Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::EYES, 4040,
+        {0.0f, -25.0f + -1.5f, 0.0f + -6.5f}, sf::Color::Black, "./Assets/eyes_golem.stl");
+    for (int x = 0; x < size_grid; x++) {
+        for (int z = 0; z < size_grid; z++)
+            //-1 -> not a client, just an entity that won't move
+            Renderer::rotatingEntityId = Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::GROUND, -1,
+                {start + (x * 55), 0.0f, start + (z * 55)}, sf::Color::Red, "./Assets/ground.stl");
+    }
 }
 
 void Game::run()

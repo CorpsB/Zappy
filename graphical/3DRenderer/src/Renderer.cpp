@@ -83,21 +83,48 @@ namespace Renderer {
         }
     }
 
+    Vec3 rotateY(const Vec3& v, float angleDegrees)
+    {
+        float angleRad = angleDegrees * (3.14159265f / 180.f);
+        float cosA = std::cos(angleRad);
+        float sinA = std::sin(angleRad);
+
+        return {
+            v.x * cosA - v.z * sinA,
+            v.y,
+            v.x * sinA + v.z * cosA
+        };
+    }
+
     void update(float dt) {
         processInput(dt);
-
+        Vec3 offset = {0.f, -1.5f, -6.5f};
+        float bodyRotY = 0.0f;
+        Vec3 bodyPos;
         // Update les rotations
-        if (rotatingEntityId != -1) {
-            for (auto& e : sceneEntities) {
-                if (e.id == rotatingEntityId) {
-                    e.rotation.y += 30.0f * dt;
-                    if (e.rotation.y >= 360.f)
-                        e.rotation.y -= 360.f;
-                    break;
-                }
+        for (auto& e : sceneEntities) {
+            if (e.clientId == 4040 && e.type == Renderer::PartType::BODY) {
+                e.rotation.y += 30.0f * dt;
+                if (e.rotation.y >= 360.f)
+                    e.rotation.y -= 360.f;
+                bodyPos = e.position;
+                bodyRotY = e.rotation.y;
+                break;
             }
         }
-
+        for (auto& e : sceneEntities) {
+            if (e.clientId == 4040 && e.type == Renderer::PartType::EYES) {
+                // Appliquer une rotation autour de Y
+                Vec3 rotatedOffset = rotateY(offset, bodyRotY);
+                e.position = {
+                    bodyPos.x + rotatedOffset.x,
+                    bodyPos.y + rotatedOffset.y,
+                    bodyPos.z + rotatedOffset.z
+                };
+                e.rotation.y = bodyRotY;
+                break;
+            }
+        }
         // HUD message à timer
         for (auto it = hudMessages.begin(); it != hudMessages.end();) {
             it->remainingTime -= dt;

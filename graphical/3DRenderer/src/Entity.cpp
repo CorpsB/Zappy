@@ -17,9 +17,11 @@ namespace Renderer {
     int nextEntityID = 0;
     int rotatingEntityId = -1;
 
-    int spawn(EntityType type, const Vec3& pos, const sf::Color& c, const std::string& filepath) {
+    int spawn(EntityType type, PartType partType, int clientId, const Vec3& pos, const sf::Color& c, const std::string& filepath) {
         Entity newEnt;
         newEnt.id = nextEntityID++;
+        newEnt.type = partType;
+        newEnt.clientId = clientId;
         newEnt.position = pos;
         newEnt.rotation = {0.f, 0.f, 0.f};
         newEnt.scale    = {1.f, 1.f, 1.f};
