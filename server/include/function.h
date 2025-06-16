@@ -20,6 +20,17 @@
  * return 0 if the client is a PLAYER.
 */
 int check_autorized(server_t *server, int index);
+
+/**
+ * @brief Function that check if the client is a GUI.
+ *
+ * @param server Global server pointer (for id & counters).
+ * @param index The index of the player.
+ * @return return 1 if the client is not a GUI (PLAYER, LISTEN, UNKNOW)
+ * return 0 if the client is a GUI.
+*/
+
+int check_graphical(server_t *server, int index);
 void see_inventory(resources_t inv, int fd);
 void see_all_players(player_t *players, int fd);
 //server
