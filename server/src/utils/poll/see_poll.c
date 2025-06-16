@@ -81,6 +81,7 @@ void see_poll(poll_t poll, int fd, int size)
     dprintf(fd, "Sockaddr.sin_port   : %d\n", ntohs(poll.sockaddr.sin_port));
     dprintf(fd, "Sockaddr.sin_addr   : %s\n\n",
         inet_ntoa(poll.sockaddr.sin_addr));
+    dprintf(fd, "====== END POLL STRUCT ======\n\n");
     see_pollfds(poll.pollfds, fd, size);
     see_client_list(poll.client_list, fd, size);
     dprintf(fd, "==========================\n\n");

@@ -23,6 +23,7 @@ void see_server(struct server *server, int fd)
     dprintf(fd, "\tteams_count  : \t\t%u\n", server->teams_count);
     dprintf(fd, "\tdebug        : \t\t%s\n", server->debug ? "true" : "false");
     dprintf(fd, "\tdebug_fd     : \t\t%d\n\n", server->debug_fd);
+    dprintf(fd, "====== END SERVER ======\n\n");
     see_poll(server->poll, fd, server->poll.connected_client);
     see_teams(server->teams, fd);
 }
