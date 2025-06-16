@@ -28,6 +28,7 @@ void see_server(server_t *server, int fd);
 void free_server(server_t *server);
 void see_poll(poll_t poll, int fd, int size);
 void debug_server(server_t *server);
+void free_poll(server_t *server);
 //teams
 void add_teams(server_t *server, char *name);
 void see_one_team(teams_t *team, int fd);

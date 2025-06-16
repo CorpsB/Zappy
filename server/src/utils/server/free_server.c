@@ -17,6 +17,7 @@ static void free_map_unit(resources_t *map)
 
 static void free_map(server_t *server, resources_t **map)
 {
+    return;
     for (unsigned int x = 0; x < server->height; x++) {
         for (unsigned int y = 0; y < server->height; y++) {
             free_map_unit(&map[x][y]);
@@ -30,5 +31,6 @@ void free_server(server_t *server)
         return;
     free_map(server, server->map);
     free_all_teams(server->teams);
+    free_poll(server);
     free(server);
 }

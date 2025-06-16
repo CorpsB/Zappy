@@ -44,6 +44,7 @@ SRC	=	src/main.c								\
 		src/utils/eggs/see_eggs.c				\
 		src/utils/loger/log.c					\
 		src/utils/poll/see_poll.c				\
+		src/utils/poll/free_poll.c				\
 
 
 OBJ	=	$(SRC:.c=.o)
