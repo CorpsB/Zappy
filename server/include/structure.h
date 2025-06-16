@@ -106,6 +106,32 @@ struct poll {
 };
 
 /**
+ * @struct resources_t
+ * @brief Represents a collection of resources on a map tile or in a
+ * player's inventory.
+ *
+ * Each type of resource is used for different game mechanics such as survival,
+ * elevation (leveling up), and crafting. This structure can be used both for
+ * map tiles and for players' inventories.
+ */
+struct resources {
+    /// Used to survive; consumed periodically to prevent death.
+    unsigned int food;
+    /// Required for player elevation (leveling).
+    unsigned int linemate;
+    /// Required for player elevation.
+    unsigned int deraumere;
+    /// Required for player elevation.
+    unsigned int sibur;
+    /// Required for player elevation.
+    unsigned int mendiane;
+    /// Required for player elevation.
+    unsigned int phiras;
+    /// Required for the final level (level 8 elevation).
+    unsigned int thystame;
+};
+
+/**
  * @struct server_t
  * @brief Represents the global configuration and state of the Zappy
  * server.
@@ -150,31 +176,6 @@ struct server {
     teams_t *teams;
 };
 
-/**
- * @struct resources_t
- * @brief Represents a collection of resources on a map tile or in a
- * player's inventory.
- *
- * Each type of resource is used for different game mechanics such as survival,
- * elevation (leveling up), and crafting. This structure can be used both for
- * map tiles and for players' inventories.
- */
-struct resources {
-    /// Used to survive; consumed periodically to prevent death.
-    unsigned int food;
-    /// Required for player elevation (leveling).
-    unsigned int linemate;
-    /// Required for player elevation.
-    unsigned int deraumere;
-    /// Required for player elevation.
-    unsigned int sibur;
-    /// Required for player elevation.
-    unsigned int mendiane;
-    /// Required for player elevation.
-    unsigned int phiras;
-    /// Required for the final level (level 8 elevation).
-    unsigned int thystame;
-};
 
 
 /**
