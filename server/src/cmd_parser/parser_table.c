@@ -22,5 +22,7 @@ const command_t command_table[] = {
     {"Eject", cmd_eject},
     {"Fork", cmd_fork},
     {"Connect_nbr", cmd_connect_nbr},
+    {"msz", cmd_msz},
+    {"bct", cmd_bct},
     {NULL, NULL}
 };

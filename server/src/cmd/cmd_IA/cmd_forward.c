@@ -9,9 +9,6 @@
 #include "include/function.h"
 #include "include/structure.h"
 
-    //position[0] = x droite gauche
-    //positon[1] = y haut bas
-
 void cmd_forward(server_t *server, int index, char **args)
 {
     (void)args;

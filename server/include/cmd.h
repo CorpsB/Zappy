@@ -81,4 +81,32 @@ void cmd_fork(server_t *server, int index, char **args);
 */
 void cmd_connect_nbr(server_t *server, int index, char **args);
 
+/**
+ * @brief GUI command “msz” – return map width and height.
+ *
+ * Client → Server :  "msz\n"
+ * Server → Client :  "msz X Y\n"
+ *
+ * - Only a GUI may issue this command.
+ */
+void cmd_msz(server_t *server, int index, char **args);
+
+/**
+ * @brief GUI command bct X Y query the resources
+ *        present on a specific map tile.
+ *
+ * Behaviour (protocol-compliant):
+ *  - If the caller is not a graphical client, @c check_graphical()
+ *    immediately sends "ko\\n".
+ *  - If the coordinate list is missing or outside the map, reply
+ *    "bad parameters\\n".
+ *  - Send the canonical "bct" line with seven resource
+ *    counters.
+ *
+ * @param server Global server context.
+ * @param index  Index of the client inside @c server->poll.
+ * @param args   Token array produced by @c str_to_array() for this line.
+*/
+void cmd_bct(server_t *server, int index, char **args);
+
 #endif /* !CMD_H_ */
