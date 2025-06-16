@@ -16,7 +16,7 @@ int check_autorized(server_t *server, int index)
 
     cl = &server->poll.client_list[index];
     fd = server->poll.pollfds[index].fd;
-    if (cl->whoAmI != PLAYER || !cl->player) {
+    if (cl->whoAmI != PLAYER) {
         dprintf(fd, "ko\n");
         return 1;
     }
