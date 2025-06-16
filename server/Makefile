@@ -12,18 +12,18 @@ SRC	=	src/main.c								\
 		src/cmd_parser/cmd_parser.c				\
 		src/cmd_parser/parser_table.c			\
 		src/cmd_parser/str_to_array.c			\
-		src/cmd/cmd_eject.c						\
-		src/cmd/cmd_fork.c						\
-		src/cmd/cmd_forward.c					\
-		src/cmd/cmd_graphic.c					\
-		src/cmd/cmd_inventory.c					\
-		src/cmd/cmd_left.c						\
-		src/cmd/cmd_player.c					\
-		src/cmd/cmd_right.c						\
-		src/cmd/cmd_set_object.c				\
-		src/cmd/cmd_take_object.c				\
-		src/cmd/cmd_test.c						\
-		src/cmd/cmd_connect_nbr.c				\
+		src/cmd/cmd_IA/cmd_eject.c				\
+		src/cmd/cmd_IA/cmd_fork.c				\
+		src/cmd/cmd_IA/cmd_forward.c			\
+		src/cmd/cmd_IA/cmd_graphic.c			\
+		src/cmd/cmd_IA/cmd_inventory.c			\
+		src/cmd/cmd_IA/cmd_left.c				\
+		src/cmd/cmd_IA/cmd_player.c				\
+		src/cmd/cmd_IA/cmd_right.c				\
+		src/cmd/cmd_IA/cmd_set_object.c			\
+		src/cmd/cmd_IA/cmd_take_object.c		\
+		src/cmd/cmd_IA/cmd_test.c				\
+		src/cmd/cmd_IA/cmd_connect_nbr.c		\
 		src/utils/server/add_server.c			\
 		src/utils/server/free_server.c			\
 		src/utils/server/see_server.c			\
