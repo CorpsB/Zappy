@@ -45,6 +45,8 @@ SRC	=	src/main.c								\
 		src/utils/loger/log.c					\
 		src/utils/poll/see_poll.c				\
 		src/utils/poll/free_poll.c				\
+		src/cmd/cmd_GUI/cmd_msz.c				\
+		src/cmd/cmd_GUI/cmd_bct.c
 
 
 OBJ	=	$(SRC:.c=.o)
