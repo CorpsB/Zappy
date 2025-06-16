@@ -26,11 +26,13 @@ static void see_one_egg(const eggs_t *egg, int fd)
 
 void see_all_eggs(eggs_t *eggs, int fd)
 {
+    dprintf(fd, "[EGGS OF THE TEAM]\n");
     if (!eggs) {
-        dprintf(fd, "\t\t[NO EGGS]\n");
+        dprintf(fd, "\t[NO EGGS]\n");
         return;
     }
     dprintf(fd, "\t\t[EGGS]:\n");
     for (eggs_t *cur = eggs; cur; cur = cur->next)
         see_one_egg(cur, fd);
+    dprintf(fd, "==============\n");
 }

@@ -13,18 +13,18 @@ void see_one_team(teams_t *team, int fd)
 {
     if (!team)
         return;
-    dprintf(fd, "\t[TEAM] Name: %s | ID: %d\n", team->name, team->id);
-    dprintf(fd, "\t\tSlots used: %d\n", team->slots_used);
-    dprintf(fd, "\t\tWin: %s\n", team->win ? "true" : "false");
-    dprintf(fd, "\t\tEliminated: %s\n", team->eliminated ? "true" : "false");
+    dprintf(fd, "\n[TEAM] Name: %s | ID: %d\n", team->name, team->id);
+    dprintf(fd, "\tSlots used: %d\n", team->slots_used);
+    dprintf(fd, "\tWin: %s\n", team->win ? "true" : "false");
+    dprintf(fd, "\tEliminated: %s\n", team->eliminated ? "true" : "false");
     see_all_eggs(team->egg, fd);
     see_all_players(team->player, fd);
 }
 
 void see_teams(teams_t *teams, int fd)
 {
-    dprintf(fd, "[DEBUG] - SEE TEAMS :\n\n");
+    dprintf(fd, "====== TEAMS LIST ======\n");
     for (teams_t *current = teams; current != NULL; current = current->next)
         see_one_team(current, fd);
-    dprintf(fd, "===== END =====\n");
+    dprintf(fd, "\n======= END =======\n");
 }

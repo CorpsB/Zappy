@@ -46,12 +46,16 @@ void see_all_players(player_t *players, int fd)
 {
     int i = 0;
 
-    dprintf(fd, "===== PLAYERS =====\n");
+    dprintf(fd, "[PLAYER IN THE TEAM]\n");
+    if (!players) {
+        dprintf(fd, "\t[NO PLAYERS]\n");
+        return;
+    }
     while (players) {
         dprintf(fd, "Player #%d:\n", i);
         see_a_player(players, fd);
         players = players->next;
         i++;
     }
-    dprintf(fd, "===================\n");
+    dprintf(fd, "\n===================\n");
 }

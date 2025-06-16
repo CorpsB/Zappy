@@ -23,11 +23,11 @@ void see_a_pollfd(struct pollfd *pollfd, int index, int fd)
 
 void see_pollfds(struct pollfd *pollfds, int fd, int size)
 {
-    dprintf(fd, "===== POLLFD TABLE =====\n");
+    dprintf(fd, "====== POLLFD TABLE ======\n");
     for (int i = 0; i < size; i++) {
         see_a_pollfd(&pollfds[i], i, fd);
     }
-    dprintf(fd, "========================\n");
+    dprintf(fd, "==========================\n\n");
 }
 
 void see_a_client(client_t *client, int fd)
@@ -55,21 +55,20 @@ void see_client_list(client_t *list, int fd, int size)
 {
     int i = 0;
 
-    dprintf(fd, "===== CLIENT LIST =====\n");
+    dprintf(fd, "====== CLIENT LIST ======\n");
     while (i < size) {
         dprintf(fd, "Client #%d:\n", i);
         see_a_client(&list[i], fd);
         i++;
     }
-    dprintf(fd, "========================\n");
 }
 
 void see_poll(poll_t poll, int fd, int size)
 {
-    dprintf(fd, "===== POLL STRUCTURE =====\n");
-    dprintf(fd, "Socket serveur      : %d\n", poll.socket);
-    dprintf(fd, "Client index actuel : %d\n", poll.client_index);
-    dprintf(fd, "Nombre de clients connectés : %d\n", poll.connected_client);
+    dprintf(fd, "====== POLL STRUCTURE ======\n");
+    dprintf(fd, "Server socket      : %d\n", poll.socket);
+    dprintf(fd, "Current client index : %d\n", poll.client_index);
+    dprintf(fd, "Number of connected clients : %d\n", poll.connected_client);
     if (poll.client_list == NULL)
         dprintf(fd, "Client list         : (null)\n");
     else
@@ -80,7 +79,7 @@ void see_poll(poll_t poll, int fd, int size)
         dprintf(fd, "pollfds             : %p\n", (void *)poll.pollfds);
     dprintf(fd, "Sockaddr.sin_family : %d\n", poll.sockaddr.sin_family);
     dprintf(fd, "Sockaddr.sin_port   : %d\n", ntohs(poll.sockaddr.sin_port));
-    dprintf(fd, "Sockaddr.sin_addr   : %s\n",
+    dprintf(fd, "Sockaddr.sin_addr   : %s\n\n",
         inet_ntoa(poll.sockaddr.sin_addr));
     see_pollfds(poll.pollfds, fd, size);
     see_client_list(poll.client_list, fd, size);
