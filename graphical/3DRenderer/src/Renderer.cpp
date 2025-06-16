@@ -82,7 +82,7 @@ namespace Renderer {
             }
         }
     }
-
+    //A function useful for update
     Vec3 rotateY(const Vec3& v, float angleDegrees)
     {
         float angleRad = angleDegrees * (3.14159265f / 180.f);
@@ -99,30 +99,38 @@ namespace Renderer {
     void update(float dt) {
         processInput(dt);
         Vec3 offset = {0.f, -1.5f, -6.5f};
-        float bodyRotY = 0.0f;
-        Vec3 bodyPos;
+        // Values in valuesForSynchro :
+        // int -> client id
+        // Vec3 -> body position
+        // Vec3 -> body rotation on the y axis
+        std::vector<std::tuple<int, Vec3, Vec3>> valuesForSynchro;
         // Update les rotations
         for (auto& e : sceneEntities) {
-            if (e.clientId == 4040 && e.type == Renderer::PartType::BODY) {
+            if (e.type == Renderer::PartType::BODY) {
                 e.rotation.y += 30.0f * dt;
                 if (e.rotation.y >= 360.f)
                     e.rotation.y -= 360.f;
-                bodyPos = e.position;
-                bodyRotY = e.rotation.y;
-                break;
+                valuesForSynchro.emplace_back(e.clientId, e.position, Vec3{0.f, e.rotation.y, 0.f});
             }
-        }
-        for (auto& e : sceneEntities) {
-            if (e.clientId == 4040 && e.type == Renderer::PartType::EYES) {
-                // Appliquer une rotation autour de Y
-                Vec3 rotatedOffset = rotateY(offset, bodyRotY);
-                e.position = {
-                    bodyPos.x + rotatedOffset.x,
-                    bodyPos.y + rotatedOffset.y,
-                    bodyPos.z + rotatedOffset.z
-                };
-                e.rotation.y = bodyRotY;
-                break;
+            if (e.type == Renderer::PartType::EYES) {
+                // Searching for the corresponding body
+                auto it = std::find_if(
+                    valuesForSynchro.begin(), valuesForSynchro.end(),
+                    [&e](const std::tuple<int, Vec3, Vec3>& t) {
+                        return std::get<0>(t) == e.clientId;
+                    });
+
+                if (it != valuesForSynchro.end()) {
+                    Vec3 bodyPos = std::get<1>(*it);
+                    float bodyRotY = std::get<2>(*it).y;
+                    Vec3 rotatedOffset = rotateY(offset, bodyRotY);
+                    e.position = {
+                        bodyPos.x + rotatedOffset.x,
+                        bodyPos.y + rotatedOffset.y,
+                        bodyPos.z + rotatedOffset.z
+                    };
+                    e.rotation.y = bodyRotY;
+                }
             }
         }
         // HUD message à timer
