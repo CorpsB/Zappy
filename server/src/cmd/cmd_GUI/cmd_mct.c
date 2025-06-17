@@ -10,7 +10,8 @@
 #include "include/structure.h"
 
 
-//ICI LA VRAI COMMANDE MCT JUSTE SUPPR CELLE DU DESSOUS ET DECOM CELLE Là ET FONCTION IMPLEMENTER
+//ICI LA VRAI COMMANDE MCT JUSTE SUPPR CELLE DU DESSOUS ET DECOM
+//CELLE Là ET FONCTION IMPLEMENTER
 // void cmd_mct(server_t *server, int index, char **args)
 // {
 //     int fd;
@@ -44,9 +45,7 @@ void cmd_mct(server_t *server, int index, char **args)
         return;
     if (check_graphical(server, index) != 0)
         return;
-
     fd = server->poll.pollfds[index].fd;
-
     for (unsigned y = 0; y < server->height; y++) {
         for (unsigned x = 0; x < server->width; x++) {
             dprintf(fd, "bct %u %u 0 0 0 0 0 0 0\n", x, y);

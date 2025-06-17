@@ -47,7 +47,9 @@ SRC	=	src/main.c								\
 		src/utils/poll/free_poll.c				\
 		src/cmd/cmd_GUI/cmd_msz.c				\
 		src/cmd/cmd_GUI/cmd_bct.c				\
-		src/cmd/cmd_GUI/cmd_mct.c
+		src/cmd/cmd_GUI/cmd_mct.c				\
+		src/cmd/cmd_GUI/cmd_tna.c				\
+		src/cmd/cmd_GUI/cmd_ppo.c				\
 
 
 OBJ	=	$(SRC:.c=.o)

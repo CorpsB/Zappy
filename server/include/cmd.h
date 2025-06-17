@@ -122,4 +122,31 @@ void cmd_bct(server_t *server, int index, char **args);
 */
 void cmd_mct(server_t *server, int index, char **args);
 
+
+/**
+ * @brief Handles the "tna" command from a graphical client.
+ *
+ * The "tna" command requests the list of all team names currently available
+ * on the server. This is part of the GUI protocol and must be issued only by
+ * clients identified as GUI.
+ *
+ * Client → Server:
+ *     tna\n
+ * Server → Client (for each team):
+ *     tna team_name\n
+ *
+ * @param server Pointer to the server structure.
+ * @param index Index of the client issuing the command.
+ * @param args Unused for this command.
+*/
+void cmd_tna(server_t *server, int index, char **args);
+
+
+/**
+ * @brief GUI command "ppo" — gets a player position and direction.
+ * Client → Server : "ppo #n"
+ * Server → Client : "ppo #n X Y O"
+*/
+void cmd_ppo(server_t *server, int index, char **args);
+
 #endif /* !CMD_H_ */

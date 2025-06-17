@@ -25,5 +25,7 @@ const command_t command_table[] = {
     {"msz", cmd_msz},
     {"bct", cmd_bct},
     {"mct", cmd_mct},
+    {"tna", cmd_tna},
+    {"ppo", cmd_ppo},
     {NULL, NULL}
 };
