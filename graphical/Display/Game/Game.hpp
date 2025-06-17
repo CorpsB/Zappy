@@ -13,6 +13,9 @@
 #include "../Event/Event.hpp"
 #include "../../3DRenderer/include/Renderer.hpp"
 
+#include "HUD/HUD.hpp"
+#include "CMDInterpreter/CMDInterpreter.hpp"
+
 class Game {
     public:
         Game() {}
@@ -23,9 +26,13 @@ class Game {
         void init();
         void run();
         void stop();
+
+        void processData(const std::string &data);
     private:
         Window _window;
         Event _event;
-
         sf::Clock _clock;
+
+        HUD _hud;
+        CMDInterpreter _interpreter;
 };

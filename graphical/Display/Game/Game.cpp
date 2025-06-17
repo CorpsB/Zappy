@@ -29,7 +29,7 @@ void Game::init()
         {0.0f, -25.0f, 0.0f}, sf::Color::Cyan, "./Assets/body_golem.stl", Renderer::Compass::NORTH);
     Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::BODY, 4042,
         {55.0f, -25.0f, 0.0f}, sf::Color::Cyan, "./Assets/body_golem.stl", Renderer::Compass::SOUTH);
-    //4040 = client id
+    // 4040 = client id
     Renderer::rotatingEntityId = Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::EYES, 4040,
         {0.0f, -25.0f + -1.5f, 0.0f + -6.5f}, sf::Color::Black, "./Assets/eyes_golem.stl");
     Renderer::rotatingEntityId = Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::EYES, 4042,
@@ -58,4 +58,9 @@ void Game::run()
 void Game::stop()
 {
     _window.stop();
+}
+
+void Game::processData(const std::string &data)
+{
+    _interpreter.interpret(_hud, data);
 }

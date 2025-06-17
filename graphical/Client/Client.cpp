@@ -64,7 +64,7 @@ void Client::sendToServer(const std::string &msg) const
         std::cerr << "Failed to send : " << msg << std::endl;
 }
 
-void Client::run()
+void Client::run(Game &game)
 {
     int queue;
     std::string data;
@@ -83,7 +83,7 @@ void Client::run()
                 closeSocket();
                 break;
             }
-            std::cerr << data << std::endl;
+            game.processData(data);
         }
     }
 }

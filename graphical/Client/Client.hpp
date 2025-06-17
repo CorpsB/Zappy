@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "../Display/Game/Game.hpp"
+
 #include "Config/NetConfig.hpp"
 
 class Client {
@@ -22,7 +24,7 @@ class Client {
 
         bool connectToServer();
         void sendToServer(const std::string &msg) const;
-        void run();
+        void run(Game &game);
 
         NetConfig &getConfig();
     private:

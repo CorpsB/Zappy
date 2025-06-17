@@ -16,35 +16,33 @@
 #include <SFML/System/Clock.hpp>
 #include <iostream>
 
-void runDisplay()
+void runDisplay(Game &game)
 {
-    Game &game = Game::GetInstance();
-
     game.init();
     game.run();
     game.stop();
 }
 
-void runNetwork()
+void runNetwork(Game &game)
 {
     Client &client = Client::GetInstance();
 
     client.initSocket();
     while (!client.connectToServer())
         std::this_thread::sleep_for(std::chrono::seconds(1));
-    client.run();
+    client.run(game);
     client.closeSocket();
 }
 
 int main(int ac, char **av)
-// int main()
 {
     Client &client = Client::GetInstance();
+    Game &game = Game::GetInstance();
 
     if (client.getConfig().parseArgs(ac - 1, av + 1))
         return 84;
-    std::thread networkInstance(runNetwork);
-    std::thread displayInstance(runDisplay);
+    std::thread networkInstance(runNetwork, std::ref(game));
+    std::thread displayInstance(runDisplay, std::ref(game));
     networkInstance.join();
     displayInstance.join();
     return 0;
