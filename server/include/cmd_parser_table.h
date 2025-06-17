@@ -17,7 +17,7 @@ typedef struct {
     command_func_t func;
 } command_t;
 
-extern const command_t command_table[];
-
+extern const command_t command_table1[];
+extern const command_t command_table2[];
 
 #endif /* !CMD_PARSER_TABLE_H_ */

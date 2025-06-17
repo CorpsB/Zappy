@@ -11,7 +11,7 @@
 #include "include/cmd.h"
 #include "include/cmd_parser_table.h"
 
-const command_t command_table[] = {
+const command_t command_table1[] = {
     {"test", cmd_test},
     {"Forward", cmd_forward},
     {"Right", cmd_right},
@@ -27,5 +27,11 @@ const command_t command_table[] = {
     {"mct", cmd_mct},
     {"tna", cmd_tna},
     {"ppo", cmd_ppo},
+    {"plv", cmd_plv},
+    {NULL, NULL}
+};
+
+const command_t command_table2[] = {
+    {"pin", cmd_pin},
     {NULL, NULL}
 };

@@ -32,6 +32,18 @@ static bool unknown_client(server_t *server, int index, char *cmd)
     return false;
 }
 
+static bool try_command(const command_t *table, server_t *server,
+    int index, char **args)
+{
+    for (int i = 0; table[i].name != NULL; ++i) {
+        if (strncmp(args[0], table[i].name, strlen(table[i].name)) == 0) {
+            table[i].func(server, index, args);
+            return true;
+        }
+    }
+    return false;
+}
+
 void cmd_parser(server_t *server, int index, char *cmd)
 {
     //=> Leak
@@ -42,12 +54,9 @@ void cmd_parser(server_t *server, int index, char *cmd)
             dprintf(server->poll.pollfds[index].fd, "ko\n");
         return;
     }
-    for (int i = 0; command_table[i].name != NULL; i++) {
-        if (strncmp(cmd, command_table[i].name,
-            strlen(command_table[i].name)) == 0) {
-            command_table[i].func(server, index, args);
-            return;
-        }
-    }
+    if (try_command(command_table1, server, index, args))
+        return;
+    if (try_command(command_table2, server, index, args))
+        return;
     dprintf(server->poll.pollfds[index].fd, "ko\n");
 }

@@ -50,6 +50,8 @@ SRC	=	src/main.c								\
 		src/cmd/cmd_GUI/cmd_mct.c				\
 		src/cmd/cmd_GUI/cmd_tna.c				\
 		src/cmd/cmd_GUI/cmd_ppo.c				\
+		src/cmd/cmd_GUI/cmd_plv.c				\
+		src/cmd/cmd_GUI/cmd_pin.c				\
 
 
 OBJ	=	$(SRC:.c=.o)

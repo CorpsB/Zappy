@@ -149,4 +149,29 @@ void cmd_tna(server_t *server, int index, char **args);
 */
 void cmd_ppo(server_t *server, int index, char **args);
 
+
+/**
+ * @brief GUI command “plv” – get the level of a player by ID.
+ * Client → Server :  "plv <id>\n"
+ * Server → Client :  "plv <id> <level>\n" or "ko\n"
+ * @param server Server instance
+ * @param index Index of the client in poll
+ * @param args Argument array from command parser
+*/
+void cmd_plv(server_t *server, int index, char **args);
+
+
+/**
+ * @brief Handles the GUI command "pin" to return a player's inventory
+ * and position.
+ * Client → Server : "pin <id>\n"
+ * Server → Client : "pin <id> x y q0 q1 q2 q3 q4 q5 q6\n"
+ * - q0 to q6: food, linemate, deraumere, sibur, mendiane, phiras, thystame
+ * - Only GUI clients are allowed to execute this command.
+ * @param server Pointer to the server instance.
+ * @param index Index of the client issuing the command.
+ * @param args Parsed arguments array: {"pin", "<id>", NULL}
+*/
+void cmd_pin(server_t *server, int index, char **args);
+
 #endif /* !CMD_H_ */
