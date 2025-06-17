@@ -174,4 +174,28 @@ void cmd_plv(server_t *server, int index, char **args);
 */
 void cmd_pin(server_t *server, int index, char **args);
 
+
+/**
+ * @brief Handles the "sst" command from a GUI client to set server frequency.
+ * Validates the input, updates the server frequency if valid, and notifies
+ * all GUI clients of the change. If input is invalid, sends
+ * "ko" to the client.
+ * @param server The server instance receiving the command.
+ * @param index The index of the client in the server's poll array.
+ * @param args The parsed command arguments from the GUI client.
+*/
+void cmd_sst(server_t *server, int index, char **args);
+
+
+/**
+ * @brief Handles the "sgt" command from a GUI client.
+ * Sends back the current game frequency (ticks per second)
+ * to the requesting GUI client.
+ * If the client is not a graphical client, a "ko" message is sent instead.
+ * @param server The main server structure.
+ * @param index Index of the client sending the command.
+ * @param args Arguments of the command (should be NULL or ignored).
+*/
+void cmd_sgt(server_t *server, int index, char **args);
+
 #endif /* !CMD_H_ */

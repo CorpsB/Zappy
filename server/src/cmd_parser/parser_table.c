@@ -33,5 +33,7 @@ const command_t command_table1[] = {
 
 const command_t command_table2[] = {
     {"pin", cmd_pin},
+    {"sst", cmd_sst},
+    {"sgt", cmd_sgt},
     {NULL, NULL}
 };
