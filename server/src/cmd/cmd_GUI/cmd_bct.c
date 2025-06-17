@@ -48,16 +48,16 @@ static int parse_coord(const char *token, long max, long *out)
  * @retval 1 Failure – missing token or invalid/out-of-range value.
 */
 static int parse_bct_coords(char **args,
-    const server_t *srv, int *x_out, int *y_out)
+    const server_t *server, int *x_out, int *y_out)
 {
     long x;
     long y;
 
     if (!args || !args[1] || !args[2])
         return 1;
-    if (parse_coord(args[1], (long)srv->width, &x))
+    if (parse_coord(args[1], (long)server->width, &x))
         return 1;
-    if (parse_coord(args[2], (long)srv->height, &y))
+    if (parse_coord(args[2], (long)server->height, &y))
         return 1;
     *x_out = (int)x;
     *y_out = (int)y;
@@ -90,25 +90,25 @@ static void send_bct_line(int fd, int x, int y, const resources_t *t)
     dprintf(fd, "Voici le contenu de la case demandée.\n");
 }
 
-void cmd_bct(server_t *srv, int idx, char **args)
+void cmd_bct(server_t *server, int index, char **args)
 {
     int x;
     int y;
     int fd;
 
-    if (!srv || !srv->poll.client_list ||
-        idx < 0 || idx >= srv->poll.client_index)
+    if (!server || !server->poll.client_list ||
+        index < 0 || index >= server->poll.client_index)
         return;
-    if (check_graphical(srv, idx) != 0)
+    if (check_graphical(server, index) != 0)
         return;
-    fd = srv->poll.pollfds[idx].fd;
-    if (parse_bct_coords(args, srv, &x, &y) != 0) {
+    fd = server->poll.pollfds[index].fd;
+    if (parse_bct_coords(args, server, &x, &y) != 0) {
         dprintf(fd, "bad parameters\n");
         return;
     }
-    if (!srv->map) {
+    if (!server->map) {
         dprintf(fd, "bct %d %d mais la map est pas là\n", x, y);
         return;
     }
-    send_bct_line(fd, x, y, &srv->map[y][x]);
+    send_bct_line(fd, x, y, &server->map[y][x]);
 }

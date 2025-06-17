@@ -109,4 +109,17 @@ void cmd_msz(server_t *server, int index, char **args);
 */
 void cmd_bct(server_t *server, int index, char **args);
 
+
+/**
+ * @brief Handle the GUI command "mct" (map content).
+ *
+ * This command returns the resource content of every tile on the map
+ * using the same format as the "bct" command.
+ *
+ * @param server Pointer to the global server structure.
+ * @param index  Index of the client in the poll list.
+ * @param args   Command arguments (unused).
+*/
+void cmd_mct(server_t *server, int index, char **args);
+
 #endif /* !CMD_H_ */
