@@ -15,5 +15,5 @@ const density_t density_table[] = {
     {"Mendiane", 0.1, 5},
     {"Phiras", 0.08, 6},
     {"Thystame", 0.05, 7},
-    {"", 0}
+    {"", 0, 0}
 };

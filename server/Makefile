@@ -54,6 +54,10 @@ SRC	=	src/main.c								\
 		src/cmd/cmd_GUI/cmd_pin.c				\
 		src/cmd/cmd_GUI/cmd_sst_t.c				\
 		src/cmd/cmd_GUI/cmd_sgt_t.c				\
+		src/utils/map/density_table.c			\
+		src/utils/map/map_generator.c			\
+		src/utils/map/map_update.c				\
+
 
 
 OBJ	=	$(SRC:.c=.o)

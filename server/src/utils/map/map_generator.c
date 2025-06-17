@@ -36,8 +36,8 @@ static void define_goals(server_t *server)
 
 static void init_rapartition_cells(server_t *server)
 {
-    for (int i = 0; i < server->height; i++) {
-        for (int j = 0; j < server->width; j++) {
+    for (unsigned int i = 0; i < server->height; i++) {
+        for (unsigned int j = 0; j < server->width; j++) {
             server->map[i][j].repartition_map[FOOD] = 0;
             server->map[i][j].repartition_map[LINEMATE] = 0;
             server->map[i][j].repartition_map[DERAUMERE] = 0;
@@ -52,7 +52,7 @@ void map_generator(server_t *server)
 {
     server->map = malloc(sizeof(resources_t *) * server->height);
     server->map[server->height] = NULL;
-    for(int i = 0; i < server->height; i++)
+    for(unsigned int i = 0; i < server->height; i++)
         server->map[i] = malloc(sizeof(resources_t) * server->width);
     define_actual_map_inventory(server);
     define_goals(server);
