@@ -25,7 +25,7 @@ OBJ	= $(SRC:.cpp=.o)
 CXXFLAGS = -std=c++20 -Wall -Wextra -Werror -g -I3DRenderer/include -O3 -march=native
 LDFLAGS = -lsfml-graphics -lsfml-window -lsfml-system
 
-NAME = graphic
+NAME = zappy_gui
 
 all: $(NAME)
 
