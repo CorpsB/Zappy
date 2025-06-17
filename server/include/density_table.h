@@ -11,6 +11,7 @@
 typedef struct density_s{
     const char *name;
     float density;
+    unsigned int repartition_value;
 } density_t;
 
 extern const density_t density_table[];

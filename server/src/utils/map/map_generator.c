@@ -34,6 +34,20 @@ static void define_goals(server_t *server)
     server->goal.thystame = density_table[6].density * map_size;
 }
 
+static void init_rapartition_cells(server_t *server)
+{
+    for (int i = 0; i < server->height; i++) {
+        for (int j = 0; j < server->width; j++) {
+            server->map[i][j].repartition_map[FOOD] = 0;
+            server->map[i][j].repartition_map[LINEMATE] = 0;
+            server->map[i][j].repartition_map[DERAUMERE] = 0;
+            server->map[i][j].repartition_map[SIBUR] = 0;
+            server->map[i][j].repartition_map[MENDIANE] = 0;
+            server->map[i][j].repartition_map[THYSTAME] = 0;
+        }
+    }
+}
+
 void map_generator(server_t *server)
 {
     server->map = malloc(sizeof(resources_t *) * server->height);
@@ -42,5 +56,6 @@ void map_generator(server_t *server)
         server->map[i] = malloc(sizeof(resources_t) * server->width);
     define_actual_map_inventory(server);
     define_goals(server);
+    init_rapartition_cells(server);
     map_update(server);
 }

@@ -96,6 +96,16 @@ typedef enum logs {
     INFO
 } logs_t;
 
+typedef enum r_ressource {
+    FOOD = 0,
+    LINEMATE = 1,
+    DERAUMERE = 2,
+    SIBUR = 3,
+    MENDIANE = 4,
+    PHIRAS = 5,
+    THYSTAME = 6,
+} r_ressource_t;
+
 struct poll {
     int socket;
     struct sockaddr_in sockaddr;
@@ -129,6 +139,8 @@ struct resources {
     unsigned int phiras;
     /// Required for the final level (level 8 elevation).
     unsigned int thystame;
+
+    int repartition_map[7];
 };
 
 /**

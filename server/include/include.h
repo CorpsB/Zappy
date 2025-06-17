@@ -38,4 +38,7 @@
     #include <sys/stat.h>  // pour les permissions (ex: 0644)
     #include <unistd.h>    // pour close(), write(), etc.
 
+    #include <limits.h>
+
+
 #endif /* !INCLUDE_H_ */
