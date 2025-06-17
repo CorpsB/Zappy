@@ -54,7 +54,14 @@ bool Client::connectToServer()
         std::cerr << "Failed to connect to the server." << std::endl;
         return false;
     }
+    sendToServer("GRAPHIC\n");
     return true;
+}
+
+void Client::sendToServer(const std::string &msg) const
+{
+    if (send(_fds.fd, msg.c_str(), msg.size(), 0) < 0)
+        std::cerr << "Failed to send : " << msg << std::endl;
 }
 
 void Client::run()

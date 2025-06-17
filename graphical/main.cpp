@@ -36,16 +36,16 @@ void runNetwork()
     client.closeSocket();
 }
 
-// int main(int ac, char **av)
-int main()
+int main(int ac, char **av)
+// int main()
 {
-    // Client &client = Client::GetInstance();
+    Client &client = Client::GetInstance();
 
-    // if (client.getConfig().parseArgs(ac - 1, av + 1))
-    //     return 84;
-    // std::thread networkInstance(runNetwork);
+    if (client.getConfig().parseArgs(ac - 1, av + 1))
+        return 84;
+    std::thread networkInstance(runNetwork);
     std::thread displayInstance(runDisplay);
-    // networkInstance.join();
+    networkInstance.join();
     displayInstance.join();
     return 0;
 }

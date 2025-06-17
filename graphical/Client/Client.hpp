@@ -21,6 +21,7 @@ class Client {
         std::string readSocket() const;
 
         bool connectToServer();
+        void sendToServer(const std::string &msg) const;
         void run();
 
         NetConfig &getConfig();
