@@ -14,61 +14,60 @@ void CMDInterpreter::interpret(HUD &hud, const std::string &msg)
     std::istringstream iss(msg);
 
     while (std::getline(iss, line)) {
-        if (std::regex_match(line, matches, msz))
+        if (std::regex_match(line, matches, msz)) {
             _msz(hud, std::stoi(matches[1]), std::stoi(matches[2]));
-        else if (std::regex_match(line, matches, bct))
+        } else if (std::regex_match(line, matches, bct)) {
             _bct(hud, std::stoi(matches[1]), std::stoi(matches[2]), std::stoi(matches[3]), std::stoi(matches[4]), std::stoi(matches[5]), std::stoi(matches[6]), std::stoi(matches[7]), std::stoi(matches[8]), std::stoi(matches[9]));
-        else if (std::regex_match(line, matches, tna))
+        } else if (std::regex_match(line, matches, tna)) {
             _tna(hud, matches[1]);
-        else if (std::regex_match(line, matches, pnw))
+        } else if (std::regex_match(line, matches, pnw)) {
             _pnw(hud, std::stoi(matches[1]), std::stoi(matches[2]), std::stoi(matches[3]), static_cast<Renderer::Compass>(std::stoi(matches[4])), std::stoi(matches[5]), matches[6]);
-        else if (std::regex_match(line, matches, ppo))
+        } else if (std::regex_match(line, matches, ppo)) {
             _ppo(hud, std::stoi(matches[1]), std::stoi(matches[2]), std::stoi(matches[3]), static_cast<Renderer::Compass>(std::stoi(matches[4])));
-        else if (std::regex_match(line, matches, plv))
+        } else if (std::regex_match(line, matches, plv)) {
             _plv(hud, std::stoi(matches[1]), std::stoi(matches[2]));
-        else if (std::regex_match(line, matches, pin))
+        } else if (std::regex_match(line, matches, pin)) {
             _pin(hud, std::stoi(matches[1]), std::stoi(matches[2]), std::stoi(matches[3]), std::stoi(matches[4]), std::stoi(matches[5]), std::stoi(matches[6]), std::stoi(matches[7]), std::stoi(matches[8]), std::stoi(matches[9]), std::stoi(matches[10]));
-        else if (std::regex_match(line, matches, pex))
+        } else if (std::regex_match(line, matches, pex)) {
             _pex(hud, std::stoi(matches[1]));
-        else if (std::regex_match(line, matches, pbc))
+        } else if (std::regex_match(line, matches, pbc)) {
             _pbc(hud, std::stoi(matches[1]), matches[2]);
-        else if (std::regex_match(line, matches, pic)) {
+        } else if (std::regex_match(line, matches, pic)) {
             std::string rest = line.substr(matches.position(3) + matches.length(3));
             auto playerBegin = std::sregex_iterator(rest.begin(), rest.end(), playerRegex);
             auto playerEnd = std::sregex_iterator();
             std::vector<int> playerIds;
 
-            for (std::sregex_iterator i = playerBegin; i != playerEnd; i++) {
+            for (std::sregex_iterator i = playerBegin; i != playerEnd; i++)
                 playerIds.push_back(std::stoi((*i)[1]));
-            }
             _pic(hud, std::stoi(matches[1]), std::stoi(matches[2]), std::stoi(matches[3]), playerIds);
-        } else if (std::regex_match(line, matches, pie))
+        } else if (std::regex_match(line, matches, pie)) {
             _pie(hud, std::stoi(matches[1]), std::stoi(matches[2]), matches[3]);
-        else if (std::regex_match(line, matches, pfk))
+        } else if (std::regex_match(line, matches, pfk)) {
             _pfk(hud, std::stoi(matches[1]));
-        else if (std::regex_match(line, matches, pdr))
+        } else if (std::regex_match(line, matches, pdr)) {
             _pdr(hud, std::stoi(matches[1]), std::stoi(matches[2]));
-        else if (std::regex_match(line, matches, pgt))
+        } else if (std::regex_match(line, matches, pgt)) {
             _pgt(hud, std::stoi(matches[1]), std::stoi(matches[2]));
-        else if (std::regex_match(line, matches, pdi))
+        } else if (std::regex_match(line, matches, pdi)) {
             _pdi(hud, std::stoi(matches[1]));
-        else if (std::regex_match(line, matches, enw))
+        } else if (std::regex_match(line, matches, enw)) {
             _enw(hud, std::stoi(matches[1]), std::stoi(matches[2]), std::stoi(matches[3]), std::stoi(matches[4]));
-        else if (std::regex_match(line, matches, ebo))
+        } else if (std::regex_match(line, matches, ebo)) {
             _ebo(hud, std::stoi(matches[1]));
-        else if (std::regex_match(line, matches, edi))
+        } else if (std::regex_match(line, matches, edi)) {
             _edi(hud, std::stoi(matches[1]));
-        else if (std::regex_match(line, matches, sgt))
+        } else if (std::regex_match(line, matches, sgt)) {
             _sgt(hud, std::stoi(matches[1]));
-        else if (std::regex_match(line, matches, sst))
+        } else if (std::regex_match(line, matches, sst)) {
             _sst(hud, std::stoi(matches[1]));
-        else if (std::regex_match(line, matches, seg))
+        } else if (std::regex_match(line, matches, seg)) {
             _seg(hud, matches[1]);
-        else if (std::regex_match(line, matches, smg))
+        } else if (std::regex_match(line, matches, smg)) {
             _smg(hud, matches[1]);
-        else if (std::regex_match(line, matches, sbp))
+        } else if (std::regex_match(line, matches, sbp)) {
             _sbp();
-        else
+        } else
             _suc(line);
     }
 }
