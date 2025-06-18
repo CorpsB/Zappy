@@ -81,13 +81,9 @@ static int parse_bct_coords(char **args,
 */
 static void send_bct_line(int fd, int x, int y, const resources_t *t)
 {
-    // dprintf(fd, "bct %d %d %u %u %u %u %u %u %u\n", x, y,
-    //     t->food, t->linemate, t->deraumere, t->sibur,
-    //     t->mendiane, t->phiras, t->thystame);
-    (void)x;
-    (void)y;
-    (void)t;
-    dprintf(fd, "Voici le contenu de la case demandée.\n");
+    dprintf(fd, "bct %d %d %u %u %u %u %u %u %u\n", x, y,
+        t->food, t->linemate, t->deraumere, t->sibur,
+        t->mendiane, t->phiras, t->thystame);
 }
 
 void cmd_bct(server_t *server, int index, char **args)
@@ -103,11 +99,7 @@ void cmd_bct(server_t *server, int index, char **args)
         return;
     fd = server->poll.pollfds[index].fd;
     if (parse_bct_coords(args, server, &x, &y) != 0) {
-        dprintf(fd, "bad parameters\n");
-        return;
-    }
-    if (!server->map) {
-        dprintf(fd, "bct %d %d mais la map est pas là\n", x, y);
+        dprintf(fd, "ko\n");
         return;
     }
     send_bct_line(fd, x, y, &server->map[y][x]);
