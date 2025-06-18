@@ -13,61 +13,49 @@ void CMDInterpreter::interpret(HUD &hud, const std::string &msg)
     std::smatch matches;
     std::istringstream iss(msg);
 
-    while (std::getline(iss, line)) {
-        if (std::regex_match(line, matches, msz)) {
-            _msz(hud, std::stoi(matches[1]), std::stoi(matches[2]));
-        } else if (std::regex_match(line, matches, bct)) {
-            _bct(hud, std::stoi(matches[1]), std::stoi(matches[2]), std::stoi(matches[3]), std::stoi(matches[4]), std::stoi(matches[5]), std::stoi(matches[6]), std::stoi(matches[7]), std::stoi(matches[8]), std::stoi(matches[9]));
-        } else if (std::regex_match(line, matches, tna)) {
-            _tna(hud, matches[1]);
-        } else if (std::regex_match(line, matches, pnw)) {
-            _pnw(hud, std::stoi(matches[1]), std::stoi(matches[2]), std::stoi(matches[3]), static_cast<Renderer::Compass>(std::stoi(matches[4])), std::stoi(matches[5]), matches[6]);
-        } else if (std::regex_match(line, matches, ppo)) {
-            _ppo(hud, std::stoi(matches[1]), std::stoi(matches[2]), std::stoi(matches[3]), static_cast<Renderer::Compass>(std::stoi(matches[4])));
-        } else if (std::regex_match(line, matches, plv)) {
-            _plv(hud, std::stoi(matches[1]), std::stoi(matches[2]));
-        } else if (std::regex_match(line, matches, pin)) {
-            _pin(hud, std::stoi(matches[1]), std::stoi(matches[2]), std::stoi(matches[3]), std::stoi(matches[4]), std::stoi(matches[5]), std::stoi(matches[6]), std::stoi(matches[7]), std::stoi(matches[8]), std::stoi(matches[9]), std::stoi(matches[10]));
-        } else if (std::regex_match(line, matches, pex)) {
-            _pex(hud, std::stoi(matches[1]));
-        } else if (std::regex_match(line, matches, pbc)) {
-            _pbc(hud, std::stoi(matches[1]), matches[2]);
-        } else if (std::regex_match(line, matches, pic)) {
-            std::string rest = line.substr(matches.position(3) + matches.length(3));
-            auto playerBegin = std::sregex_iterator(rest.begin(), rest.end(), playerRegex);
-            auto playerEnd = std::sregex_iterator();
-            std::vector<int> playerIds;
+    const std::vector<std::pair<std::regex, std::function<void(const std::smatch &)>>> commands = {
+        { msz, [&](const std::smatch &m) { _msz(hud, std::stoi(m[1]), std::stoi(m[2])); } },
+        { bct, [&](const std::smatch &m) { _bct(hud, std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), std::stoi(m[4]), std::stoi(m[5]), std::stoi(m[6]), std::stoi(m[7]), std::stoi(m[8]), std::stoi(m[9])); } },
+        { tna, [&](const std::smatch &m) { _tna(hud, m[1]); } },
+        { pnw, [&](const std::smatch &m) { _pnw(hud, std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), static_cast<Renderer::Compass>(std::stoi(m[4])), std::stoi(m[5]), m[6]); } },
+        { ppo, [&](const std::smatch &m) { _ppo(hud, std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), static_cast<Renderer::Compass>(std::stoi(m[4]))); } },
+        { plv, [&](const std::smatch &m) { _plv(hud, std::stoi(m[1]), std::stoi(m[2])); } },
+        { pin, [&](const std::smatch &m) { _pin(hud, std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), std::stoi(m[4]), std::stoi(m[5]), std::stoi(m[6]), std::stoi(m[7]), std::stoi(m[8]), std::stoi(m[9]), std::stoi(m[10])); } },
+        { pex, [&](const std::smatch &m) { _pex(hud, std::stoi(m[1])); } },
+        { pbc, [&](const std::smatch &m) { _pbc(hud, std::stoi(m[1]), m[2]); } },
+        { pie, [&](const std::smatch &m) { _pie(hud, std::stoi(m[1]), std::stoi(m[2]), m[3]); } },
+        { pfk, [&](const std::smatch &m) { _pfk(hud, std::stoi(m[1])); } },
+        { pdr, [&](const std::smatch &m) { _pdr(hud, std::stoi(m[1]), std::stoi(m[2])); } },
+        { pgt, [&](const std::smatch &m) { _pgt(hud, std::stoi(m[1]), std::stoi(m[2])); } },
+        { pdi, [&](const std::smatch &m) { _pdi(hud, std::stoi(m[1])); } },
+        { enw, [&](const std::smatch &m) { _enw(hud, std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), std::stoi(m[4])); } },
+        { ebo, [&](const std::smatch &m) { _ebo(hud, std::stoi(m[1])); } },
+        { edi, [&](const std::smatch &m) { _edi(hud, std::stoi(m[1])); } },
+        { sgt, [&](const std::smatch &m) { _sgt(hud, std::stoi(m[1])); } },
+        { sst, [&](const std::smatch &m) { _sst(hud, std::stoi(m[1])); } },
+        { seg, [&](const std::smatch &m) { _seg(hud, m[1]); } },
+        { smg, [&](const std::smatch &m) { _smg(hud, m[1]); } },
+        { sbp, [&](const std::smatch &) { _sbp(); } },
+        { pic, [&](const std::smatch &m) {
+            std::string rest = line.substr(m.position(3) + m.length(3));
+            std::vector<int> ids;
+            for (std::sregex_iterator it(rest.begin(), rest.end(), playerRegex), end; it != end; ++it)
+                ids.push_back(std::stoi((*it)[1]));
+            _pic(hud, std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), ids);
+        } },
+    };
 
-            for (std::sregex_iterator i = playerBegin; i != playerEnd; i++)
-                playerIds.push_back(std::stoi((*i)[1]));
-            _pic(hud, std::stoi(matches[1]), std::stoi(matches[2]), std::stoi(matches[3]), playerIds);
-        } else if (std::regex_match(line, matches, pie)) {
-            _pie(hud, std::stoi(matches[1]), std::stoi(matches[2]), matches[3]);
-        } else if (std::regex_match(line, matches, pfk)) {
-            _pfk(hud, std::stoi(matches[1]));
-        } else if (std::regex_match(line, matches, pdr)) {
-            _pdr(hud, std::stoi(matches[1]), std::stoi(matches[2]));
-        } else if (std::regex_match(line, matches, pgt)) {
-            _pgt(hud, std::stoi(matches[1]), std::stoi(matches[2]));
-        } else if (std::regex_match(line, matches, pdi)) {
-            _pdi(hud, std::stoi(matches[1]));
-        } else if (std::regex_match(line, matches, enw)) {
-            _enw(hud, std::stoi(matches[1]), std::stoi(matches[2]), std::stoi(matches[3]), std::stoi(matches[4]));
-        } else if (std::regex_match(line, matches, ebo)) {
-            _ebo(hud, std::stoi(matches[1]));
-        } else if (std::regex_match(line, matches, edi)) {
-            _edi(hud, std::stoi(matches[1]));
-        } else if (std::regex_match(line, matches, sgt)) {
-            _sgt(hud, std::stoi(matches[1]));
-        } else if (std::regex_match(line, matches, sst)) {
-            _sst(hud, std::stoi(matches[1]));
-        } else if (std::regex_match(line, matches, seg)) {
-            _seg(hud, matches[1]);
-        } else if (std::regex_match(line, matches, smg)) {
-            _smg(hud, matches[1]);
-        } else if (std::regex_match(line, matches, sbp)) {
-            _sbp();
-        } else
+    while (std::getline(iss, line)) {
+        bool matched = false;
+
+        for (const auto &[pattern, action] : commands) {
+            if (std::regex_match(line, matches, pattern)) {
+                action(matches);
+                matched = true;
+                break;
+            }
+        }
+        if (!matched)
             _suc(line);
     }
 }
