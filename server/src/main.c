@@ -91,7 +91,11 @@ int main(int ac, char **av)
     if (!parse_and_find_error(ac, av, server))
         return print_help();
     srand(time(NULL));
-    debug_server(server);
+    // debug_server(server);
+    printf("Coucou\n");
+    map_generator(server);
+    printf("Coucou\n");
+    debug_print_resource_map(server);
     run_server(server);
     free_server(server);
     return 0;

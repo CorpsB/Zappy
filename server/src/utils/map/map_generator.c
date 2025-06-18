@@ -50,12 +50,13 @@ static void init_rapartition_cells(server_t *server)
 
 void map_generator(server_t *server)
 {
-    server->map = malloc(sizeof(resources_t *) * server->height);
+    server->map = malloc(sizeof(resources_t *) * (server->height + 1));
     server->map[server->height] = NULL;
     for(unsigned int i = 0; i < server->height; i++)
         server->map[i] = malloc(sizeof(resources_t) * server->width);
     define_actual_map_inventory(server);
     define_goals(server);
     init_rapartition_cells(server);
+    printf("COUCOU mais pas coucou\n");
     map_update(server);
 }

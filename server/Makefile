@@ -57,6 +57,7 @@ SRC	=	src/main.c								\
 		src/utils/map/density_table.c			\
 		src/utils/map/map_generator.c			\
 		src/utils/map/map_update.c				\
+		src/utils/map/see_map.c					\
 
 
 

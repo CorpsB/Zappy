@@ -25,6 +25,5 @@ server_t *add_server(void)
     server->width = 0;
     server->eggs_count = 0;
     server->player_count = 0;
-    map_generator(server);
     return server;
 }
