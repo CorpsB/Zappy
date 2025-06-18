@@ -9,15 +9,20 @@
 
 void CMDInterpreter::interpret(HUD &hud, const std::string &msg)
 {
+    std::string line;
     std::smatch matches;
+    std::istringstream iss(msg);
 
-    if (std::regex_match(msg, matches, msz))
-        _msz(hud, std::stoi(matches[1]), std::stoi(matches[2]));
-    else if (std::regex_match(msg, matches, bct))
-        _bct(hud, std::stoi(matches[1]), std::stoi(matches[2]), std::stoi(matches[3]), std::stoi(matches[4]), std::stoi(matches[5]), std::stoi(matches[6]), std::stoi(matches[7]), std::stoi(matches[8]), std::stoi(matches[9]));
-    else if (std::regex_match(msg, matches, tna))
-        _tna(hud, matches[1]);
-    _suc(msg);
+    while (std::getline(iss, line)) {
+        if (std::regex_match(line, matches, msz))
+            _msz(hud, std::stoi(matches[1]), std::stoi(matches[2]));
+        else if (std::regex_match(line, matches, bct))
+            _bct(hud, std::stoi(matches[1]), std::stoi(matches[2]), std::stoi(matches[3]), std::stoi(matches[4]), std::stoi(matches[5]), std::stoi(matches[6]), std::stoi(matches[7]), std::stoi(matches[8]), std::stoi(matches[9]));
+        else if (std::regex_match(line, matches, tna))
+            _tna(hud, matches[1]);
+        else
+            _suc(line);
+    }
 }
 
 // Commands
