@@ -32,38 +32,6 @@ static int parse_ppo_id(const char *str, long *out)
     return 0;
 }
 
-/**
- * @brief Searches a player by ID inside one team.
- * @param team The team to search in
- * @param id   The player ID
- * @return player_t* The player if found, NULL otherwise
- */
-static player_t *find_in_team(teams_t *team, unsigned int id)
-{
-    for (player_t *p = team->player; p; p = p->next)
-        if (p->id == id)
-            return p;
-    return NULL;
-}
-
-/**
- * @brief Searches a player by ID in all teams.
- * @param server The server instance
- * @param id The target ID
- * @return player_t* The player if found, NULL otherwise
- */
-static player_t *find_player_by_id(server_t *server, unsigned int id)
-{
-    player_t *p;
-
-    for (teams_t *t = server->teams; t; t = t->next) {
-        p = find_in_team(t, id);
-        if (p)
-            return p;
-    }
-    return NULL;
-}
-
 void cmd_ppo(server_t *server, int index, char **args)
 {
     int fd;
@@ -80,7 +48,7 @@ void cmd_ppo(server_t *server, int index, char **args)
         return (void)dprintf(fd, "ko\n");
     target = find_player_by_id(server, (unsigned int)id);
     if (!target)
-        return (void)dprintf(fd, "unknown player\n");
+        return (void)dprintf(fd, "ko\n");
     dprintf(fd, "ppo %d %d %d %d\n", target->id,
         target->position[0], target->position[1], target->direction);
 }
