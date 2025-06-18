@@ -34,6 +34,5 @@ void cmd_msz(server_t *server, int index, char **args)
     if (check_graphical(server, index) != 0)
         return;
     fd = server->poll.pollfds[index].fd;
-    //dprintf(fd, "msz %u %u\n", server->width, server->height);
-    dprintf(fd, "voici la map\n");
+    dprintf(fd, "msz %u %u\n", server->width, server->height);
 }
