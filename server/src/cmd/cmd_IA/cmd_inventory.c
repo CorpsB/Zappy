@@ -36,11 +36,11 @@ void cmd_inventory(server_t *server, int index, const char **args)
         return;
     player = server->poll.client_list[index].player;
     snprintf(buf, sizeof(buf),
-        "[food %u , linemate %u , deraumere %u , sibur %u , "
-        "mendiane %u , phiras %u , thystame %u , time %u]\n",
-        player->inventory.food, player->inventory.linemate,
+        "[food %u, linemate %u, deraumere %u, sibur %u, "
+        "mendiane %u, phiras %u, thystame %u]\n",
+        player->cycle_before_death / 126, player->inventory.linemate,
         player->inventory.deraumere, player->inventory.sibur,
         player->inventory.mendiane, player->inventory.phiras,
-        player->inventory.thystame, player->cycle_before_death);
+        player->inventory.thystame);
     dprintf(player->socket_fd, "%s", buf);
 }
