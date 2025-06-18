@@ -20,6 +20,6 @@ void cmd_fork(server_t *server, int index, char **args)
     if (check_autorized(server, index) != 0)
         return;
     pl = server->poll.client_list[index].player;
-    add_eggs(server, pl->id, pl->team, pl->position);
+    add_eggs(server, pl->id, pl->team, (int *)pl->position);
     dprintf(pl->socket_fd, "ok\n");
 }
