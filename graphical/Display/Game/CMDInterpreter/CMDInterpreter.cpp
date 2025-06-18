@@ -39,6 +39,7 @@ void CMDInterpreter::interpret(HUD &hud, const std::string &msg)
         { pic, [&](const std::smatch &m) {
             std::string rest = line.substr(m.position(3) + m.length(3));
             std::vector<int> ids;
+
             for (std::sregex_iterator it(rest.begin(), rest.end(), playerRegex), end; it != end; ++it)
                 ids.push_back(std::stoi((*it)[1]));
             _pic(hud, std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), ids);
