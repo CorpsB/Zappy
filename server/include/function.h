@@ -46,6 +46,13 @@ void see_one_team(teams_t *team, int fd);
 void see_teams(teams_t *teams, int fd);
 void free_all_teams(teams_t *teams);
 //player
+/**
+ * @brief Searches for a player by ID across all teams.
+ * @param server The server structure containing teams.
+ * @param id The target player ID.
+ * @return player_t* if found, NULL otherwise.
+*/
+player_t *find_player_by_id(const server_t *server, unsigned int id);
 void add_player(server_t *server, int socket, teams_t *teams);
 void free_all_player(player_t *player);
 //cmd parser

@@ -39,6 +39,6 @@
     #include <unistd.h>    // pour close(), write(), etc.
 
     #include <limits.h>
-
+    #include <ctype.h>
 
 #endif /* !INCLUDE_H_ */
