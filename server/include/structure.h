@@ -251,6 +251,8 @@ struct player {
     /// Player's personal inventory of resources.
     resources_t inventory;
 
+    bool is_dead;
+
     /// Pointer to the next player in the linked list (same team).
     struct player *next;
 };

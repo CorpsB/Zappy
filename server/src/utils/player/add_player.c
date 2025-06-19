@@ -19,6 +19,7 @@ void add_player(server_t *server, int socket, teams_t *teams)
     node->position[0] = rand() % server->width;
     node->position[1] = rand() % server->height;
     node->lvl = 1;
+    node->is_dead = false;
     node->cycle_before_death = 1260;
     node->direction = (rand() % 4) + 1;
     node->socket_fd = socket;

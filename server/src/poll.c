@@ -116,10 +116,20 @@ static void poll_func(server_t *server)
     }
 }
 
-static void check_player_is_alive(server_t *server)
+static void check_player_is_alive(server_t *server, teams_t *teams)
 {
-    player_t *tmp;
-    event_pdi(server, tmp);
+    for (player_t *tmp = teams->player; tmp != NULL; tmp = tmp->next) {
+        if (!tmp->is_dead && tmp->cycle_before_death <= 0) {
+            tmp->is_dead = true;
+            event_pdi(server, tmp);
+        }
+    }
+}
+
+static void check_each_teams(server_t *server)
+{
+    for (teams_t *teams = server->teams; teams != NULL; teams = teams->next)
+        check_player_is_alive(server, teams);
 }
 
 void run_server(server_t *server)
@@ -128,6 +138,6 @@ void run_server(server_t *server)
     add_client(server, server->poll.socket, LISTEN);
     for (; !is_game_over(server);) {
         poll_func(server);
-        check_player_is_alive(server);
+        check_each_teams(server);
     }
 }
