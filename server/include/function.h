@@ -133,4 +133,42 @@ int eggs_size(eggs_t *eggs);
 void generate_starter_eggs(server_t *server, teams_t *teams);
 void event_pdi_by_index(server_t *server, int index);
 void event_pdi(server_t *server, player_t *player);
+
+
+//EVENTS
+
+/**
+ * @brief Notify all GUI clients with the map size.
+ *
+ * @param server The main server structure containing map and clients.
+ */
+void event_msz(server_t *server);
+
+/**
+ * @brief Notify the GUI and the player that a player has died.
+ *
+ * GUI clients receive: pdi <id>
+ * The player receives: dead
+ *
+ * @param server Pointer to the game server.
+ * @param player Pointer to the player who has died.
+ */
+void event_pdi(server_t *server, player_t *player);
+
+void event_bct(server_t *server);
+
+void event_pdi_by_index(server_t *server, int index);
+
+void event_sgt(server_t *server);
+
+void event_tna(server_t *server);
+
+void event_pfk(server_t *server, player_t *player);
+
+void event_enw(server_t *server, player_t *player, eggs_t *egg);
+
+void event_new_gui_enw(server_t *server);
+
+void event_ebo(server_t *server, unsigned int egg_id);
+
 #endif /* !FUCNTION_H_ */

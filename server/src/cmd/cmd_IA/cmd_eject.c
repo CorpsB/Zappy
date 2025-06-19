@@ -41,6 +41,9 @@ static void remove_eggs_in_team(teams_t *team, unsigned x, unsigned y,
     eggs_t **pp;
     eggs_t *e;
 
+    if (!team)
+        return;
+    pp = &team->egg;
     e = *pp;
     while (e) {
         if (e->position[0] == x && e->position[1] == y) {
