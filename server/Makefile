@@ -30,6 +30,7 @@ SRC	=	src/main.c								\
 		src/utils/teams/add_teams.c				\
 		src/utils/teams/free_teams.c			\
 		src/utils/eggs/free_eggs.c				\
+		src/utils/eggs/eggs_size.c				\
 		src/utils/player/free_player.c			\
 		src/utils/teams/search_teams.c			\
 		src/utils/teams/see_teams.c				\
@@ -63,7 +64,7 @@ SRC	=	src/main.c								\
 		src/event/event_bct.c					\
 		src/event/event_sgt.c					\
 		src/event/event_tna.c					\
-		src/event/event_enw.c			\
+		src/event/event_enw.c					\
 		src/event/event_pfk.c					\
 		src/event/event_ebo.c					\
 

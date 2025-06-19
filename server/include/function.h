@@ -131,7 +131,6 @@ void change_arround(server_t *server, int *pos, r_ressource_t type,
 void send_to_all_gui(server_t *server, char *message);
 int eggs_size(eggs_t *eggs);
 void generate_starter_eggs(server_t *server, teams_t *teams);
-void event_pdi_by_index(server_t *server, int index);
 void event_pdi(server_t *server, player_t *player);
 
 
@@ -157,7 +156,7 @@ void event_pdi(server_t *server, player_t *player);
 
 void event_bct(server_t *server);
 
-void event_pdi_by_index(server_t *server, int index);
+void event_pdi_by_index(void);
 
 void event_sgt(server_t *server);
 
@@ -170,5 +169,9 @@ void event_enw(server_t *server, player_t *player, eggs_t *egg);
 void event_new_gui_enw(server_t *server);
 
 void event_ebo(server_t *server, unsigned int egg_id);
+
+void send_enw(int fd, eggs_t *egg);
+
+eggs_t *create_egg_from_player(player_t *player);
 
 #endif /* !FUCNTION_H_ */

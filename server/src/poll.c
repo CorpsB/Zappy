@@ -79,7 +79,7 @@ static bool del_client(server_t *server, int index)
         sizeof(struct pollfd) * server->poll.connected_client);
     if (!server->poll.pollfds || !server->poll.client_list)
         logger(server, "REALLOC", PERROR, true);
-    event_pdi_by_index(server, index);
+    event_pdi_by_index();
     return true;
 }
 
