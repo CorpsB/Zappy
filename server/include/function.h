@@ -127,4 +127,6 @@ void map_generator(server_t *server);
 void map_update(server_t *server);
 void change_arround(server_t *server, int *pos, r_ressource_t type,
     int weight);
+
+void send_to_all_gui(server_t *server, char *message);
 #endif /* !FUCNTION_H_ */

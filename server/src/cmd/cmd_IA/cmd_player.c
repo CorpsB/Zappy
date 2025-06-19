@@ -29,23 +29,24 @@ static int create_and_assign_player(server_t *srv, int idx, teams_t *team)
     return 0;
 }
 
-void cmd_player(server_t *srv, int idx, teams_t *team)
+void cmd_player(server_t *server, int index, teams_t *team)
 {
     client_t *cl;
     int fd;
 
-    cl = &srv->poll.client_list[idx];
-    fd = srv->poll.pollfds[idx].fd;
+    cl = &server->poll.client_list[index];
+    fd = server->poll.pollfds[index].fd;
     if (cl->whoAmI != UNKNOWN ||
-        team->slots_used >= srv->max_connections_per_team) {
+        team->slots_used >= server->max_connections_per_team) {
         dprintf(fd, "ko\n");
         return;
     }
-    if (create_and_assign_player(srv, idx, team)) {
+    if (create_and_assign_player(server, index, team)) {
         dprintf(fd, "ko\n");
         return;
     }
     cl->whoAmI = PLAYER;
     team->slots_used++;
     dprintf(fd, "ok\n");
+    event_ebo(server, index);
 }

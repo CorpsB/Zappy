@@ -80,6 +80,7 @@ static bool del_client(server_t *server, int index)
         sizeof(struct pollfd) * server->poll.connected_client);
     if (!server->poll.pollfds || !server->poll.client_list)
         logger(server, "REALLOC", PERROR, true);
+    event_pdi(server, index);
     return true;
 }
 
@@ -115,11 +116,18 @@ static void poll_func(server_t *server)
     }
 }
 
+static void check_player_is_alive(server_t *server)
+{
+    player_t *tmp;
+    event_pdi(server, tmp);
+}
+
 void run_server(server_t *server)
 {
     init_server(server);
     add_client(server, server->poll.socket, LISTEN);
     for (; !is_game_over(server);) {
         poll_func(server);
+        check_player_is_alive(server);
     }
 }
