@@ -35,21 +35,64 @@ static void push_player(player_t *pl, direction_t dir,
     pl->direction = dir;
 }
 
+static void remove_eggs_in_team(teams_t *team, unsigned x, unsigned y,
+    server_t *server)
+{
+    eggs_t **pp;
+    eggs_t *e;
+
+    e = *pp;
+    while (e) {
+        if (e->position[0] == x && e->position[1] == y) {
+            *pp = e->next;
+            free(e);
+            server->eggs_count--;
+            e = *pp;
+            continue;
+        }
+        pp = &e->next;
+        e = *pp;
+    }
+}
+
+/** Destroy every egg located at (x,y) on the whole map. */
+static void destroy_eggs(server_t *server, unsigned x, unsigned y)
+{
+    teams_t *t = server->teams;
+
+    while (t) {
+        remove_eggs_in_team(t, x, y, server);
+        t = t->next;
+    }
+}
+
+/** Notify the player, push him, then destroy eggs on his new tile. */
+static void notify_and_push(player_t *pl, direction_t dir,
+    server_t *server)
+{
+    dprintf(pl->socket_fd, "Eject %d\n", dir);
+    push_player(pl, dir, server->width, server->height);
+    destroy_eggs(server, pl->position[0], pl->position[1]);
+}
+
 /**
  * @brief Push every player of @p team that shares the tile (x,y)
  *        with @p agressor, except @p agressor itself.
+ *  Push every player of @p team sharing the tile with @p agressor
+ * (except @p a).
 */
 static unsigned eject_team(teams_t *team, const player_t *agressor,
-    unsigned int width, unsigned int height)
+    server_t *server)
 {
     unsigned pushed = 0;
+    player_t *p;
 
-    for (player_t *p = team->player; p; p = p->next) {
+    for (p = team->player; p; p = p->next) {
         if (p == agressor)
             continue;
         if (p->position[0] == agressor->position[0] &&
             p->position[1] == agressor->position[1]) {
-            push_player(p, agressor->direction, width, height);
+            notify_and_push(p, agressor->direction, server);
             pushed++;
         }
     }
@@ -59,22 +102,19 @@ static unsigned eject_team(teams_t *team, const player_t *agressor,
 void cmd_eject(server_t *server, int index, const char **args)
 {
     client_t *cl;
-    player_t *aggressor;
+    player_t *ag;
     unsigned total = 0;
     int fd;
 
     (void)args;
-    if (!server || !server->poll.client_list ||
-        index < 0 || index >= server->poll.client_index)
+    if (!server || index < 0 || index >= server->poll.client_index)
         return;
     cl = &server->poll.client_list[index];
     fd = server->poll.pollfds[index].fd;
-    if (cl->whoAmI != PLAYER || !cl->player) {
-        dprintf(fd, "ko\n");
-        return;
-    }
-    aggressor = cl->player;
+    if (cl->whoAmI != PLAYER || !cl->player)
+        return (void)dprintf(fd, "ko\n");
+    ag = cl->player;
     for (teams_t *t = server->teams; t; t = t->next)
-        total += eject_team(t, aggressor, server->width, server->height);
-    dprintf(aggressor->socket_fd, total ? "ok\n" : "ko\n");
+        total += eject_team(t, ag, server);
+    dprintf(ag->socket_fd, total ? "ok\n" : "ko\n");
 }
