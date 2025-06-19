@@ -10,7 +10,8 @@
 #include "include/structure.h"
 #include "include/density_table.h"
 
-static int search_map_information(server_t *server, r_ressource_t type, int *min)
+static int search_map_information(server_t *server, r_ressource_t type,
+    int *min)
 {
     int size = 0;
 

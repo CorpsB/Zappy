@@ -74,8 +74,10 @@ static bool del_client(server_t *server, int index)
     }
     server->poll.connected_client--;
     server->poll.client_index--;
-    server->poll.client_list = realloc(server->poll.client_list, sizeof(client_t) * server->poll.connected_client);
-    server->poll.pollfds = realloc(server->poll.pollfds, sizeof(struct pollfd) * server->poll.connected_client);
+    server->poll.client_list = realloc(server->poll.client_list,
+        sizeof(client_t) * server->poll.connected_client);
+    server->poll.pollfds = realloc(server->poll.pollfds,
+        sizeof(struct pollfd) * server->poll.connected_client);
     if (!server->poll.pollfds || !server->poll.client_list)
         logger(server, "REALLOC", PERROR, true);
     return true;
@@ -119,6 +121,5 @@ void run_server(server_t *server)
     add_client(server, server->poll.socket, LISTEN);
     for (; !is_game_over(server);) {
         poll_func(server);
-        see_poll(server->poll, server->debug_fd, server->poll.connected_client);
     }
 }

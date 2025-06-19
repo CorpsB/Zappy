@@ -8,7 +8,7 @@
 #ifndef DENSITY_TABLE_H_
     #define DENSITY_TABLE_H_
 
-typedef struct density_s{
+typedef struct density_s {
     const char *name;
     float density;
     unsigned int repartition_value;

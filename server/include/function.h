@@ -125,5 +125,6 @@ void logger(server_t *server, char *message, logs_t log, bool is_end);
 void debug_print_resource_map(server_t *server);
 void map_generator(server_t *server);
 void map_update(server_t *server);
-void change_arround(server_t *server, int *pos, r_ressource_t type, int weight);
+void change_arround(server_t *server, int *pos, r_ressource_t type,
+    int weight);
 #endif /* !FUCNTION_H_ */
