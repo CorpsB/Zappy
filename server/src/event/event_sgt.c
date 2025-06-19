@@ -1,15 +1,15 @@
 /*
-** EPITECH PROJECT, 2025
+** EPITECH PROJECT, 2024
 ** B-YEP-400-STG-4-1-zappy-noe.carabin
 ** File description:
-** event_msz
+** event_sgt.c
 */
 
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
 
-void event_msz(server_t *server)
+void event_sgt(server_t *server)
 {
     int fd;
     client_t *cl;
@@ -20,7 +20,7 @@ void event_msz(server_t *server)
         cl = &server->poll.client_list[i];
         if (cl->whoAmI == GUI) {
             fd = server->poll.pollfds[i].fd;
-            dprintf(fd, "msz %u %u\n", server->width, server->height);
+            dprintf(fd, "sgt %u\n", server->frequency);
         }
     }
 }

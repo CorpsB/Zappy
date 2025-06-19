@@ -58,8 +58,13 @@ SRC	=	src/main.c								\
 		src/utils/map/map_generator.c			\
 		src/utils/map/map_update.c				\
 		src/utils/map/see_map.c					\
-
-
+		src/event/event_msz.c					\
+		src/event/event_pdi.c					\
+		src/event/event_bct.c					\
+		src/event/event_sgt.c					\
+		src/event/event_tna.c					\
+		src/event/event_new_gui_enw.c			\
+		src/event/event_pfk.c
 
 OBJ	=	$(SRC:.c=.o)
 
