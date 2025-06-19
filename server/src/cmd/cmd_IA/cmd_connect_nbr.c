@@ -23,7 +23,7 @@ void cmd_connect_nbr(server_t *server, int index, char **args)
         return;
     pl = server->poll.client_list[index].player;
     team = pl->team;
-    free_slots = (int)server->max_connections_per_team - team->slots_used;
+    free_slots = (int)server->starter_eggs_number - team->slots_used;
     if (free_slots < 0)
         free_slots = 0;
     dprintf(pl->socket_fd, "%d\n", free_slots);

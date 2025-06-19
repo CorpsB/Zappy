@@ -48,6 +48,13 @@ static void init_rapartition_cells(server_t *server)
     }
 }
 
+static void spawn_eggs(server_t *server) 
+{
+    for (teams_t *tmp = server->teams; tmp != NULL; tmp = tmp->next)
+        while(eggs_size(tmp->egg) < server->starter_eggs_number)
+            generate_starter_eggs(server, tmp);
+}
+
 void map_generator(server_t *server)
 {
     server->map = malloc(sizeof(resources_t *) * (server->height + 1));
@@ -57,6 +64,6 @@ void map_generator(server_t *server)
     define_actual_map_inventory(server);
     define_goals(server);
     init_rapartition_cells(server);
-    printf("COUCOU mais pas coucou\n");
     map_update(server);
+    spawn_eggs(server);
 }

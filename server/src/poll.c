@@ -9,7 +9,6 @@
 #include "include/function.h"
 #include "include/structure.h"
 
-
 static void init_server(server_t *server)
 {
     socklen_t size = sizeof(struct sockaddr_in);
@@ -80,7 +79,7 @@ static bool del_client(server_t *server, int index)
         sizeof(struct pollfd) * server->poll.connected_client);
     if (!server->poll.pollfds || !server->poll.client_list)
         logger(server, "REALLOC", PERROR, true);
-    event_pdi(server, index);
+    event_pdi_by_index(server, index);
     return true;
 }
 

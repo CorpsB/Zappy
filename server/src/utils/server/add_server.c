@@ -18,7 +18,7 @@ server_t *add_server(void)
     server->teams = NULL;
     server->map = NULL;
     server->teams_count = 0;
-    server->max_connections_per_team = 0;
+    server->starter_eggs_number = 0;
     server->frequency = 0;
     server->port = 0;
     server->height = 0;

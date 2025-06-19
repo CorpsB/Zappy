@@ -129,4 +129,8 @@ void change_arround(server_t *server, int *pos, r_ressource_t type,
     int weight);
 
 void send_to_all_gui(server_t *server, char *message);
+int eggs_size(eggs_t *eggs);
+void generate_starter_eggs(server_t *server, teams_t *teams);
+void event_pdi_by_index(server_t *server, int index);
+void event_pdi(server_t *server, player_t *player);
 #endif /* !FUCNTION_H_ */

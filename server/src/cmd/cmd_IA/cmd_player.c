@@ -37,7 +37,7 @@ void cmd_player(server_t *server, int index, teams_t *team)
     cl = &server->poll.client_list[index];
     fd = server->poll.pollfds[index].fd;
     if (cl->whoAmI != UNKNOWN ||
-        team->slots_used >= server->max_connections_per_team) {
+        team->slots_used >= server->starter_eggs_number) {
         dprintf(fd, "ko\n");
         return;
     }

@@ -13,7 +13,7 @@ void see_server(struct server *server, int fd)
 {
     dprintf(fd, "====== SERVER STATE ======\n");
     dprintf(fd, "\tco           : \t\t%u\n",
-        server->max_connections_per_team);
+        server->starter_eggs_number);
     dprintf(fd, "\tfrequency    : \t\t%u\n", server->frequency);
     dprintf(fd, "\tport         : \t\t%u\n", server->port);
     dprintf(fd, "\twidth        : \t\t%u\n", server->width);

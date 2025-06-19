@@ -62,7 +62,7 @@ bool parse_and_find_error(int ac, char **av, server_t *server)
     if (server->frequency == 0 ||
         server->height == 0 ||
         server->width == 0 ||
-        server->max_connections_per_team == 0 ||
+        server->starter_eggs_number == 0 ||
         server->port == 0 ||
         server->teams == NULL)
             return false;

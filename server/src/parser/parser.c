@@ -54,7 +54,7 @@ int parse_client(char *str, server_t *server, int i)
             ERROR, false);
         return -1;
     }
-    server->max_connections_per_team = nbr;
+    server->starter_eggs_number = nbr;
     return i + 1;
 }
 

@@ -155,7 +155,7 @@ struct resources {
  */
 struct server {
     /// Maximum number of players per team (including pending eggs).
-    unsigned int max_connections_per_team;
+    unsigned int starter_eggs_number;
     /// Number of game ticks per second. Used to control action timing.
     unsigned int frequency;
     /// TCP port used to listen for incoming client connections.
@@ -270,7 +270,7 @@ struct eggs {
     /// Unique identifier for the egg.
     unsigned int id;
     /// ID of the player who laid the egg (used for logging/debug).
-    unsigned int creator_id;
+    int creator_id;
     /// Position of the egg on the map, as [x, y] coordinates.
     unsigned int position[2];
 
