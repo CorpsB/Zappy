@@ -22,10 +22,12 @@ void add_player(server_t *server, int index, teams_t *teams)
 
     if (!node)
         logger(server, "MALLOC", PERROR, true);
+    server->poll.client_list[index].player = node;
     node->id = server->player_count;
     node->position[0] = pos[0];
     node->position[1] = pos[1];
     node->lvl = 1;
+    node->team = teams;
     node->is_dead = false;
     node->cycle_before_death = 1260;
     node->direction = (rand() % 4) + 1;

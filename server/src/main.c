@@ -90,6 +90,7 @@ int main(int ac, char **av)
     need_debug(server, av);
     if (!parse_and_find_error(ac, av, server))
         return print_help();
+    complete_team_data(server);
     srand(time(NULL));
     map_generator(server);
     debug_print_resource_map(server);

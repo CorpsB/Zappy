@@ -176,4 +176,5 @@ eggs_t *create_egg_from_player(player_t *player);
 
 void del_egg(server_t *server, teams_t *teams, eggs_t *egg);
 unsigned int *hatching_egg(server_t *server, teams_t *teams);
+void complete_team_data(server_t *server);
 #endif /* !FUCNTION_H_ */

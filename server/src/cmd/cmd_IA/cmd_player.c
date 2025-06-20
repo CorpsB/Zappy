@@ -21,7 +21,7 @@ void cmd_player(server_t *server, int index, teams_t *team)
         dprintf(fd, "ko\n");
         return;
     }
-    if (team->slots_used < team->slots_max) {
+    if (team->slots_used >= team->slots_max || team->egg == NULL) {
         dprintf(fd, "ko\n");
         return;
     }
