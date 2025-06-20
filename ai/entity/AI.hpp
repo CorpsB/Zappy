@@ -67,7 +67,6 @@ namespace ai::entity
             SoundSystem _sound_system;
 
             std::string _thread_name;
-            utils::debug::Logger _logger;
             network::Socket _socket;
     };
 }

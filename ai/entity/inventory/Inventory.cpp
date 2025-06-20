@@ -21,22 +21,26 @@ ai::entity::Inventory::Inventory()
     _storage["thystame"] = 0;
 }
 
-void ai::entity::Inventory::update(const std::string &storage)
+bool ai::entity::Inventory::update(const std::string &storage)
 {
-    if (storage.empty() || storage.front() != '[' || storage.back() != ']')
-        throw utils::exception::Error("INVENTORY", "Bad inventory format.");
-    
+    utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
+
+    if (storage.empty() || storage.front() != '[' || storage.back() != ']') {
+        logger.log("[Error] Bad inventory format.");
+        return false;
+    }
+
     const std::string content = storage.substr(1, storage.size() - 2);
     std::vector<std::string> items = utils::string::split(content, ',');
 
     for (std::string &item : items) {
-        // delete spaces
         item.erase(std::remove_if(item.begin(), item.end(), ::isspace), item.end());
 
         const size_t pos = std::find_if(item.begin(), item.end(), ::isdigit) - item.begin();
-        if (pos == std::string::npos || pos == 0)
-            throw utils::exception::Error("INVENTORY", "Unset item quantity : " + item);
-
+        if (pos == std::string::npos || pos == 0) {
+            logger.log("[Error] Unset item quantity : " + item);
+            return false;
+        }
         const std::string resource = item.substr(0, pos);
         const std::string quantity = item.substr(pos);
 
@@ -48,8 +52,11 @@ void ai::entity::Inventory::setItem(const std::string &item, int quantity)
 {
     int value = getItem(item);
 
-    if (value == -1)
-        throw utils::exception::Error("INVENTORY", "Unknown item to set '" + item + "'");
+    if (value == -1) {
+        utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
+        logger.log("[Error] Unknown item to set '" + item + "'");
+        return;
+    }
     _storage[item] = quantity;
 }
 

@@ -17,7 +17,7 @@ namespace ai::entity
             Inventory();
             ~Inventory() = default;
 
-            void update(const std::string &storage);
+            bool update(const std::string &storage);
 
             void setItem(const std::string &item, int quantity);
             int getItem(const std::string &item);

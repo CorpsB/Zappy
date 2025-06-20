@@ -8,6 +8,12 @@
 #include "Logger.hpp"
 #include <iostream>
 
+ai::utils::debug::Logger &ai::utils::debug::Logger::GetInstance()
+{
+    static Logger _logger;
+    return _logger;
+}
+
 ai::utils::debug::Logger::Logger()
 {
     _thread_name = "";
@@ -18,6 +24,11 @@ void ai::utils::debug::Logger::setup(bool debug, const std::string &thread_name)
 {
     _thread_name = thread_name;
     _debug = debug;
+
+    if (_debug)
+        std::cout << "[Main] Debug mode ENABLED." << std::endl;
+    else
+        std::cout << "[Main] Debug mode DISABLED. Logs will print on exit or error." << std::endl;
 }
 
 void ai::utils::debug::Logger::log(const std::string &msg)

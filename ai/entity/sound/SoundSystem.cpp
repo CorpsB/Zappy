@@ -76,11 +76,14 @@ ai::entity::SoundDirection ai::entity::SoundSystem::getNearestSoundDirection()
 // message [direction], [id]|[timestamp]|[message]
 ai::entity::SoundDirection ai::entity::SoundSystem::setSound(const std::string &sound_str)
 {
+    utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
     std::regex pattern(R"(message\s*\[(\d+)\],\s*(\d+)\|(\d+)\|(.+))");
     std::smatch match;
 
-    if (!std::regex_match(sound_str, match, pattern))
-        throw utils::exception::Error("SOUND_SYSTEM", "Invalid sound format: regex mismatch");
+    if (!std::regex_match(sound_str, match, pattern)) {
+        logger.log("[Error] Invalid sound format: regex mismatch");
+        return NONE;
+    }
 
     int direction = std::stoi(match[1].str());
     const int id = std::stoi(match[2].str());
@@ -90,19 +93,24 @@ ai::entity::SoundDirection ai::entity::SoundSystem::setSound(const std::string &
     try {
         sended_at_64 = std::stoll(match[3].str());
     } catch (...) {
-        throw utils::exception::Error("SOUND_SYSTEM", "Invalid timestamp: must be a valid int64");
+        logger.log("[Error] Invalid timestamp: must be a valid int64");
+        return NONE;
     }
 
-    if (direction < 0 || direction > 7)
-        throw utils::exception::Error("SOUND_SYSTEM", "Invalid direction index: must be between 0 and 7");
+    if (direction < 0 || direction > 7) {
+        logger.log("[Error] Invalid direction index: must be between 0 and 7");
+        return NONE;
+    }
 
     const auto date_now = std::chrono::high_resolution_clock::now();
     const auto sended_at = std::chrono::high_resolution_clock::time_point{
         std::chrono::milliseconds{sended_at_64}
     };
 
-    if (sended_at > date_now)
-        throw utils::exception::Error("SOUND_SYSTEM", "Invalid timestamp: message from the future");
+    if (sended_at > date_now) {
+        logger.log("[Error] Invalid timestamp: message from the future");
+        return NONE;
+    }
 
     const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(date_now - sended_at);
 

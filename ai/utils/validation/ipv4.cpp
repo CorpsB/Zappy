@@ -33,6 +33,7 @@ bool ai::utils::validation::ipv4(const std::string &ip)
 {
     if (assert_ipv4(ip))
         return true;
-    std::cerr << "Error: Invalid ipv4 " << ip << std::endl;
+    utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
+    logger.log("[Error] Invalid ipv4 " + ip);
     return false;
 }

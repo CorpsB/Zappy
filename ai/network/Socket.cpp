@@ -40,6 +40,7 @@ void ai::network::Socket::initSocket(int port, const std::string &ip)
 
 bool ai::network::Socket::readSocket()
 {
+    utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
     const auto start_time = std::chrono::high_resolution_clock::now();
     char local_buffer[READ_BUFFER_SIZE];
     int rd;
@@ -50,17 +51,27 @@ bool ai::network::Socket::readSocket()
 
         if (duration.count() > READ_TIMEOUT) {
             closeSocket();
-            throw utils::exception::Error("CONNECTION", _thread_name + " Socket receive timeout (" + std::to_string(READ_TIMEOUT) + "s).");
+            logger.log("[Error] Socket receive timeout (" + std::to_string(READ_TIMEOUT) + "s).");
+            return false;
         }
-        if (!isServerReadable())
-            continue;
-        memset(local_buffer, 0, READ_BUFFER_SIZE);
-        rd = read(_fds.fd, local_buffer, READ_BUFFER_SIZE);
-        if (rd < 0) {
-            closeSocket();
-            throw utils::exception::Error("CONNECTION", _thread_name + " Read failure.");
+        switch (isServerReadable()) {
+            case 1:
+                memset(local_buffer, 0, READ_BUFFER_SIZE);
+                rd = read(_fds.fd, local_buffer, READ_BUFFER_SIZE);
+                if (rd < 0) {
+                    closeSocket();
+                    logger.log("[Error] Read failure.");
+                    return false;
+                }
+                _buffer.append(local_buffer, rd);
+                break;
+            case 2:
+                closeSocket();
+                logger.log("[Error] Poll failure.");
+                return false;
+            default:
+                break;
         }
-        _buffer.append(local_buffer, rd);
     }
     return true;
 }
@@ -90,17 +101,17 @@ void ai::network::Socket::closeSocket()
     _fds.events = 0;
 }
 
-bool ai::network::Socket::isServerReadable()
+int ai::network::Socket::isServerReadable()
 {
     const int queue = poll((struct pollfd *)&_fds, 1, 0);
 
     if (queue < 0)
-        throw utils::exception::Error("CONNECTION", _thread_name + " Poll failure.");
+        return 2;
     if (queue == 0)
-        return false;
+        return 0;
     if (_fds.revents & POLLIN)
-        return true;
-    return false;
+        return 1;
+    return 0;
 }
 
 void ai::network::Socket::connectServer()
@@ -136,16 +147,21 @@ void ai::network::Socket::greetsServer()
         throw utils::exception::Error("CONNECTION", _thread_name + " Failed to receive world size.");
 }
 
-void ai::network::Socket::sendCommand(const std::string &cmd)
+bool ai::network::Socket::sendCommand(const std::string &cmd)
 {
     const std::string cmd_final = cmd + "\n";
 
-    if (write(_fds.fd, cmd_final.c_str(), cmd_final.size()) < 0)
-        throw utils::exception::Error("CONNECTION", _thread_name + " Socket error while sending '" + cmd + "'");
+    if (write(_fds.fd, cmd_final.c_str(), cmd_final.size()) < 0) {
+        utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
+        logger.log("[Error] Socket error while sending '" + cmd + "'");
+        return false;
+    }
+    return true;
 }
 
 std::string ai::network::Socket::doAction(const std::string &cmd)
 {
-    sendCommand(cmd);
+    if (!sendCommand(cmd))
+        return "dead";
     return readSocketBuffer();
 }

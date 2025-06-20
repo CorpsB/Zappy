@@ -30,11 +30,11 @@ namespace ai::network
             std::string readSocketBuffer();
             void closeSocket();
 
-            bool isServerReadable();
+            int isServerReadable();
             void connectServer();
             void greetsServer();
 
-            void sendCommand(const std::string &cmd);
+            bool sendCommand(const std::string &cmd);
             std::string doAction(const std::string &cmd);
 
         private:

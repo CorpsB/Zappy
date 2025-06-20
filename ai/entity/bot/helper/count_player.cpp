@@ -11,8 +11,12 @@
 
 int ai::entity::AI::countPlayersOnTile(int idx, const std::string &look)
 {
-    if (look.empty() || look.front() != '[' || look.back() != ']')
-        throw utils::exception::Error("COUNT_PLAYER", "Bad look format.");
+    utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
+
+    if (look.empty() || look.front() != '[' || look.back() != ']') {
+        logger.log("[Error] Bad look format.");
+        return -1;
+    }
 
     const std::string content = look.substr(1, look.size() - 2);
     const std::vector<std::string> tiles = utils::string::split(content, ',');
@@ -22,6 +26,6 @@ int ai::entity::AI::countPlayersOnTile(int idx, const std::string &look)
         const std::vector<std::string> words = utils::string::split(tile, ' ');
         return std::count(words.begin(), words.end(), "player");
     }
-    _logger.log("Tile index " + std::to_string(idx) + " out of bounds for look string.");
+    logger.log("Tile index " + std::to_string(idx) + " out of bounds for look string.");
     return 0;
 }

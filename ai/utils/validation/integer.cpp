@@ -11,6 +11,7 @@ bool ai::utils::validation::integer(int val, const std::string &str_val)
 {
     if (str_val.size() == std::to_string(val).size())
         return true;
-    std::cerr << "Error: Invalid int " << str_val << std::endl;
+    utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
+    logger.log("[Error] Invalid int " + str_val);
     return false;
 }
