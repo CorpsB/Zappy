@@ -46,7 +46,6 @@ std::string ai::entity::AI::doAction(const std::string &action)
     }
     if (result.rfind("eject", 0) == 0) {
         _logger.log("Got ejected! " + result);
-        // switch sound direction
         return doAction(action);
     }
     return result;

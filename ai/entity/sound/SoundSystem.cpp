@@ -42,12 +42,12 @@ void ai::entity::SoundSystem::setPlayerOrientation(SoundDirection orientation)
 
 ai::entity::SoundDirection ai::entity::SoundSystem::getAjustedDirection(SoundDirection raw)
 {
-    return static_cast<SoundDirection>((raw - _player + 8) % 8);
+    return static_cast<SoundDirection>((raw - _player + 9) % 8);
 }
 
 ai::entity::SoundDirection ai::entity::SoundSystem::getRawDirection(SoundDirection adjusted)
 {
-    return static_cast<SoundDirection>((adjusted + _player) % 8);
+    return static_cast<SoundDirection>((adjusted + _player - 1 + 8) % 8);
 }
 
 ai::entity::SoundCell &ai::entity::SoundSystem::getDirectionSound(SoundDirection ajusted)
