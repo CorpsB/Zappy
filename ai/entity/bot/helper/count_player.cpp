@@ -11,21 +11,25 @@
 
 int ai::entity::AI::countPlayersOnTile(int idx, const std::string &look)
 {
-    utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
+    ai::utils::debug::Logger &logger = ai::utils::debug::Logger::GetInstance();
 
     if (look.empty() || look.front() != '[' || look.back() != ']') {
-        logger.log("[Error] Bad look format.");
+        logger.log("[Error] Bad Look string for player count: '" + look + "'");
         return -1;
     }
 
-    const std::string content = look.substr(1, look.size() - 2);
-    const std::vector<std::string> tiles = utils::string::split(content, ',');
+    try {
+        std::string inner = look.substr(1, look.size() - 2);
+        std::vector<std::string> tiles = ai::utils::string::split(inner, ',');
 
-    if (idx >= 0 && idx < static_cast<int>(tiles.size())) {
-        const std::string tile = tiles[idx];
-        const std::vector<std::string> words = utils::string::split(tile, ' ');
-        return std::count(words.begin(), words.end(), "player");
+        if (idx < 0 || idx >= static_cast<int>(tiles.size())) {
+            logger.log("[Warn] Tile index " + std::to_string(idx) + " out of bounds for look string.");
+            return 0;
+        }
+        std::vector<std::string> contents = ai::utils::string::split(tiles[idx], ' ');
+        return std::count(contents.begin(), contents.end(), "player");
+    } catch (const std::exception &e) {
+        logger.log("[Error] Failed counting players in look string '" + look + "': " + e.what());
+        return -1;
     }
-    logger.log("Tile index " + std::to_string(idx) + " out of bounds for look string.");
-    return 0;
 }

@@ -50,7 +50,7 @@ bool ai::entity::Inventory::update(const std::string &storage)
 
 void ai::entity::Inventory::setItem(const std::string &item, int quantity)
 {
-    int value = getItem(item);
+    const int value = getItem(item);
 
     if (value == -1) {
         utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
@@ -62,12 +62,10 @@ void ai::entity::Inventory::setItem(const std::string &item, int quantity)
 
 int ai::entity::Inventory::getItem(const std::string &item)
 {
-    int value;
-
     try {
-        value = _storage.at(item);
+        const int value = _storage.at(item);
+        return value;
     } catch (std::out_of_range) {
-        value = -1;
+        return -1;
     }
-    return value;
 }
