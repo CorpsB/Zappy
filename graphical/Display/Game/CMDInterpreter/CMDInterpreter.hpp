@@ -10,6 +10,8 @@
 #include "../HUD/HUD.hpp"
 #include "CMDMatches.hpp"
 
+#define SIZE_GROUND 70
+
 class CMDInterpreter {
     public:
         CMDInterpreter() {}
