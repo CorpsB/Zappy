@@ -175,5 +175,5 @@ void send_enw(int fd, eggs_t *egg);
 eggs_t *create_egg_from_player(player_t *player);
 
 void del_egg(server_t *server, teams_t *teams, eggs_t *egg);
-
+unsigned int *hatching_egg(server_t *server, teams_t *teams);
 #endif /* !FUCNTION_H_ */
