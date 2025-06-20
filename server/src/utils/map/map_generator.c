@@ -48,14 +48,6 @@ static void init_rapartition_cells(server_t *server)
     }
 }
 
-// static void spawn_eggs(server_t *server) 
-// {
-//     for (teams_t *tmp = server->teams; tmp != NULL; tmp = tmp->next)
-//         while(eggs_size(tmp->egg) < server->starter_eggs_number)
-//             generate_starter_eggs(server, tmp);
-// }
-// LA FONCTION CI DESSUS C'EST TON ANCIENNE FONCTION QUI A UNE ERREUR DE COMPILATION
-// CI DESSOUS UNE FONCTION DU CHAT JE SAIS PAS SI ELLE MARCHE
 static void spawn_eggs(server_t *server) 
 {
     for (teams_t *tmp = server->teams; tmp != NULL; tmp = tmp->next)

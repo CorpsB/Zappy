@@ -18,6 +18,7 @@ void add_teams(server_t *server, char *name)
     node->name = strdup(name);
     node->id = server->teams_count;
     node->slots_used = 0;
+    node->slots_max = server->starter_eggs_number;
     node->win = false;
     node->eliminated = false;
     node->egg = NULL;

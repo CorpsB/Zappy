@@ -208,6 +208,8 @@ struct teams {
     /// Number of currently used slots (players + unhatched eggs).
     unsigned int slots_used;
 
+    unsigned int slots_max;
+
     /// Whether this team has achieved victory (level 8 incantation).
     bool win;
     /// Whether this team has lost (no players or eggs remaining).

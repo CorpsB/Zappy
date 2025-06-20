@@ -17,14 +17,22 @@ static const char *resource_names[] = {
 static unsigned int get_resource_quantity(resources_t tile, r_ressource_t type)
 {
     switch (type) {
-        case FOOD: return tile.food;
-        case LINEMATE: return tile.linemate;
-        case DERAUMERE: return tile.deraumere;
-        case SIBUR: return tile.sibur;
-        case MENDIANE: return tile.mendiane;
-        case PHIRAS: return tile.phiras;
-        case THYSTAME: return tile.thystame;
-        default: return 0;
+        case FOOD:
+            return tile.food;
+        case LINEMATE: 
+            return tile.linemate;
+        case DERAUMERE:
+            return tile.deraumere;
+        case SIBUR:
+            return tile.sibur;
+        case MENDIANE:
+            return tile.mendiane;
+        case PHIRAS:
+            return tile.phiras;
+        case THYSTAME:
+            return tile.thystame;
+        default:
+            return 0;
     }
 }
 

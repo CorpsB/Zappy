@@ -67,6 +67,7 @@ SRC	=	src/main.c								\
 		src/event/event_enw.c					\
 		src/event/event_pfk.c					\
 		src/event/event_ebo.c					\
+		src/utils/eggs/del_egg.c				\
 
 OBJ	=	$(SRC:.c=.o)
 

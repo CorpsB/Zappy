@@ -23,6 +23,7 @@ void see_one_team(teams_t *team, int fd)
 
 void see_teams(teams_t *teams, int fd)
 {
+    printf("->Coucou<-\n");
     dprintf(fd, "====== TEAMS LIST ======\n");
     for (teams_t *current = teams; current != NULL; current = current->next)
         see_one_team(current, fd);

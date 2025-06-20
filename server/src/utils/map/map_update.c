@@ -26,11 +26,13 @@ static int search_map_information(server_t *server, r_ressource_t type,
                 size++;
         }
     }
-    printf("Min found for %i type is %i\n", type, *min);
     return size;
 }
 
-static void complete_table(server_t *server, r_ressource_t type, int min, int *table)
+
+
+static void complete_table(server_t *server, r_ressource_t type, int min,
+    int *table)
 {
     int r_index = 0;
 
