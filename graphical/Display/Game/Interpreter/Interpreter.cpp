@@ -64,7 +64,7 @@ void Interpreter::_msz(int x, int y)
     for (int i = 0; i < x; i++)
         for (int j = 0; j < y; j++)
             Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::GROUND, -1,
-                {0.0f + (i * SIZE_GROUND), 0.0f, 0.0f + (j * SIZE_GROUND)}, sf::Color::Red, "./Assets/ground.stl");
+                {0.0f + (i * x), 0.0f, 0.0f + (j * y)}, sf::Color::Red, "./Assets/ground.stl");
 }
 
 void Interpreter::_bct(int x, int y, int q0, int q1, int q2, int q3, int q4, int q5, int q6)
