@@ -9,26 +9,31 @@
 #include "include/function.h"
 #include "include/structure.h"
 
+static void move_player_forward(server_t *server, player_t *player)
+{
+    if (player->direction == NORTH)
+        player->position[1] = (player->position[1] + 1) % server->height;
+    if (player->direction == SOUTH)
+        player->position[1] =
+            (player->position[1] + server->height - 1) % server->height;
+    if (player->direction == EAST)
+        player->position[0] = (player->position[0] + 1) % server->width;
+    if (player->direction == WEST)
+        player->position[0] =
+            (player->position[0] + server->width - 1) % server->width;
+}
+
 void cmd_forward(server_t *server, int index, char **args)
 {
+    player_t *player;
+
     (void)args;
     if (check_autorized(server, index) != 0)
         return;
-    if (server->poll.client_list[index].player->direction == NORTH)
-    server->poll.client_list[index].player->position[1] =
-        (server->poll.client_list[index].player->position[1] + 1)
-            % server->height;
-    if (server->poll.client_list[index].player->direction == SOUTH)
-        server->poll.client_list[index].player->position[1] =
-            (server->poll.client_list[index].player->position[1]
-                + server->height - 1) % server->height;
-    if (server->poll.client_list[index].player->direction == EAST)
-        server->poll.client_list[index].player->position[0] =
-            (server->poll.client_list[index].player->position[0] + 1)
-                % server->width;
-    if (server->poll.client_list[index].player->direction == WEST)
-        server->poll.client_list[index].player->position[0] =
-            (server->poll.client_list[index].player->position[0]
-                + server->width - 1) % server->width;
+    player = server->poll.client_list[index].player;
+    if (!player || player->is_dead)
+        return;
+    move_player_forward(server, player);
+    event_ppo(server, player);
     dprintf(server->poll.pollfds[index].fd, "ok\n");
 }

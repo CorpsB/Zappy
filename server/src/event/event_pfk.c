@@ -24,7 +24,6 @@ eggs_t *create_egg_from_player(player_t *player)
     new_egg->position[1] = player->position[1];
     new_egg->next = player->team->egg;
     player->team->egg = new_egg;
-
     return new_egg;
 }
 
