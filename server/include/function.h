@@ -184,4 +184,6 @@ void event_pin(server_t *server, player_t *player);
 
 void event_ppo(server_t *server, player_t *player);
 
+void event_edi(server_t *server, unsigned int egg_id);
+
 #endif /* !FUCNTION_H_ */

@@ -70,6 +70,7 @@ SRC	=	src/main.c								\
 		src/event/event_pnw.c					\
 		src/event/event_pin.c					\
 		src/event/event_ppo.c					\
+		src/event/event_edi.c					\
 		src/utils/eggs/del_egg.c				\
 		src/utils/eggs/hatching_eggs.c			\
 		src/utils/teams/complete_team_data.c	\
