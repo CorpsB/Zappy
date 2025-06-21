@@ -7,34 +7,34 @@
 
 #include "CMDInterpreter.hpp"
 
-void CMDInterpreter::interpret(HUD &hud, const std::string &msg)
+void CMDInterpreter::interpret(const std::string &data)
 {
     std::string line;
     std::smatch matches;
-    std::istringstream iss(msg);
+    std::istringstream iss(data);
 
     const std::vector<std::pair<std::regex, std::function<void(const std::smatch &)>>> commands = {
-        { msz, [&](const std::smatch &m) { _msz(hud, std::stoi(m[1]), std::stoi(m[2])); } },
-        { bct, [&](const std::smatch &m) { _bct(hud, std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), std::stoi(m[4]), std::stoi(m[5]), std::stoi(m[6]), std::stoi(m[7]), std::stoi(m[8]), std::stoi(m[9])); } },
-        { tna, [&](const std::smatch &m) { _tna(hud, m[1]); } },
-        { pnw, [&](const std::smatch &m) { _pnw(hud, std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), static_cast<Renderer::Compass>(std::stoi(m[4])), std::stoi(m[5]), m[6]); } },
-        { ppo, [&](const std::smatch &m) { _ppo(hud, std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), static_cast<Renderer::Compass>(std::stoi(m[4]))); } },
-        { plv, [&](const std::smatch &m) { _plv(hud, std::stoi(m[1]), std::stoi(m[2])); } },
-        { pin, [&](const std::smatch &m) { _pin(hud, std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), std::stoi(m[4]), std::stoi(m[5]), std::stoi(m[6]), std::stoi(m[7]), std::stoi(m[8]), std::stoi(m[9]), std::stoi(m[10])); } },
-        { pex, [&](const std::smatch &m) { _pex(hud, std::stoi(m[1])); } },
-        { pbc, [&](const std::smatch &m) { _pbc(hud, std::stoi(m[1]), m[2]); } },
-        { pie, [&](const std::smatch &m) { _pie(hud, std::stoi(m[1]), std::stoi(m[2]), m[3]); } },
-        { pfk, [&](const std::smatch &m) { _pfk(hud, std::stoi(m[1])); } },
-        { pdr, [&](const std::smatch &m) { _pdr(hud, std::stoi(m[1]), std::stoi(m[2])); } },
-        { pgt, [&](const std::smatch &m) { _pgt(hud, std::stoi(m[1]), std::stoi(m[2])); } },
-        { pdi, [&](const std::smatch &m) { _pdi(hud, std::stoi(m[1])); } },
-        { enw, [&](const std::smatch &m) { _enw(hud, std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), std::stoi(m[4])); } },
-        { ebo, [&](const std::smatch &m) { _ebo(hud, std::stoi(m[1])); } },
-        { edi, [&](const std::smatch &m) { _edi(hud, std::stoi(m[1])); } },
-        { sgt, [&](const std::smatch &m) { _sgt(hud, std::stoi(m[1])); } },
-        { sst, [&](const std::smatch &m) { _sst(hud, std::stoi(m[1])); } },
-        { seg, [&](const std::smatch &m) { _seg(hud, m[1]); } },
-        { smg, [&](const std::smatch &m) { _smg(hud, m[1]); } },
+        { msz, [&](const std::smatch &m) { _msz(std::stoi(m[1]), std::stoi(m[2])); } },
+        { bct, [&](const std::smatch &m) { _bct(std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), std::stoi(m[4]), std::stoi(m[5]), std::stoi(m[6]), std::stoi(m[7]), std::stoi(m[8]), std::stoi(m[9])); } },
+        { tna, [&](const std::smatch &m) { _tna(m[1]); } },
+        { pnw, [&](const std::smatch &m) { _pnw(std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), static_cast<Renderer::Compass>(std::stoi(m[4])), std::stoi(m[5]), m[6]); } },
+        { ppo, [&](const std::smatch &m) { _ppo(std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), static_cast<Renderer::Compass>(std::stoi(m[4]))); } },
+        { plv, [&](const std::smatch &m) { _plv(std::stoi(m[1]), std::stoi(m[2])); } },
+        { pin, [&](const std::smatch &m) { _pin(std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), std::stoi(m[4]), std::stoi(m[5]), std::stoi(m[6]), std::stoi(m[7]), std::stoi(m[8]), std::stoi(m[9]), std::stoi(m[10])); } },
+        { pex, [&](const std::smatch &m) { _pex(std::stoi(m[1])); } },
+        { pbc, [&](const std::smatch &m) { _pbc(std::stoi(m[1]), m[2]); } },
+        { pie, [&](const std::smatch &m) { _pie(std::stoi(m[1]), std::stoi(m[2]), m[3]); } },
+        { pfk, [&](const std::smatch &m) { _pfk(std::stoi(m[1])); } },
+        { pdr, [&](const std::smatch &m) { _pdr(std::stoi(m[1]), std::stoi(m[2])); } },
+        { pgt, [&](const std::smatch &m) { _pgt(std::stoi(m[1]), std::stoi(m[2])); } },
+        { pdi, [&](const std::smatch &m) { _pdi(std::stoi(m[1])); } },
+        { enw, [&](const std::smatch &m) { _enw(std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), std::stoi(m[4])); } },
+        { ebo, [&](const std::smatch &m) { _ebo(std::stoi(m[1])); } },
+        { edi, [&](const std::smatch &m) { _edi(std::stoi(m[1])); } },
+        { sgt, [&](const std::smatch &m) { _sgt(std::stoi(m[1])); } },
+        { sst, [&](const std::smatch &m) { _sst(std::stoi(m[1])); } },
+        { seg, [&](const std::smatch &m) { _seg(m[1]); } },
+        { smg, [&](const std::smatch &m) { _smg(m[1]); } },
         { sbp, [&](const std::smatch &) { _sbp(); } },
         { pic, [&](const std::smatch &m) {
             std::string rest = line.substr(m.position(3) + m.length(3));
@@ -42,7 +42,7 @@ void CMDInterpreter::interpret(HUD &hud, const std::string &msg)
 
             for (std::sregex_iterator it(rest.begin(), rest.end(), playerRegex), end; it != end; ++it)
                 ids.push_back(std::stoi((*it)[1]));
-            _pic(hud, std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), ids);
+            _pic(std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), ids);
         } },
     };
 
@@ -61,12 +61,9 @@ void CMDInterpreter::interpret(HUD &hud, const std::string &msg)
     }
 }
 
-// Commands
-// map size
-void CMDInterpreter::_msz(HUD &hud, int x, int y)
+// 
+void CMDInterpreter::_msz(int x, int y)
 {
-    (void) hud;
-    std::cerr << "Map size : " << x << y << std::endl;
     for (int i = 0; i < x; i++) {
         for (int j = 0; j < y; j++) {
             Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::GROUND, -1,
@@ -74,22 +71,19 @@ void CMDInterpreter::_msz(HUD &hud, int x, int y)
         }
     }
 }
-// content of a tile
-void CMDInterpreter::_bct(HUD &hud, int x, int y, int q0, int q1, int q2, int q3, int q4, int q5, int q6)
+
+void CMDInterpreter::_bct(int x, int y, int q0, int q1, int q2, int q3, int q4, int q5, int q6)
 {
-    (void) hud;
     std::cerr << "Content of " << x << y << ": " << q0 << " " << q1 << " " << q2 << " " << q3 << " " << q4 << " " << q5 << " " << q6 << std::endl;
 }
 // name of all the teams
-void CMDInterpreter::_tna(HUD &hud, std::string teamName)
+void CMDInterpreter::_tna(std::string teamName)
 {
-    (void) hud;
     std::cerr << "Teams name : " << teamName << std::endl;
 }
 // connection of a new player
-void CMDInterpreter::_pnw(HUD &hud, int playerId, int x, int y, Renderer::Compass orientation, int level, std::string teamName)
+void CMDInterpreter::_pnw(int playerId, int x, int y, Renderer::Compass orientation, int level, std::string teamName)
 {
-    (void) hud;
     (void) playerId;
     (void) x;
     (void) y;
@@ -102,25 +96,22 @@ void CMDInterpreter::_pnw(HUD &hud, int playerId, int x, int y, Renderer::Compas
         {0.f + (x * SIZE_GROUND), -25.0f + -1.5f, 0.f + (y * SIZE_GROUND) + -6.5f}, sf::Color::Black, "./Assets/eyes_golem.stl");
 }
 // player’s position
-void CMDInterpreter::_ppo(HUD &hud, int playerId, int x, int y, Renderer::Compass orientation)
+void CMDInterpreter::_ppo(int playerId, int x, int y, Renderer::Compass orientation)
 {
-    (void) hud;
     (void) playerId;
     (void) x;
     (void) y;
     (void) orientation;
 }
 // player’s level
-void CMDInterpreter::_plv(HUD &hud, int playerId, int level)
+void CMDInterpreter::_plv(int playerId, int level)
 {
-    (void) hud;
     (void) playerId;
     (void) level;
 }
 // player’s inventory
-void CMDInterpreter::_pin(HUD &hud, int playerId, int x, int y, int q0, int q1, int q2, int q3, int q4, int q5, int q6)
+void CMDInterpreter::_pin(int playerId, int x, int y, int q0, int q1, int q2, int q3, int q4, int q5, int q6)
 {
-    (void) hud;
     (void) playerId;
     (void) x;
     (void) y;
@@ -133,104 +124,89 @@ void CMDInterpreter::_pin(HUD &hud, int playerId, int x, int y, int q0, int q1, 
     (void) q6;
 }
 // expulsion
-void CMDInterpreter::_pex(HUD &hud, int playerId)
+void CMDInterpreter::_pex(int playerId)
 {
-    (void) hud;
     (void) playerId;
 }
 // broadcast
-void CMDInterpreter::_pbc(HUD &hud, int playerId, std::string msg)
+void CMDInterpreter::_pbc(int playerId, std::string data)
 {
-    (void) hud;
     (void) playerId;
-    (void) msg;
+    (void) data;
 }
 // start of an incantation (by the first player)
-void CMDInterpreter::_pic(HUD &hud, int x, int y, int level, std::vector<int> playersId)
+void CMDInterpreter::_pic(int x, int y, int level, std::vector<int> playersId)
 {
-    (void) hud;
     (void) x;
     (void) y;
     (void) level;
     (void) playersId;
 }
 // end of an incantation
-void CMDInterpreter::_pie(HUD &hud, int x, int y, std::string result)
+void CMDInterpreter::_pie(int x, int y, std::string result)
 {
-    (void) hud;
     (void) x;
     (void) y;
     (void) result;
 }
 // egg laying by the player
-void CMDInterpreter::_pfk(HUD &hud, int playerId)
+void CMDInterpreter::_pfk(int playerId)
 {
-    (void) hud;
     (void) playerId;
 }
 // resource dropping
-void CMDInterpreter::_pdr(HUD &hud, int playerId, int resourceNumber)
+void CMDInterpreter::_pdr(int playerId, int resourceNumber)
 {
-    (void) hud;
     (void) playerId;
     (void) resourceNumber;
 }
 // resource collecting
-void CMDInterpreter::_pgt(HUD &hud, int playerId, int resourceNumber)
+void CMDInterpreter::_pgt(int playerId, int resourceNumber)
 {
-    (void) hud;
     (void) playerId;
     (void) resourceNumber;
 }
 // death of a player
-void CMDInterpreter::_pdi(HUD &hud, int playerId)
+void CMDInterpreter::_pdi(int playerId)
 {
-    (void) hud;
     (void) playerId;
 }
 // an egg was laid by a player
-void CMDInterpreter::_enw(HUD &hud, int eggId, int playerId, int x, int y)
+void CMDInterpreter::_enw(int eggId, int playerId, int x, int y)
 {
-    (void) hud;
     (void) eggId;
     (void) playerId;
     (void) x;
     (void) y;
 }
 // player connection for an egg
-void CMDInterpreter::_ebo(HUD &hud, int eggId)
+void CMDInterpreter::_ebo(int eggId)
 {
-    (void) hud;
     (void) eggId;
 }
 // death of an egg
-void CMDInterpreter::_edi(HUD &hud, int eggId)
+void CMDInterpreter::_edi(int eggId)
 {
-    (void) hud;
     (void) eggId;
 }
 // time unit request
-void CMDInterpreter::_sgt(HUD &hud, int timeUnit)
+void CMDInterpreter::_sgt(int timeUnit)
 {
-    (void) hud;
     (void) timeUnit;
 }
 // time unit modification
-void CMDInterpreter::_sst(HUD &hud, int timeUnit)
+void CMDInterpreter::_sst(int timeUnit)
 {
-    (void) hud;
     (void) timeUnit;
 }
 // end of game
-void CMDInterpreter::_seg(HUD &hud, std::string teamName)
+void CMDInterpreter::_seg(std::string teamName)
 {
-    (void) hud;
     (void) teamName;
 }
 // message from the server
-void CMDInterpreter::_smg(HUD &hud, std::string msg)
+void CMDInterpreter::_smg(std::string msg)
 {
-    (void) hud;
     (void) msg;
 }
 // unknown command

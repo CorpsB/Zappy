@@ -13,7 +13,6 @@
 #include "../Event/Event.hpp"
 #include "../../3DRenderer/include/Renderer.hpp"
 
-#include "HUD/HUD.hpp"
 #include "CMDInterpreter/CMDInterpreter.hpp"
 
 class Game {
@@ -23,16 +22,28 @@ class Game {
 
         static Game &GetInstance();
 
+        /**
+         * @brief Initialise la fenêtre d'affichage
+         */
         void init();
+        /**
+         * @brief Lance la boucle principale d'update de l'affichage
+         */
         void run();
+        /**
+         * Stop la fenêtre d'affichage
+         */
         void stop();
 
+        /**
+         * @brief Analyse la donnée et modifie les éléments graphique en fonction de 'data'
+         * @param data La ligne de commande reçu par le client
+         */
         void processData(const std::string &data);
     private:
         Window _window;
         Event _event;
         sf::Clock _clock;
 
-        HUD _hud;
         CMDInterpreter _interpreter;
 };
