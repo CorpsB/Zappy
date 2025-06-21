@@ -12,7 +12,7 @@
 #include "../../../3DRenderer/include/Renderer.hpp"
 #include "RegexMatches.hpp"
 
-#define SIZE_GROUND 70
+#define TILE_SIZE 70
 
 class Interpreter {
     public:
@@ -47,7 +47,7 @@ class Interpreter {
          * @param level Level of the new player
          * @param teamName Team of the new player
          */
-        void _tna(const std::string &teamName) {}; // A garder ?
+        void _tna(const std::string &teamName); // A garder ?
         void _pnw(int playerId, int x, int y, Renderer::Compass orientation, int level, std::string teamName);
         /**
          * @brief Set the position of a player
@@ -61,10 +61,10 @@ class Interpreter {
          * @brief Kicks a player from the server
          * @param playerId ID of the player
          */
-        void _plv(int playerId) {}; // A Garder ?
-        void _pin(int playerId, int x, int y, int q0, int q1, int q2, int q3, int q4, int q5, int q6) {}; // A Garder ?
-        void _pex(int playerId) {}; // Utile ?
-        void _pbc(int playerId, std::string msg) {}; // Utile ?
+        void _plv(int playerId); // A Garder ?
+        void _pin(int playerId, int x, int y, int q0, int q1, int q2, int q3, int q4, int q5, int q6); // A Garder ?
+        void _pex(int playerId); // Utile ?
+        void _pbc(int playerId, std::string msg); // Utile ?
         /**
          * @brief Starts an incantation (by the first player)
          * @param x X Position
@@ -80,7 +80,7 @@ class Interpreter {
          * @param result Result of the incantation
          */
         void _pie(int x, int y, std::string result);
-        void _pfk(int playerId) {}; // Utile ?
+        void _pfk(int playerId); // Utile ?
         /**
          * @brief Drops resources
          * @param playerId ID of the player
@@ -106,20 +106,20 @@ class Interpreter {
          * @param y Y Position
          */
         void _enw(int eggId, int playerId, int x, int y);
-        void _ebo(int eggId) {}; // A Gardder ?
+        void _ebo(int eggId); // A Gardder ?
         /**
          * @brief Despawn an egg (death)
          * @param eggId ID of the egg
          */
         void _edi(int eggId);
-        void _sgt(int timeUnit) {}; // Utile ?
-        void _sst(int timeUnit) {}; // Utile ?
+        void _sgt(int timeUnit); // Utile ?
+        void _sst(int timeUnit); // Utile ?
         /**
          * @brief Ends the game
          * @param teamName Winning team ?
          */
         void _seg(std::string teamName);
-        void _smg(std::string msg) {}; // Utile ?
+        void _smg(std::string msg); // Utile ?
         void _suc(std::string data);
         void _sbp() {}
 };

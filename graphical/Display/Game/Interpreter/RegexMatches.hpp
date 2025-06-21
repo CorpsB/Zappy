@@ -12,7 +12,7 @@
 static std::regex msz(R"(msz\s+(\d+)\s+(\d+))");
 static std::regex bct(R"(bct\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+))");
 static std::regex pnw(R"(pnw\s+#(-?\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\S+))");
-static std::regex ppo(R"(ppo\s+#(-?\d+)\s+(\d+)\s+(\d+))");
+static std::regex ppo(R"(ppo\s+#(-?\d+)\s+(\d+)\s+(\d+)\s+(\d+))");
 static std::regex pin(R"(pin\s+#(-?\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+))");
 static std::regex pex(R"(pex\s+#(-?\d+))");
 static std::regex pbc(R"(pbc\s+#(-?\d+)\s+(.+))");

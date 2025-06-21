@@ -23,8 +23,9 @@ namespace Renderer {
     static int frameCount = 0;
     static int lastFps = 0;
     static float cooldownAction = 0.f;
-    static std::unordered_map<int, MovementState> activeMovements;
-    static std::unordered_map<int, RotationState> activeRotations;
+    std::unordered_map<int, MovementState> activeMovements;
+    std::unordered_map<int, RotationState> activeRotations;
+    std::unordered_map<int, Renderer::MovementState> pendingMovementsAfterRotation;
 
     bool initRenderer(sf::RenderWindow &window) {
         // window = new sf::RenderWindow(sf::VideoMode(width, height), title);
@@ -102,9 +103,6 @@ namespace Renderer {
     void update(float dt) {
         processInput(dt);
         cooldownAction -= dt;
-        bool oPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::O);
-        bool kPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::K);
-        bool mPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::M);
         Vec3 offset = {0.f, -1.5f, -6.5f};
         // Values in valuesForSynchro :
         // int -> client id
@@ -113,52 +111,6 @@ namespace Renderer {
         std::vector<std::tuple<int, Vec3, Vec3>> valuesForSynchro;
 
         for (auto& e : sceneEntities) {
-            // The cooldown and letter o pressed will have to be changed with the instruction given by the server.
-            if (oPressed && cooldownAction <= 0.f) {
-                // Prevent any new movement if currently executing one
-                if (activeMovements[e.clientId].active)
-                    continue;
-
-                float angleRad = e.rotation.y * (3.14159265f / 180.f); // convert in rad
-                Vec3 dir = {
-                    std::sin(angleRad),  // x
-                    0.f,                 // y
-                    -std::cos(angleRad)   // z
-                };
-                // Step * 5.5 --> 55 total after 0.5 second --> 55 = size ground
-                // Save movements in a map to be executed later
-                activeMovements[e.clientId] = MovementState{
-                    .direction = {dir.x * 2.25f, dir.y * 2.25f, dir.z * 2.25f},
-                    .timeElapsed = 0.f,
-                    .stepsRemaining = 40,
-                    .active = true
-                };
-                cooldownAction = 0.5f;
-            }
-            if (kPressed && cooldownAction <= 0.f) {
-                if (!activeRotations[e.clientId].active) {
-                    activeRotations[e.clientId] = RotationState{
-                        .totalRotated = 0.f,
-                        .timeElapsed = 0.f,
-                        .stepsRemaining = 20,
-                        .active = true,
-                        .goingRight = false
-                    };
-                    cooldownAction = 0.5f;
-                }
-            }
-            if (mPressed && cooldownAction <= 0.f) {
-                if (!activeRotations[e.clientId].active) {
-                    activeRotations[e.clientId] = RotationState{
-                        .totalRotated = 0.f,
-                        .timeElapsed = 0.f,
-                        .stepsRemaining = 20,
-                        .active = true,
-                        .goingRight = true
-                    };
-                    cooldownAction = 0.5f;
-                }
-            }
             auto itMove = activeMovements.find(e.clientId);
             if (itMove != activeMovements.end() && itMove->second.active) {
                 MovementState& m = itMove->second;
@@ -202,10 +154,15 @@ namespace Renderer {
                     }
                 }
             }
+            // Fin de rotation -> on démarre le mouvement
+            for (auto it = Renderer::activeRotations.begin(); it != Renderer::activeRotations.end(); ++it) {
+                int clientId = it->first;
+                if (!it->second.active && pendingMovementsAfterRotation.contains(clientId)) {
+                    Renderer::activeMovements[clientId] = pendingMovementsAfterRotation[clientId];
+                    pendingMovementsAfterRotation.erase(clientId);
+                }
+            }
             if (e.type == Renderer::PartType::BODY) {
-                // e.rotation.y += 30.0f * dt;
-                // if (e.rotation.y >= 360.f)
-                //     e.rotation.y -= 360.f;
                 valuesForSynchro.emplace_back(e.clientId, e.position, Vec3{0.f, e.rotation.y, 0.f});
             }
             if (e.type == Renderer::PartType::EYES) {

@@ -27,24 +27,7 @@ namespace Renderer {
         newEnt.rotation = {0.f, 0.f, 0.f};
         newEnt.scale    = {1.f, 1.f, 1.f};
         newEnt.orientation = orientation;
-
-        switch (orientation)
-        {
-        case Compass::NORTH:
-            newEnt.rotation.y = 0.f;
-            break;
-        case Compass::EAST:
-            newEnt.rotation.y = 90.f;
-            break;
-        case Compass::SOUTH:
-            newEnt.rotation.y = 180.f;
-            break;
-        case Compass::WEST:
-            newEnt.rotation.y = 270.f;
-            break;
-        default:
-            break;
-        }
+        newEnt.rotation.y = compassToAngle(orientation);
         try {
             switch (type) {
             case EntityType::CUBE:
@@ -66,6 +49,16 @@ namespace Renderer {
 
         sceneEntities.push_back(newEnt);
         return newEnt.id;
+    }
+
+    float compassToAngle(Renderer::Compass c) {
+        switch (c) {
+            case Renderer::Compass::NORTH: return 0.f;
+            case Renderer::Compass::EAST:  return 90.f;
+            case Renderer::Compass::SOUTH: return 180.f;
+            case Renderer::Compass::WEST:  return 270.f;
+        }
+        return 0.f;
     }
 
 } // namespace Renderer

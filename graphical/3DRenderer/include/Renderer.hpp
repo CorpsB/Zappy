@@ -17,4 +17,9 @@ namespace Renderer {
     void render(float dt, sf::RenderWindow &window);
     // bool getIsRunning();
     // void shutdownRenderer();
+
+    extern std::unordered_map<int, MovementState> activeMovements;
+    extern std::unordered_map<int, RotationState> activeRotations;
+    extern std::unordered_map<int, Renderer::MovementState> pendingMovementsAfterRotation;
+
 }
