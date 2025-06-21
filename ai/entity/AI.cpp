@@ -84,7 +84,10 @@ void ai::entity::AI::run(const ai::parser::Config &config)
             }
 
             // goal fullfill
-            const auto goal = getGoal(look_str);
+            _goal = getGoal(look_str);
+            logger.log("Tick: Lvl:" + std::to_string(_level) + ", Food:" +
+            std::to_string(_food_level) + ", Goal:" + std::to_string(_goal) +
+            ", HeardK:{last_k_for_decision}, Inv:" + _inventory.print());
         }
     } catch (...) {
     }

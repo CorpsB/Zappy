@@ -65,6 +65,7 @@ namespace ai::entity
             Goal getGoal(const std::string &look);
             bool hasEnoughRocks();
             std::string getRarestMissingStone();
+            bool handleGoal(const std::string &look, const std::string &goal);
 
             // moves
             std::string getDirectionName(Direction dir);
@@ -83,6 +84,7 @@ namespace ai::entity
             Persona _persona;
             Inventory _inventory;
             SoundSystem _sound_system;
+            SpiralState _spiral_state;
 
             std::string _thread_name;
             network::Socket _socket;

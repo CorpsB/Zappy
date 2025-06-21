@@ -48,6 +48,16 @@ bool ai::entity::Inventory::update(const std::string &storage)
     }
 }
 
+std::string ai::entity::Inventory::print()
+{
+    return std::to_string(getItem("linemate")) + " Li," +
+    std::to_string(getItem("deraumere")) + " De," +
+    std::to_string(getItem("sibur")) + " Si," +
+    std::to_string(getItem("mendiane")) + " Me," +
+    std::to_string(getItem("phiras")) + " Ph," +
+    std::to_string(getItem("thystame")) + "Ty";
+}
+
 void ai::entity::Inventory::setItem(const std::string &item, int quantity)
 {
     const int value = getItem(item);

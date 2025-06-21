@@ -27,7 +27,7 @@ int ai::entity::AI::findItemInLook(const std::string &look, const std::string &i
             if (std::find(contents.begin(), contents.end(), item) != contents.end())
                 return i;
         }
-        return 0;
+        return -2;
     } catch (const std::exception &e) {
         logger.log("[Error] Failed parsing Look string '" + look + "': " + e.what());
         return -1;

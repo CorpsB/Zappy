@@ -57,3 +57,31 @@ ai::entity::Goal ai::entity::AI::getGoal(const std::string &look)
         return MEETUP;
     return STONE;
 }
+
+bool ai::entity::AI::handleGoal(const std::string &look, const std::string &goal)
+{
+    ai::utils::debug::Logger &logger = ai::utils::debug::Logger::GetInstance();
+    const int item_idx = findItemInLook(look, goal);
+
+    if (item_idx == 0) {
+        logger.log(goal + " on current tile. Taking.");
+        return doAction("Take " + goal) != "dead";
+    } else if (item_idx > 0) {
+        const std::vector<Direction> moves = getMovesToTileLevel1Vision(item_idx);
+        if (!moves.empty()) {
+            logger.log(goal + " on tile " + std::to_string(item_idx) + ". Moving to take.");
+            if (!executeMoves(look, moves))
+                return false;
+            return doAction("Take " + goal) != "dead";
+        } else {
+            logger.log(goal + " at tile " + std::to_string(item_idx) + ", path too complex. Defaulting to spiral.");
+            return executeSpiralMove(_spiral_state);
+        }
+    } else if (item_idx == -2) {
+        logger.log(goal + " not seen. Executing spiral move.");
+        return executeSpiralMove(_spiral_state);
+    } else {
+        logger.log("Halting " + goal + " goal due to look parse error.");
+        return false;
+    }
+}
