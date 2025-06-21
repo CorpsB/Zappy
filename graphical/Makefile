@@ -9,8 +9,7 @@ SRC	= main.cpp	\
 	Display/Window/Window.cpp	\
 	Display/Event/Event.cpp	\
 	Display/Game/Game.cpp	\
-	Display/Game/HUD/HUD.cpp	\
-	Display/Game/CMDInterpreter/CMDInterpreter.cpp	\
+	Display/Game/Interpreter/Interpreter.cpp	\
 	Client/Client.cpp	\
 	Client/Config/NetConfig.cpp	\
 	3DRenderer/src/Camera.cpp \

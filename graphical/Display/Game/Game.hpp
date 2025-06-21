@@ -13,7 +13,7 @@
 #include "../Event/Event.hpp"
 #include "../../3DRenderer/include/Renderer.hpp"
 
-#include "CMDInterpreter/CMDInterpreter.hpp"
+#include "Interpreter/Interpreter.hpp"
 
 class Game {
     public:
@@ -45,5 +45,5 @@ class Game {
         Event _event;
         sf::Clock _clock;
 
-        CMDInterpreter _interpreter;
+        Interpreter _interpreter;
 };
