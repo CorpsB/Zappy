@@ -7,6 +7,7 @@
 
 #include "AI.hpp"
 #include "../network/Socket.hpp"
+#include <thread>
 
 ai::entity::AI::AI(int id)
 {
@@ -32,6 +33,8 @@ void ai::entity::AI::start(const ai::parser::Config &config)
 void ai::entity::AI::stop()
 {
     utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
+    logger.log("Connection closed. Final state: Level " + std::to_string(_level) +
+    ", Goal " + std::to_string(_goal) + ", Food " + std::to_string(_food_level) + ".");
     logger.display();
 }
 
@@ -62,6 +65,9 @@ void ai::entity::AI::run(const ai::parser::Config &config)
 
     try {
         while (1) {
+            // clear old broadcast messages
+            _sound_system.update();
+
             // update inventory
             const std::string inv_str = doAction("Inventory");
             if (inv_str == "dead") {
@@ -88,6 +94,12 @@ void ai::entity::AI::run(const ai::parser::Config &config)
             logger.log("Tick: Lvl:" + std::to_string(_level) + ", Food:" +
             std::to_string(_food_level) + ", Goal:" + std::to_string(_goal) +
             ", HeardK:{last_k_for_decision}, Inv:" + _inventory.print());
+
+            if (!performActionForGoal(look_str)) {
+                logger.log("Action failed or led to 'dead' state. Terminating.");
+                break;
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(ACTION_DELAY_MS));
         }
     } catch (...) {
     }

@@ -74,6 +74,10 @@ namespace ai::entity
             bool executeMoves(const std::string &look, const std::vector<Direction> &moves);
             bool executeSpiralMove(SpiralState &state);
 
+            // action
+            bool performWanderAction();
+            bool performActionForGoal(const std::string &look);
+
         private:
             static const ElevationRecipe RECIPES[7];
 

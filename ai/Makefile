@@ -12,6 +12,7 @@ SRC	=	main.cpp	\
 		entity/bot/helper/count_player.cpp	\
 		entity/bot/helper/collect_item.cpp	\
 		entity/bot/helper/find_item.cpp	\
+		entity/bot/action.cpp	\
 		entity/bot/goal.cpp	\
 		entity/bot/moves.cpp	\
 		entity/inventory/Inventory.cpp	\
