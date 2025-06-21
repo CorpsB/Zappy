@@ -35,29 +35,29 @@ void ai::entity::SoundSystem::update()
     }
 }
 
-void ai::entity::SoundSystem::setPlayerOrientation(SoundDirection orientation)
+void ai::entity::SoundSystem::setPlayerOrientation(Direction orientation)
 {
     _player = orientation;
 }
 
-ai::entity::SoundDirection ai::entity::SoundSystem::getAjustedDirection(SoundDirection raw)
+ai::entity::Direction ai::entity::SoundSystem::getAjustedDirection(Direction raw)
 {
-    return static_cast<SoundDirection>((raw - _player + 9) % 8);
+    return static_cast<Direction>(((raw - _player + 8) % 8) + 1);
 }
 
-ai::entity::SoundDirection ai::entity::SoundSystem::getRawDirection(SoundDirection adjusted)
+ai::entity::Direction ai::entity::SoundSystem::getRawDirection(Direction adjusted)
 {
-    return static_cast<SoundDirection>((adjusted + _player - 1 + 8) % 8);
+    return static_cast<Direction>(((adjusted - 1 + _player - 1) % 8) + 1);
 }
 
-ai::entity::SoundCell &ai::entity::SoundSystem::getDirectionSound(SoundDirection ajusted)
+ai::entity::SoundCell &ai::entity::SoundSystem::getDirectionSound(Direction ajusted)
 {
     return _cells[ajusted];
 }
 
-ai::entity::SoundDirection ai::entity::SoundSystem::getNearestSoundDirection()
+ai::entity::Direction ai::entity::SoundSystem::getNearestSoundDirection()
 {
-    SoundDirection dir = NONE;
+    Direction dir = NONE;
     int64_t min_duration = MAX_SOUND_DURATION;
 
     for (int i = 0; i < 8; ++i) {
@@ -65,7 +65,7 @@ ai::entity::SoundDirection ai::entity::SoundSystem::getNearestSoundDirection()
             continue;
         if (_cells[i].delta < min_duration) {
             min_duration = _cells[i].delta;
-            dir = static_cast<SoundDirection>(i);
+            dir = static_cast<Direction>(i);
         }
     }
     if (dir != NONE)
@@ -74,7 +74,7 @@ ai::entity::SoundDirection ai::entity::SoundSystem::getNearestSoundDirection()
 }
 
 // message [direction], [id]|[timestamp]|[message]
-ai::entity::SoundDirection ai::entity::SoundSystem::setSound(const std::string &sound_str)
+ai::entity::Direction ai::entity::SoundSystem::setSound(const std::string &sound_str)
 {
     utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
     std::regex pattern(R"(message\s*\[(\d+)\],\s*(\d+)\|(\d+)\|(.+))");
@@ -114,10 +114,10 @@ ai::entity::SoundDirection ai::entity::SoundSystem::setSound(const std::string &
 
     const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(date_now - sended_at);
 
-    direction = getAjustedDirection(static_cast<SoundDirection>(direction));
+    direction = getAjustedDirection(static_cast<Direction>(direction));
     _cells[direction].id = id;
     _cells[direction].message = message;
     _cells[direction].received_at = date_now;
     _cells[direction].delta = duration.count();
-    return static_cast<SoundDirection>(direction);
+    return static_cast<Direction>(direction);
 }

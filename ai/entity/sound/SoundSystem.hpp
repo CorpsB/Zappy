@@ -14,16 +14,17 @@
 
 namespace ai::entity
 {
-    enum SoundDirection {
+    enum Direction {
         NONE = -1,
-        UP_LEFT,
+        HERE,
         UP,
-        UP_RIGHT,
+        UP_LEFT,
         LEFT,
-        RIGHT,
         DOWN_LEFT,
         DOWN,
-        DOWN_RIGHT
+        DOWN_RIGHT,
+        RIGHT,
+        UP_RIGHT,
     };
 
     struct SoundCell {
@@ -39,15 +40,15 @@ namespace ai::entity
             ~SoundSystem() = default;
 
             void update();
-            void setPlayerOrientation(SoundDirection orientation);
-            SoundDirection getAjustedDirection(SoundDirection raw);
-            SoundDirection getRawDirection(SoundDirection adjusted);
-            SoundCell &getDirectionSound(SoundDirection direction);
-            SoundDirection getNearestSoundDirection();
-            SoundDirection setSound(const std::string &sound_str);
+            void setPlayerOrientation(Direction orientation);
+            Direction getAjustedDirection(Direction raw);
+            Direction getRawDirection(Direction adjusted);
+            SoundCell &getDirectionSound(Direction direction);
+            Direction getNearestSoundDirection();
+            Direction setSound(const std::string &sound_str);
 
         private:
-            SoundDirection _player;
+            Direction _player;
             SoundCell _cells[8];
     };
 }

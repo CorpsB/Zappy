@@ -8,9 +8,11 @@
 #pragma once
 
 #define FOOD_THRESHOLD 8.0
+#define ACTION_DELAY_MS 200
 
 #include <string>
 #include <memory>
+#include <vector>
 #include "persona/Persona.hpp"
 #include "../parser/parser.hpp"
 #include "../utils/utils.hpp"
@@ -37,6 +39,12 @@ namespace ai::entity
         int thystame;
     };
 
+    struct SpiralState {
+        int leg_max_steps = 1;
+        int leg_steps_taken = 0;
+        int legs_completed_at_current_length = 0;
+    };
+
     class AI {
         public:
             AI(int id);
@@ -57,6 +65,13 @@ namespace ai::entity
             Goal getGoal(const std::string &look);
             bool hasEnoughRocks();
             std::string getRarestMissingStone();
+
+            // moves
+            std::string getDirectionName(Direction dir);
+            std::vector<Direction> getMovesToTileLevel1Vision(int idx);
+            std::vector<Direction> getMovesTowardsSoundDirection(Direction dir);
+            bool executeMoves(const std::string &look, const std::vector<Direction> &moves);
+            bool executeSpiralMove(SpiralState &state);
 
         private:
             static const ElevationRecipe RECIPES[7];

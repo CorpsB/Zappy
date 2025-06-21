@@ -43,7 +43,7 @@ std::string ai::entity::AI::doAction(const std::string &action)
     if (result == "dead")
         return "dead";
     if (result.rfind("message", 0) == 0) {
-        const SoundDirection dir = _sound_system.setSound(result);
+        const Direction dir = _sound_system.setSound(result);
         const SoundCell &cell = _sound_system.getDirectionSound(dir);
         logger.log("Message received from " + std::to_string(cell.id) + " '" + cell.message + "'");
         return doAction(action);

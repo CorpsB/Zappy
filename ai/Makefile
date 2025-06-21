@@ -10,7 +10,10 @@ FLAGS	= -std=c++20 -Wall -Wextra -Werror -g
 SRC	=	main.cpp	\
 		entity/AI.cpp	\
 		entity/bot/helper/count_player.cpp	\
+		entity/bot/helper/collect_item.cpp	\
+		entity/bot/helper/find_item.cpp	\
 		entity/bot/goal.cpp	\
+		entity/bot/moves.cpp	\
 		entity/inventory/Inventory.cpp	\
 		entity/persona/Persona.cpp	\
 		entity/sound/SoundSystem.cpp	\
