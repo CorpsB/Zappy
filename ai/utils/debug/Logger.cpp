@@ -7,10 +7,13 @@
 
 #include "Logger.hpp"
 #include <iostream>
+#include <thread>
+
+std::mutex ai::utils::debug::WRITE_LOCK;
 
 ai::utils::debug::Logger &ai::utils::debug::Logger::GetInstance()
 {
-    static Logger _logger;
+    thread_local Logger _logger;
     return _logger;
 }
 
@@ -24,23 +27,20 @@ void ai::utils::debug::Logger::setup(bool debug, const std::string &thread_name)
 {
     _thread_name = thread_name;
     _debug = debug;
-
-    if (_debug)
-        std::cout << "[Main] Debug mode ENABLED." << std::endl;
-    else
-        std::cout << "[Main] Debug mode DISABLED. Logs will print on exit or error." << std::endl;
 }
 
 void ai::utils::debug::Logger::log(const std::string &msg)
 {
-    if (_debug)
-        _logs.push_back(msg);
-    else
+    if (_debug) {
+        std::lock_guard<std::mutex> lock(WRITE_LOCK);
         std::cout << _thread_name << " " << msg << std::endl;
+    } else
+        _logs.push_back(msg);
 }
 
 void ai::utils::debug::Logger::display()
 {
+    std::lock_guard<std::mutex> lock(WRITE_LOCK);   
     for (const auto log : _logs)
         std::cout << _thread_name << " " << log << std::endl;
     _logs.clear();

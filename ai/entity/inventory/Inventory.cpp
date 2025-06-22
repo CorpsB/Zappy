@@ -46,6 +46,7 @@ bool ai::entity::Inventory::update(const std::string &storage)
 
         setItem(resource, std::stoi(quantity));
     }
+    return true;
 }
 
 std::string ai::entity::Inventory::print()

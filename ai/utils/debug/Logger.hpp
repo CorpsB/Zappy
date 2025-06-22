@@ -9,9 +9,12 @@
 
 #include <string>
 #include <vector>
+#include <mutex>
 
 namespace ai::utils::debug
 {
+    extern std::mutex WRITE_LOCK;
+
     class Logger {
         public:
             Logger(Logger &other) = delete;

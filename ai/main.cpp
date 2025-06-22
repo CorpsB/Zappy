@@ -17,13 +17,28 @@ int main(int ac, char **av)
     if (!ai::parser::parse(ac, av, config) && !config.help)
         return 84;
 
+    if (config.debug)
+        std::cout << "[Main] Debug mode ENABLED." << std::endl;
+    else
+        std::cout << "[Main] Debug mode DISABLED. Logs will print on exit or error." << std::endl;
+
     const unsigned int nthreads = std::thread::hardware_concurrency();
     std::vector<std::thread> threads;
 
     const auto worker = [&](unsigned threadId) {
-        ai::entity::AI bot(threadId);
+        ai::utils::debug::Logger &logger = ai::utils::debug::Logger::GetInstance();
 
-        bot.run(config);
+        try {
+            ai::entity::AI bot(threadId);
+            bot.run(config);
+        } catch (const ai::utils::exception::Error &e) {
+            logger.log("[Exception] " + std::string(e.what()));
+        } catch (const std::exception &e) {
+            logger.log("[Unhandled Exception] " + std::string(e.what()));
+        } catch (...) {
+            logger.log("[Unknown Exception] Something went bad.");
+        }
+        logger.display();
     };
 
     threads.reserve(nthreads);
