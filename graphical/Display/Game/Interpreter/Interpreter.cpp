@@ -64,7 +64,7 @@ void Interpreter::_msz(int x, int y)
     for (int i = 0; i < x; i++)
         for (int j = 0; j < y; j++)
             Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::GROUND, -1,
-                {0.0f + (i * TILE_SIZE), 0.0f, 0.0f + (j * TILE_SIZE)}, sf::Color::Red, "./Assets/ground.stl");
+                {0.0f + (i * TILE_SIZE), 0.0f, 0.0f + (j * TILE_SIZE)}, sf::Color {65, 65, 65}, "./Assets/ground.stl");
                 //@Toma, at least, test your solution if you think you corrected something i did wrong...
 }
 
@@ -77,27 +77,33 @@ void Interpreter::_bct(int x, int y, int q0, int q1, int q2, int q3, int q4, int
     // Linemate
     if (q1 != 0)
         Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q1, -1,
-        {15.0f + (x * TILE_SIZE), -6.5f, -25.0f + (y * TILE_SIZE)}, sf::Color {96, 96, 96}, "./Assets/Crystals.stl");
+        {15.0f + (x * TILE_SIZE), -6.5f, -25.0f + (y * TILE_SIZE)}, sf::Color {96, 96, 96}, "./Assets/Crystals.stl",
+        Renderer::Compass::NORTH, {0.f, Renderer::getRandomAngle(), 0.f});
     // Deraumere
     if (q2 != 0)
         Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q2, -1,
-        {25.0f + (x * TILE_SIZE), -6.5f, -15.0f + (y * TILE_SIZE)}, sf::Color::Green, "./Assets/Crystals.stl");
+        {25.0f + (x * TILE_SIZE), -6.5f, -15.0f + (y * TILE_SIZE)}, sf::Color::Green, "./Assets/Crystals.stl",
+        Renderer::Compass::NORTH, {0.f, Renderer::getRandomAngle(), 0.f});
     // Sibur
     if (q3 != 0)
         Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q3, -1,
-        {-15.0f + (x * TILE_SIZE), -6.5f, -25.0f + (y * TILE_SIZE)}, sf::Color {204, 0, 102}, "./Assets/Crystals.stl");
+        {-15.0f + (x * TILE_SIZE), -6.5f, -25.0f + (y * TILE_SIZE)}, sf::Color {204, 0, 102}, "./Assets/Crystals.stl",
+        Renderer::Compass::NORTH, {0.f, Renderer::getRandomAngle(), 0.f});
     // Mendiane
     if (q4 != 0)
         Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q4, -1,
-        {-25.0f + (x * TILE_SIZE), -6.5f, -15.0f + (y * TILE_SIZE)}, sf::Color {255, 255, 255}, "./Assets/Crystals.stl");
+        {-25.0f + (x * TILE_SIZE), -6.5f, -15.0f + (y * TILE_SIZE)}, sf::Color {255, 255, 255}, "./Assets/Crystals.stl",
+        Renderer::Compass::NORTH, {0.f, Renderer::getRandomAngle(), 0.f});
     // Phiras
     if (q5 != 0)
         Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q5, -1,
-        {-15.0f + (x * TILE_SIZE), -6.5f, 25.0f + (y * TILE_SIZE)}, sf::Color {127, 0, 255}, "./Assets/Crystals.stl");
+        {-15.0f + (x * TILE_SIZE), -6.5f, 25.0f + (y * TILE_SIZE)}, sf::Color {127, 0, 255}, "./Assets/Crystals.stl",
+        Renderer::Compass::NORTH, {0.f, Renderer::getRandomAngle(), 0.f});
     // Thystame
     if (q6 != 0)
         Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q6, -1,
-        {-25.0f + (x * TILE_SIZE), -5.0f, 15.0f + (y * TILE_SIZE)}, sf::Color::Red, "./Assets/Crystals.stl");
+        {-25.0f + (x * TILE_SIZE), -5.0f, 15.0f + (y * TILE_SIZE)}, sf::Color::Red, "./Assets/Crystals.stl",
+        Renderer::Compass::NORTH, {0.f, Renderer::getRandomAngle(), 0.f});
     // If there is no more of a particular ressources, we have to verify if there was before, and if yes, we have to remove it.
     for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
         Renderer::Entity &e = *it;

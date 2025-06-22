@@ -123,4 +123,11 @@ Mat4x4 multiplyMatrixMatrix(const Mat4x4& a, const Mat4x4& b) {
     return matrix;
 }
 
+float getRandomAngle() {
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    static std::uniform_real_distribution<float> dist(0.0f, 360.0f);
+    return dist(gen);
+}
+
 } // namespace Renderer

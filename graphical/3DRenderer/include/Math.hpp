@@ -1,6 +1,7 @@
 // include/Math.hpp
 #pragma once
 #include <cmath>
+#include <random>
 
 namespace Renderer {
     struct Vec3 {
@@ -36,4 +37,5 @@ namespace Renderer {
     // Multiplications
     Vec4 multiplyMatrixVector(const Vec4& i, const Mat4x4& m);
     Mat4x4 multiplyMatrixMatrix(const Mat4x4& a, const Mat4x4& b);
+    float getRandomAngle();
 }

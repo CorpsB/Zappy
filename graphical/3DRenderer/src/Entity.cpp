@@ -18,16 +18,17 @@ namespace Renderer {
     int rotatingEntityId = -1;
 
     int spawn(EntityType type, PartType partType, int clientId, const Vec3& pos,
-              const sf::Color& c, const std::string& filepath, Compass orientation) {
+              const sf::Color& c, const std::string& filepath, Compass orientation,
+              const Vec3& rotation) {
         Entity newEnt;
         newEnt.id = nextEntityID++;
         newEnt.type = partType;
         newEnt.clientId = clientId;
         newEnt.position = pos;
-        newEnt.rotation = {0.f, 0.f, 0.f};
+        newEnt.rotation = rotation;
         newEnt.scale    = {1.f, 1.f, 1.f};
         newEnt.orientation = orientation;
-        newEnt.rotation.y = compassToAngle(orientation);
+        // newEnt.rotation.y = compassToAngle(orientation);
         try {
             switch (type) {
             case EntityType::CUBE:

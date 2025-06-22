@@ -43,6 +43,7 @@ namespace Renderer {
 
     // Création d'entités
     int spawn(EntityType type, PartType partType, int clientId, const Vec3& pos,
-              const sf::Color& c, const std::string& filepath = "", Compass orientation = Compass::NORTH);
+              const sf::Color& c, const std::string& filepath = "", Compass orientation = Compass::NORTH,
+              const Vec3& rotation = {0.f, 0.f, 0.f});
     float compassToAngle(Renderer::Compass c);
 }
