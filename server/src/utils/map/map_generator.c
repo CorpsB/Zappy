@@ -48,7 +48,7 @@ static void init_rapartition_cells(server_t *server)
     }
 }
 
-static void spawn_eggs(server_t *server) 
+static void spawn_eggs(server_t *server)
 {
     for (teams_t *tmp = server->teams; tmp != NULL; tmp = tmp->next)
         while ((unsigned int)eggs_size(tmp->egg) < server->starter_eggs_number)

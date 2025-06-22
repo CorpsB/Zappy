@@ -11,5 +11,5 @@
 
 void cmd_incantation(server_t *server, int index, const char *args)
 {
-    
+    return;
 }

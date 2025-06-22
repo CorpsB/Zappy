@@ -9,10 +9,11 @@
 #include "include/function.h"
 #include "include/structure.h"
 
-static void free_pos(unsigned int *pos)
+static void free_pos(unsigned int *pos, server_t *server)
 {
     if (pos)
         free(pos);
+    server->player_count++;
 }
 
 void add_player(server_t *server, int index, teams_t *teams)
@@ -36,6 +37,5 @@ void add_player(server_t *server, int index, teams_t *teams)
     node->inventory = create_resources();
     node->next = teams->player;
     teams->player = node;
-    server->player_count++;
-    free_pos(pos);
+    free_pos(pos, server);
 }

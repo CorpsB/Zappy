@@ -29,8 +29,6 @@ static int search_map_information(server_t *server, r_ressource_t type,
     return size;
 }
 
-
-
 static void complete_table(server_t *server, r_ressource_t type, int min,
     int *table)
 {
@@ -49,9 +47,10 @@ static void complete_table(server_t *server, r_ressource_t type, int min,
 
 void change_arround(server_t *srv, int *pos, r_ressource_t type, int weight)
 {
-    if (weight <= 0) return;
     int r = weight;
-
+    
+    if (weight <= 0)
+        return;
     for (int dy = -r; dy <= r; dy++)
         for (int dx = -r; dx <= r; dx++) {
             int x = pos[1] + dx, y = pos[0] + dy;

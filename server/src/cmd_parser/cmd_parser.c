@@ -34,20 +34,22 @@ static bool unknown_client(server_t *server, int index, char *cmd)
 
 void cmd_parser(server_t *server, int index, char *cmd)
 {
-    //=> Leak
     char **args = str_to_array(cmd, " ");
 
     if (server->poll.client_list[index].whoAmI == UNKNOWN) {
         if (!unknown_client(server, index, cmd))
             dprintf(server->poll.pollfds[index].fd, "ko\n");
+        free_table(args);
         return;
     }
     for (int i = 0; command_table[i].name != NULL; i++) {
         if (strncmp(cmd, command_table[i].name,
             strlen(command_table[i].name)) == 0) {
             command_table[i].func(server, index, args);
+            free_table(args);
             return;
         }
     }
     dprintf(server->poll.pollfds[index].fd, "ko\n");
+    free_table(args);
 }

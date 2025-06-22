@@ -32,10 +32,8 @@ SRC	=	src/main.c								\
 		src/utils/eggs/free_eggs.c				\
 		src/utils/eggs/eggs_size.c				\
 		src/utils/player/free_player.c			\
-		src/utils/teams/search_teams.c			\
 		src/utils/teams/see_teams.c				\
 		src/utils/player/add_player.c			\
-		src/utils/player/del_player.c			\
 		src/utils/player/search_player.c		\
 		src/utils/player/see_player.c			\
 		src/utils/inventory/add_ressources.c	\
