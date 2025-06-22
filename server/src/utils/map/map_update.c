@@ -14,17 +14,22 @@ static int search_map_information(server_t *server, r_ressource_t type,
     int *min)
 {
     int size = 0;
+    unsigned int j = 0;
 
-    for (unsigned int i = 0; i < server->height; i++) {
-        for (unsigned int j = 0; j < server->width; j++) {
-            if (server->map[i][j].repartition_map[type] < *min) {
-                *min = server->map[i][j].repartition_map[type];
-                size = 1;
-                continue;
-            }
-            if (*min == server->map[i][j].repartition_map[type])
-                size++;
+    for (unsigned int i = 0; true; j++) {
+        if (j >= server->width) {
+            j = 0;
+            i++;
         }
+        if (i >= server->height)
+            break;
+        if (server->map[i][j].repartition_map[type] < *min) {
+            *min = server->map[i][j].repartition_map[type];
+            size = 1;
+            continue;
+        }
+        if (*min == server->map[i][j].repartition_map[type])
+            size++;
     }
     return size;
 }
@@ -33,37 +38,64 @@ static void complete_table(server_t *server, r_ressource_t type, int min,
     int *table)
 {
     int r_index = 0;
+    unsigned int j = 0;
 
-    for (unsigned int i = 0; i < server->height; i++) {
-        for (unsigned int j = 0; j < server->width; j++) {
-            if (server->map[i][j].repartition_map[type] == min) {
-                table[r_index] = i;
-                table[r_index + 1] = j;
-                r_index += 2;
-            }
+    for (unsigned int i = 0; true; j++) {
+        if (j >= server->width) {
+            j = 0;
+            i++;
+        }
+        if (i >= server->height)
+            break;
+        if (server->map[i][j].repartition_map[type] == min) {
+            table[r_index] = i;
+            table[r_index + 1] = j;
+            r_index += 2;
         }
     }
 }
 
+static void draw_circle(int *pos, r_ressource_t type, server_t *server, int *d)
+{
+    int x = pos[1] + d[0];
+    int y = pos[0] + d[1];
+    int dist;
+    int influence;
+
+    if (x < 0 || y < 0 || x >= (int)server->width || y >= (int)server->height)
+        return;
+    dist = abs(d[0]) + abs(d[1]);
+    influence = d[2] - dist;
+    if (influence <= 0)
+        return;
+    server->map[y][x].repartition_map[type] += influence;
+}
+
+//C'est un grand pas pour le coding-style, mais un petit pas pour continue;
 void change_arround(server_t *srv, int *pos, r_ressource_t type, int weight)
 {
     int r = weight;
-    
+    int dx = -r;
+    int d[3];
+
     if (weight <= 0)
         return;
-    for (int dy = -r; dy <= r; dy++)
-        for (int dx = -r; dx <= r; dx++) {
-            int x = pos[1] + dx, y = pos[0] + dy;
-            if (x < 0 || y < 0 || x >= (int)srv->width || y >= (int)srv->height)
-                continue;
-            int dist = abs(dx) + abs(dy);
-            int influence = weight - dist;
-            if (influence <= 0) continue;
-            srv->map[y][x].repartition_map[type] += influence;
+    d[2] = weight;
+    for (int dy = -r; dy <= r; dx++) {
+        if (dx > r) {
+            dx = -r;
+            dy++;
         }
+        if (dy > r)
+            break;
+        d[0] = dy;
+        d[1] = dx;
+        draw_circle(pos, type, srv, d);
+    }
 }
 
-static void sapwn_ressource(server_t *server, r_ressource_t type, int *table, int size)
+static void spawn_ressource(server_t *server, r_ressource_t type,
+    int *table, int size)
 {
     int r = rand() % size;
     int pos[2] = {table[r * 2], table[r * 2 + 1]};
@@ -87,12 +119,8 @@ static void sapwn_ressource(server_t *server, r_ressource_t type, int *table, in
         server->map[pos[0]][pos[1]].thystame++;
 }
 
-static void ressource_update(server_t *server, r_ressource_t type)
+static void update_map_inventory(server_t *server, r_ressource_t type)
 {
-    int min = INT_MAX;
-    int size = search_map_information(server, type, &min);
-    int *table = malloc(sizeof(int) * (size * 2));
-
     if (type == FOOD)
         server->actual_map_inventory.food++;
     if (type == LINEMATE)
@@ -107,9 +135,21 @@ static void ressource_update(server_t *server, r_ressource_t type)
         server->actual_map_inventory.phiras++;
     if (type == THYSTAME)
         server->actual_map_inventory.thystame++;
+}
+
+static void ressource_update(server_t *server, r_ressource_t type)
+{
+    int min = INT_MAX;
+    int size = search_map_information(server, type, &min);
+    int *table = malloc(sizeof(int) * (size * 2));
+
+    if (!table)
+        logger(server, "MALLOC", PERROR, true);
+    update_map_inventory(server, type);
     complete_table(server, type, min, table);
-    sapwn_ressource(server, type, table, size);
-    free(table);
+    spawn_ressource(server, type, table, size);
+    if (table)
+        free(table);
 }
 
 static bool is_update_complete(server_t *server)
@@ -128,7 +168,7 @@ static bool is_update_complete(server_t *server)
 
 void map_update(server_t *server)
 {
-    while(1) {
+    while (1) {
         if (server->actual_map_inventory.food < server->goal.food)
             ressource_update(server, FOOD);
         if (server->actual_map_inventory.linemate < server->goal.linemate)
