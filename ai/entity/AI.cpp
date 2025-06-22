@@ -63,45 +63,42 @@ void ai::entity::AI::run(const ai::parser::Config &config)
     start(config);
     utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
 
-    try {
-        while (1) {
-            // clear old broadcast messages
-            _sound_system.update();
+    while (1) {
+        // clear old broadcast messages
+        _sound_system.update();
 
-            // update inventory
-            const std::string inv_str = doAction("Inventory");
-            if (inv_str == "dead") {
-                logger.log("Died looking Inventory.");
-                break;
-            }
-            _inventory.update(inv_str);
-
-            // check starvation
-            if (_inventory.getItem("food") < 1) {
-                logger.log("Died from starvation.");
-                break;
-            }
-
-            // look around
-            const std::string look_str = doAction("Look");
-            if (look_str == "dead") {
-                logger.log("Died looking around.");
-                break;
-            }
-
-            // goal fullfill
-            _goal = getGoal(look_str);
-            logger.log("Tick: Lvl:" + std::to_string(_level) + ", Food:" +
-            std::to_string(_food_level) + ", Goal:" + std::to_string(_goal) +
-            ", HeardK:{last_k_for_decision}, Inv:" + _inventory.print());
-
-            if (!performActionForGoal(look_str)) {
-                logger.log("Action failed or led to 'dead' state. Terminating.");
-                break;
-            }
-            std::this_thread::sleep_for(std::chrono::milliseconds(ACTION_DELAY_MS));
+        // update inventory
+        const std::string inv_str = doAction("Inventory");
+        if (inv_str == "dead") {
+            logger.log("Died looking Inventory.");
+            break;
         }
-    } catch (...) {
+        _inventory.update(inv_str);
+
+        // check starvation
+        if (_inventory.getItem("food") < 1) {
+            logger.log("Died from starvation.");
+            break;
+        }
+
+        // look around
+        const std::string look_str = doAction("Look");
+        if (look_str == "dead") {
+            logger.log("Died looking around.");
+            break;
+        }
+
+        // goal fullfill
+        _goal = getGoal(look_str);
+        logger.log("Tick: Lvl:" + std::to_string(_level) + ", Food:" +
+        std::to_string(_food_level) + ", Goal:" + std::to_string(_goal) +
+        ", HeardK:{last_k_for_decision}, Inv:" + _inventory.print());
+
+        if (!performActionForGoal(look_str)) {
+            logger.log("Action failed or led to 'dead' state. Terminating.");
+            break;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(ACTION_DELAY_MS));
     }
     stop();
 }
