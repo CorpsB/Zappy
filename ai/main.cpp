@@ -22,7 +22,6 @@ int main(int ac, char **av)
     else
         std::cout << "[Main] Debug mode DISABLED. Logs will print on exit or error." << std::endl;
 
-    const unsigned int nthreads = std::thread::hardware_concurrency();
     std::vector<std::thread> threads;
 
     const auto worker = [&](unsigned threadId) {
@@ -41,8 +40,8 @@ int main(int ac, char **av)
         logger.display();
     };
 
-    threads.reserve(nthreads);
-    for (size_t i = 0; i < nthreads; ++i)
+    threads.reserve(config.count);
+    for (size_t i = 0; i < config.count; ++i)
         threads.emplace_back(worker, i);
     for (auto &t : threads)
         t.join();

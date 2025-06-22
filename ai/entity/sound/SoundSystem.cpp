@@ -81,7 +81,7 @@ ai::entity::Direction ai::entity::SoundSystem::setSound(const std::string &sound
     std::smatch match;
 
     if (!std::regex_match(sound_str, match, pattern)) {
-        logger.log("[Error] Invalid sound format: regex mismatch");
+        logger.log("[Error] Invalid sound format: regex mismatch '" + sound_str + "'.");
         return NONE;
     }
 

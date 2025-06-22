@@ -47,8 +47,10 @@ std::string ai::entity::AI::doAction(const std::string &action)
         return "dead";
     if (result.rfind("message", 0) == 0) {
         const Direction dir = _sound_system.setSound(result);
-        const SoundCell &cell = _sound_system.getDirectionSound(dir);
-        logger.log("Message received from " + std::to_string(cell.id) + " '" + cell.message + "'");
+        if (dir != NONE) {
+            const SoundCell &cell = _sound_system.getDirectionSound(dir);
+            logger.log("Message received from " + std::to_string(cell.id) + " '" + cell.message + "'");
+        }
         return doAction(action);
     }
     if (result.rfind("eject", 0) == 0) {
@@ -74,9 +76,10 @@ void ai::entity::AI::run(const ai::parser::Config &config)
             break;
         }
         _inventory.update(inv_str);
+        _food_level = _inventory.getItem("food");
 
         // check starvation
-        if (_inventory.getItem("food") < 1) {
+        if (_food_level < 1) {
             logger.log("Died from starvation.");
             break;
         }
@@ -92,7 +95,7 @@ void ai::entity::AI::run(const ai::parser::Config &config)
         _goal = getGoal(look_str);
         logger.log("Tick: Lvl:" + std::to_string(_level) + ", Food:" +
         std::to_string(_food_level) + ", Goal:" + std::to_string(_goal) +
-        ", HeardK:{last_k_for_decision}, Inv:" + _inventory.print());
+        ", Inv:" + _inventory.print());
 
         if (!performActionForGoal(look_str)) {
             logger.log("Action failed or led to 'dead' state. Terminating.");

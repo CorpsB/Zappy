@@ -26,7 +26,7 @@ bool ai::entity::Inventory::update(const std::string &storage)
     utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
 
     if (storage.empty() || storage.front() != '[' || storage.back() != ']') {
-        logger.log("[Error] Bad inventory format.");
+        logger.log("[Error] Bad inventory format : '" + storage + "'.");
         return false;
     }
 
@@ -51,12 +51,12 @@ bool ai::entity::Inventory::update(const std::string &storage)
 
 std::string ai::entity::Inventory::print()
 {
-    return std::to_string(getItem("linemate")) + " Li," +
-    std::to_string(getItem("deraumere")) + " De," +
-    std::to_string(getItem("sibur")) + " Si," +
-    std::to_string(getItem("mendiane")) + " Me," +
-    std::to_string(getItem("phiras")) + " Ph," +
-    std::to_string(getItem("thystame")) + "Ty";
+    return std::to_string(getItem("linemate")) + " Li, " +
+    std::to_string(getItem("deraumere")) + " De, " +
+    std::to_string(getItem("sibur")) + " Si, " +
+    std::to_string(getItem("mendiane")) + " Me, " +
+    std::to_string(getItem("phiras")) + " Ph, " +
+    std::to_string(getItem("thystame")) + " Ty";
 }
 
 void ai::entity::Inventory::setItem(const std::string &item, int quantity)
