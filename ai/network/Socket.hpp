@@ -7,7 +7,7 @@
 
 #pragma once
 
-#define READ_TIMEOUT 180
+#define READ_TIMEOUT 2000
 #define READ_BUFFER_SIZE 2048
 
 #include <poll.h>

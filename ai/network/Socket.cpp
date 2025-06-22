@@ -49,7 +49,7 @@ bool ai::network::Socket::readSocket()
 
         if (duration.count() > READ_TIMEOUT) {
             closeSocket();
-            logger.log("[Error] Socket receive timeout (" + std::to_string(READ_TIMEOUT) + "s).");
+            logger.log("[Error] Socket receive timeout (" + std::to_string(READ_TIMEOUT) + "ms).");
             return false;
         }
         switch (isServerReadable()) {
