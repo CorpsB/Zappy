@@ -44,5 +44,6 @@ void Game::stop()
 
 void Game::processData(const std::string &data)
 {
+    std::cerr << "Instruction : " << data << std::endl;
     _interpreter.interpret(data);
 }

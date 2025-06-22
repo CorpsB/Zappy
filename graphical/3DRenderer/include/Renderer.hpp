@@ -9,6 +9,8 @@
 #include "HUD.hpp"
 #include "Math.hpp"
 
+#define TILE_SIZE 70
+
 namespace Renderer {
     // Initialisation et boucle
     bool initRenderer(sf::RenderWindow &window);
@@ -21,5 +23,7 @@ namespace Renderer {
     extern std::unordered_map<int, MovementState> activeMovements;
     extern std::unordered_map<int, RotationState> activeRotations;
     extern std::unordered_map<int, Renderer::MovementState> pendingMovementsAfterRotation;
+    extern int map_size_x;
+    extern int map_size_y;
 
 }

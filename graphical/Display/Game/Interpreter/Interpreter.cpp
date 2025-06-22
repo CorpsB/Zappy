@@ -62,69 +62,104 @@ void Interpreter::interpret(const std::string &data)
 void Interpreter::_msz(int x, int y)
 {
     for (int i = 0; i < x; i++)
-        for (int j = 0; j < y; j++)
-            Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::GROUND, -1,
+        for (int j = 0; j < y; j++) {
+            if (j == 0 && i == 0) {
+                Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::GROUND, -1,
+                {0.0f + (i * TILE_SIZE), 0.0f, 0.0f + (j * TILE_SIZE)}, sf::Color::Red, "./Assets/ground.stl");
+            } else
+                Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::GROUND, -1,
                 {0.0f + (i * TILE_SIZE), 0.0f, 0.0f + (j * TILE_SIZE)}, sf::Color {65, 65, 65}, "./Assets/ground.stl");
-                //@Toma, at least, test your solution if you think you corrected something i did wrong...
+        }
+    Renderer::map_size_x = x;
+    Renderer::map_size_y = y;
 }
 
 void Interpreter::_bct(int x, int y, int q0, int q1, int q2, int q3, int q4, int q5, int q6)
 {
-    // food
-    if (q0 != 0)
-        Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q0, -1,
-        {25.0f + (x * TILE_SIZE), -6.5f, 25.0f + (y * TILE_SIZE)}, sf::Color::Yellow, "./Assets/Food.stl");
-    // Linemate
-    if (q1 != 0)
-        Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q1, -1,
-        {15.0f + (x * TILE_SIZE), -6.5f, -25.0f + (y * TILE_SIZE)}, sf::Color {96, 96, 96}, "./Assets/Crystals.stl",
-        Renderer::Compass::NORTH, {0.f, Renderer::getRandomAngle(), 0.f});
-    // Deraumere
-    if (q2 != 0)
-        Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q2, -1,
-        {25.0f + (x * TILE_SIZE), -6.5f, -15.0f + (y * TILE_SIZE)}, sf::Color::Green, "./Assets/Crystals.stl",
-        Renderer::Compass::NORTH, {0.f, Renderer::getRandomAngle(), 0.f});
-    // Sibur
-    if (q3 != 0)
-        Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q3, -1,
-        {-15.0f + (x * TILE_SIZE), -6.5f, -25.0f + (y * TILE_SIZE)}, sf::Color {204, 0, 102}, "./Assets/Crystals.stl",
-        Renderer::Compass::NORTH, {0.f, Renderer::getRandomAngle(), 0.f});
-    // Mendiane
-    if (q4 != 0)
-        Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q4, -1,
-        {-25.0f + (x * TILE_SIZE), -6.5f, -15.0f + (y * TILE_SIZE)}, sf::Color {255, 255, 255}, "./Assets/Crystals.stl",
-        Renderer::Compass::NORTH, {0.f, Renderer::getRandomAngle(), 0.f});
-    // Phiras
-    if (q5 != 0)
-        Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q5, -1,
-        {-15.0f + (x * TILE_SIZE), -6.5f, 25.0f + (y * TILE_SIZE)}, sf::Color {127, 0, 255}, "./Assets/Crystals.stl",
-        Renderer::Compass::NORTH, {0.f, Renderer::getRandomAngle(), 0.f});
-    // Thystame
-    if (q6 != 0)
-        Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q6, -1,
-        {-25.0f + (x * TILE_SIZE), -5.0f, 15.0f + (y * TILE_SIZE)}, sf::Color::Red, "./Assets/Crystals.stl",
-        Renderer::Compass::NORTH, {0.f, Renderer::getRandomAngle(), 0.f});
+    bool q0Exists = false;
+    bool q1Exists = false;
+    bool q2Exists = false;
+    bool q3Exists = false;
+    bool q4Exists = false;
+    bool q5Exists = false;
+    bool q6Exists = false;
+
     // If there is no more of a particular ressources, we have to verify if there was before, and if yes, we have to remove it.
     for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
         Renderer::Entity &e = *it;
-        if (e.type == Renderer::PartType::Q0 && q0 == 0 && e.position.x == 25.0f + (x * TILE_SIZE) && e.position.z == 25.0f + (y * TILE_SIZE)) {
-            it = Renderer::sceneEntities.erase(it);
-        } else if (e.type == Renderer::PartType::Q1 && q1 == 0 && e.position.x == 15.0f + (x * TILE_SIZE) && e.position.z == -25.0f + (y * TILE_SIZE)) {
-            it = Renderer::sceneEntities.erase(it);
-        } else if (e.type == Renderer::PartType::Q2 && q2 == 0 && e.position.x == 25.0f + (x * TILE_SIZE) && e.position.z == -15.0f + (y * TILE_SIZE)) {
-            it = Renderer::sceneEntities.erase(it);
-        } else if (e.type == Renderer::PartType::Q3 && q3 == 0 && e.position.x == -15.0f + (x * TILE_SIZE) && e.position.z == -25.0f + (y * TILE_SIZE)) {
-            it = Renderer::sceneEntities.erase(it);
-        } else if (e.type == Renderer::PartType::Q4 && q4 == 0 && e.position.x == -25.0f + (x * TILE_SIZE) && e.position.z == -15.0f + (y * TILE_SIZE)) {
-            it = Renderer::sceneEntities.erase(it);
-        } else if (e.type == Renderer::PartType::Q5 && q5 == 0 && e.position.x == -15.0f + (x * TILE_SIZE) && e.position.z == 25.0f + (y * TILE_SIZE)) {
-            it = Renderer::sceneEntities.erase(it);
-        } else if (e.type == Renderer::PartType::Q6 && q6 == 0 && e.position.x == -25.0f + (x * TILE_SIZE) && e.position.z == 15.0f + (y * TILE_SIZE)) {
-            it = Renderer::sceneEntities.erase(it);
+        if (e.type == Renderer::PartType::Q0 && e.position.x == 25.0f + (x * TILE_SIZE) && e.position.z == 25.0f + (y * TILE_SIZE)) {
+            if (q0 == 0) {
+                it = Renderer::sceneEntities.erase(it);
+            } else
+                q0Exists = true;
+        } else if (e.type == Renderer::PartType::Q1 && e.position.x == 15.0f + (x * TILE_SIZE) && e.position.z == -25.0f + (y * TILE_SIZE)) {
+            if (q1 == 0) {
+                it = Renderer::sceneEntities.erase(it);
+            } else
+                q1Exists = true;
+        } else if (e.type == Renderer::PartType::Q2 && e.position.x == 25.0f + (x * TILE_SIZE) && e.position.z == -15.0f + (y * TILE_SIZE)) {
+            if (q2 == 0) {
+                it = Renderer::sceneEntities.erase(it);
+            } else
+                q2Exists = true;
+        } else if (e.type == Renderer::PartType::Q3 && e.position.x == -15.0f + (x * TILE_SIZE) && e.position.z == -25.0f + (y * TILE_SIZE)) {
+            if (q3 == 0) {
+                it = Renderer::sceneEntities.erase(it);
+            } else
+                q3Exists = true;
+        } else if (e.type == Renderer::PartType::Q4 && e.position.x == -25.0f + (x * TILE_SIZE) && e.position.z == -15.0f + (y * TILE_SIZE)) {
+            if (q4 == 0) {
+                it = Renderer::sceneEntities.erase(it);
+            } else
+                q4Exists = true;
+        } else if (e.type == Renderer::PartType::Q5 && e.position.x == -15.0f + (x * TILE_SIZE) && e.position.z == 25.0f + (y * TILE_SIZE)) {
+            if (q5 == 0) {
+                it = Renderer::sceneEntities.erase(it);
+            } else
+                q5Exists = true;
+        } else if (e.type == Renderer::PartType::Q6 && e.position.x == -25.0f + (x * TILE_SIZE) && e.position.z == 15.0f + (y * TILE_SIZE)) {
+            if (q6 == 0) {
+                it = Renderer::sceneEntities.erase(it);
+            } else
+                q6Exists = true;
         } else {
             ++it;
         }
     }
+    // food
+    if (q0 != 0 && !q0Exists)
+        Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q0, -1,
+        {25.0f + (x * TILE_SIZE), -6.5f, 25.0f + (y * TILE_SIZE)}, sf::Color::Yellow, "./Assets/Food.stl");
+    // Linemate
+    if (q1 != 0 && !q1Exists)
+        Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q1, -1,
+        {15.0f + (x * TILE_SIZE), -6.5f, -25.0f + (y * TILE_SIZE)}, sf::Color {96, 96, 96}, "./Assets/Crystals.stl",
+        Renderer::Compass::NORTH, {0.f, Renderer::getRandomAngle(), 0.f});
+    // Deraumere
+    if (q2 != 0 && !q2Exists)
+        Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q2, -1,
+        {25.0f + (x * TILE_SIZE), -6.5f, -15.0f + (y * TILE_SIZE)}, sf::Color::Green, "./Assets/Crystals.stl",
+        Renderer::Compass::NORTH, {0.f, Renderer::getRandomAngle(), 0.f});
+    // Sibur
+    if (q3 != 0 && !q3Exists)
+        Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q3, -1,
+        {-15.0f + (x * TILE_SIZE), -6.5f, -25.0f + (y * TILE_SIZE)}, sf::Color {204, 0, 102}, "./Assets/Crystals.stl",
+        Renderer::Compass::NORTH, {0.f, Renderer::getRandomAngle(), 0.f});
+    // Mendiane
+    if (q4 != 0 && !q4Exists)
+        Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q4, -1,
+        {-25.0f + (x * TILE_SIZE), -6.5f, -15.0f + (y * TILE_SIZE)}, sf::Color {255, 255, 255}, "./Assets/Crystals.stl",
+        Renderer::Compass::NORTH, {0.f, Renderer::getRandomAngle(), 0.f});
+    // Phiras
+    if (q5 != 0 && !q5Exists)
+        Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q5, -1,
+        {-15.0f + (x * TILE_SIZE), -6.5f, 25.0f + (y * TILE_SIZE)}, sf::Color {127, 0, 255}, "./Assets/Crystals.stl",
+        Renderer::Compass::NORTH, {0.f, Renderer::getRandomAngle(), 0.f});
+    // Thystame
+    if (q6 != 0 && !q6Exists)
+        Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q6, -1,
+        {-25.0f + (x * TILE_SIZE), -5.0f, 15.0f + (y * TILE_SIZE)}, sf::Color::Red, "./Assets/Crystals.stl",
+        Renderer::Compass::NORTH, {0.f, Renderer::getRandomAngle(), 0.f});
     std::cerr << "Content of " << x << y << ": " << q0 << " " << q1 << " " << q2 << " " << q3 << " " << q4 << " " << q5 << " " << q6 << std::endl;
 }
 

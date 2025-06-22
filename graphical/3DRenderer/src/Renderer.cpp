@@ -26,6 +26,8 @@ namespace Renderer {
     std::unordered_map<int, MovementState> activeMovements;
     std::unordered_map<int, RotationState> activeRotations;
     std::unordered_map<int, Renderer::MovementState> pendingMovementsAfterRotation;
+    int map_size_x = 0;
+    int map_size_y = 0;
 
     bool initRenderer(sf::RenderWindow &window) {
         // window = new sf::RenderWindow(sf::VideoMode(width, height), title);
@@ -115,6 +117,19 @@ namespace Renderer {
             if (itMove != activeMovements.end() && itMove->second.active) {
                 MovementState& m = itMove->second;
                 m.timeElapsed += dt;
+                // X axis wrap
+                if (e.position.x < -35.f) {
+                    e.position.x = map_size_x * TILE_SIZE + e.position.x;
+                } else if (e.position.x > map_size_x * TILE_SIZE + 35.f) {
+                    e.position.x = map_size_x * TILE_SIZE - e.position.x;
+                }
+
+                // Z axis wrap
+                if (e.position.z < -35.f) {
+                    e.position.z = map_size_y * TILE_SIZE + e.position.z;
+                } else if (e.position.z > map_size_y * TILE_SIZE + 35.f) {
+                    e.position.z = map_size_y * TILE_SIZE - e.position.z;
+                }
                 while (m.stepsRemaining > 0 && m.timeElapsed >= 0.025f) {
                     m.timeElapsed -= 0.025f;
 

@@ -21,7 +21,7 @@ namespace Renderer {
     struct RotationState {
         float totalRotated = 0.f;
         float timeElapsed = 0.f;
-        int stepsRemaining = 20;
+        int stepsRemaining = 0.f;
         bool active = false;
         bool goingRight; // true or false (= going left)
     };
