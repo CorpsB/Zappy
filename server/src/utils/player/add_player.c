@@ -16,14 +16,13 @@ static void free_pos(unsigned int *pos, server_t *server)
     server->player_count++;
 }
 
-void add_player(server_t *server, int index, teams_t *teams)
+static player_t *init_player_node(server_t *server, int index,
+    teams_t *teams, unsigned int *pos)
 {
     player_t *node = malloc(sizeof(*node));
-    unsigned int *pos = hatching_egg(server, teams);
 
     if (!node)
         logger(server, "MALLOC", PERROR, true);
-    server->poll.client_list[index].player = node;
     node->id = server->player_count;
     node->position[0] = pos[0];
     node->position[1] = pos[1];
@@ -33,9 +32,18 @@ void add_player(server_t *server, int index, teams_t *teams)
     node->cycle_before_death = 1260;
     node->direction = (rand() % 4) + 1;
     node->socket_fd = server->poll.pollfds[index].fd;
-    node->team = teams;
     node->inventory = create_resources();
     node->next = teams->player;
+    return node;
+}
+
+void add_player(server_t *server, int index, teams_t *teams)
+{
+    unsigned int *pos = hatching_egg(server, teams);
+    player_t *node = init_player_node(server, index, teams, pos);
+
+    server->poll.client_list[index].player = node;
     teams->player = node;
+    event_pnw(server, node);
     free_pos(pos, server);
 }

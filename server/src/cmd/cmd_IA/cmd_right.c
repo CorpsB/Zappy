@@ -9,26 +9,37 @@
 #include "include/function.h"
 #include "include/structure.h"
 
-void cmd_right(server_t *server, int index, char **args)
+static void rotate_right(player_t *p)
 {
-    (void)args;
-    if (check_autorized(server, index) != 0)
-        return;
-    switch (server->poll.client_list[index].player->direction) {
+    switch (p->direction) {
         case NORTH:
-            server->poll.client_list[index].player->direction = EAST;
+            p->direction = EAST;
             break;
         case EAST:
-            server->poll.client_list[index].player->direction = SOUTH;
+            p->direction = SOUTH;
             break;
         case SOUTH:
-            server->poll.client_list[index].player->direction = WEST;
+            p->direction = WEST;
             break;
         case WEST:
-            server->poll.client_list[index].player->direction = NORTH;
+            p->direction = NORTH;
             break;
         default:
             break;
     }
+}
+
+void cmd_right(server_t *server, int index, char **args)
+{
+    player_t *p;
+
+    (void)args;
+    if (check_autorized(server, index) != 0)
+        return;
+    p = server->poll.client_list[index].player;
+    if (!p || p->is_dead)
+        return;
+    rotate_right(p);
+    event_ppo(server, p);
     dprintf(server->poll.pollfds[index].fd, "ok\n");
 }

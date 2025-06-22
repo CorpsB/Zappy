@@ -5,4 +5,4 @@
 ## test_connexion
 ##
 
-nc localhost 4243
+nc localhost 4241
