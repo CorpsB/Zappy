@@ -15,6 +15,7 @@ typedef void (*command_func_t)(server_t *server, int index, char **args);
 typedef struct {
     const char *name;
     command_func_t func;
+    const unsigned int time;
 } command_t;
 
 extern const command_t command_table[];
