@@ -70,15 +70,55 @@ void Interpreter::_msz(int x, int y)
 
 void Interpreter::_bct(int x, int y, int q0, int q1, int q2, int q3, int q4, int q5, int q6)
 {
-    (void) x;
-    (void) y;
-    (void) q0;
-    (void) q1;
-    (void) q2;
-    (void) q3;
-    (void) q4;
-    (void) q5;
-    (void) q6;
+    // food
+    if (q0 != 0)
+        Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q0, -1,
+        {25.0f + (x * TILE_SIZE), -6.5f, 25.0f + (y * TILE_SIZE)}, sf::Color::Yellow, "./Assets/Food.stl");
+    // Linemate
+    if (q1 != 0)
+        Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q1, -1,
+        {15.0f + (x * TILE_SIZE), -6.5f, -25.0f + (y * TILE_SIZE)}, sf::Color {96, 96, 96}, "./Assets/Crystals.stl");
+    // Deraumere
+    if (q2 != 0)
+        Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q2, -1,
+        {25.0f + (x * TILE_SIZE), -6.5f, -15.0f + (y * TILE_SIZE)}, sf::Color::Green, "./Assets/Crystals.stl");
+    // Sibur
+    if (q3 != 0)
+        Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q3, -1,
+        {-15.0f + (x * TILE_SIZE), -6.5f, -25.0f + (y * TILE_SIZE)}, sf::Color {204, 0, 102}, "./Assets/Crystals.stl");
+    // Mendiane
+    if (q4 != 0)
+        Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q4, -1,
+        {-25.0f + (x * TILE_SIZE), -6.5f, -15.0f + (y * TILE_SIZE)}, sf::Color {255, 255, 255}, "./Assets/Crystals.stl");
+    // Phiras
+    if (q5 != 0)
+        Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q5, -1,
+        {-15.0f + (x * TILE_SIZE), -6.5f, 25.0f + (y * TILE_SIZE)}, sf::Color {127, 0, 255}, "./Assets/Crystals.stl");
+    // Thystame
+    if (q6 != 0)
+        Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q6, -1,
+        {-25.0f + (x * TILE_SIZE), -5.0f, 15.0f + (y * TILE_SIZE)}, sf::Color::Red, "./Assets/Crystals.stl");
+    // If there is no more of a particular ressources, we have to verify if there was before, and if yes, we have to remove it.
+    for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
+        Renderer::Entity &e = *it;
+        if (e.type == Renderer::PartType::Q0 && q0 == 0 && e.position.x == 25.0f + (x * TILE_SIZE) && e.position.z == 25.0f + (y * TILE_SIZE)) {
+            it = Renderer::sceneEntities.erase(it);
+        } else if (e.type == Renderer::PartType::Q1 && q1 == 0 && e.position.x == 15.0f + (x * TILE_SIZE) && e.position.z == -25.0f + (y * TILE_SIZE)) {
+            it = Renderer::sceneEntities.erase(it);
+        } else if (e.type == Renderer::PartType::Q2 && q2 == 0 && e.position.x == 25.0f + (x * TILE_SIZE) && e.position.z == -15.0f + (y * TILE_SIZE)) {
+            it = Renderer::sceneEntities.erase(it);
+        } else if (e.type == Renderer::PartType::Q3 && q3 == 0 && e.position.x == -15.0f + (x * TILE_SIZE) && e.position.z == -25.0f + (y * TILE_SIZE)) {
+            it = Renderer::sceneEntities.erase(it);
+        } else if (e.type == Renderer::PartType::Q4 && q4 == 0 && e.position.x == -25.0f + (x * TILE_SIZE) && e.position.z == -15.0f + (y * TILE_SIZE)) {
+            it = Renderer::sceneEntities.erase(it);
+        } else if (e.type == Renderer::PartType::Q5 && q5 == 0 && e.position.x == -15.0f + (x * TILE_SIZE) && e.position.z == 25.0f + (y * TILE_SIZE)) {
+            it = Renderer::sceneEntities.erase(it);
+        } else if (e.type == Renderer::PartType::Q6 && q6 == 0 && e.position.x == -25.0f + (x * TILE_SIZE) && e.position.z == 15.0f + (y * TILE_SIZE)) {
+            it = Renderer::sceneEntities.erase(it);
+        } else {
+            ++it;
+        }
+    }
     std::cerr << "Content of " << x << y << ": " << q0 << " " << q1 << " " << q2 << " " << q3 << " " << q4 << " " << q5 << " " << q6 << std::endl;
 }
 
