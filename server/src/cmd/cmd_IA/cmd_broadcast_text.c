@@ -9,6 +9,7 @@
 #include "include/function.h"
 #include "include/structure.h"
 
+//=> Penser à ajouter event_pbc à la fin.
 void cmd_broadcast_text(server_t *server, int index, const char *args)
 {
     return;
