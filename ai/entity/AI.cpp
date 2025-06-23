@@ -94,9 +94,9 @@ void ai::entity::AI::run(const ai::parser::Config &config)
 
         // goal fullfill
         _goal = getGoal(look_str);
-        logger.log("Tick: Lvl:" + std::to_string(_level) + ", Food:" +
-        std::to_string(_food_level) + ", Goal:" + std::to_string(_goal) +
-        ", Inv:" + _inventory.print());
+        // logger.log("Tick: Lvl:" + std::to_string(_level) + ", Food:" +
+        // std::to_string(_food_level) + ", Goal:" + std::to_string(_goal) +
+        // ", Inv:" + _inventory.print());
 
         if (!performActionForGoal(look_str)) {
             logger.log("Action failed or led to 'dead' state. Terminating.");

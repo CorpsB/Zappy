@@ -34,8 +34,8 @@ bool ai::entity::AI::performActionForGoal(const std::string &look)
             return handleGoal(look, rarest_missing);
         }
 
-        case ELEVATION: {
-        }
+        case ELEVATION:
+            return launchIncantation();
 
         case MEETUP: {
             logger.log("Sending everyone a meetup request for level " + std::to_string(_level + 1));

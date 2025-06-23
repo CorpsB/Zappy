@@ -6,6 +6,7 @@
 */
 
 #include "../AI.hpp"
+#include <thread>
 
 bool ai::entity::AI::setStoneForIncantation(const std::string &name, int qty,
     std::vector<std::string> &stones_to_set)
@@ -55,6 +56,7 @@ bool ai::entity::AI::launchIncantation()
     }
 
     const std::string response = doAction("Incantation");
+    std::this_thread::sleep_for(std::chrono::milliseconds(READ_TIMEOUT * 5));
     if (response == "dead")
         return false;
     if (response.find("Elevation underway") != std::string::npos) {
