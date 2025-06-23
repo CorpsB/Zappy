@@ -43,6 +43,7 @@ std::string ai::entity::AI::doAction(const std::string &action)
     const std::string result = _socket.doAction(action);
     utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
 
+    std::this_thread::sleep_for(std::chrono::milliseconds(ACTION_DELAY_MS));
     if (result == "dead")
         return "dead";
     if (result.rfind("message", 0) == 0) {
@@ -101,7 +102,6 @@ void ai::entity::AI::run(const ai::parser::Config &config)
             logger.log("Action failed or led to 'dead' state. Terminating.");
             break;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(ACTION_DELAY_MS));
     }
     stop();
 }

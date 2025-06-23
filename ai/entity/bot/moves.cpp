@@ -6,7 +6,6 @@
 */
 
 #include "../AI.hpp"
-#include <thread>
 
 std::string ai::entity::AI::getDirectionName(Direction dir)
 {
@@ -75,13 +74,9 @@ bool ai::entity::AI::executeMoves(const std::string &look, const std::vector<Dir
             return false;
         }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(ACTION_DELAY_MS));
-
         const std::string move_str = getDirectionName(move);
         if (doAction(move_str) == "dead")
             return false;
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(ACTION_DELAY_MS));
     }
     return true;
 }

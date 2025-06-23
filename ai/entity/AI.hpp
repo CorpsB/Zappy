@@ -8,7 +8,7 @@
 #pragma once
 
 #define FOOD_THRESHOLD 8.0
-#define ACTION_DELAY_MS 200
+#define ACTION_DELAY_MS 50
 
 #include <string>
 #include <memory>
