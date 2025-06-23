@@ -11,18 +11,11 @@
 
 void event_edi(server_t *server, unsigned int egg_id)
 {
-    client_t *cl;
-    int fd;
+    char *buffer = NULL;
 
-    cl = NULL;
-    fd = 0;
-    if (!server)
-        return;
-    for (int i = 0; i < server->poll.client_index; i++) {
-        cl = &server->poll.client_list[i];
-        if (cl->whoAmI != GUI)
-            continue;
-        fd = server->poll.pollfds[i].fd;
-        dprintf(fd, "edi #%u\n", egg_id);
-    }
+    if (asprintf(&buffer, "edi #%u", egg_id) == -1)
+        logger(server, "EDI", ERROR, true);
+    send_to_all_gui(server, buffer);
+    if (buffer)
+        free(buffer);
 }

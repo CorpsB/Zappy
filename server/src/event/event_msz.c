@@ -16,16 +16,11 @@
  */
 void event_msz(server_t *server)
 {
-    int fd;
-    client_t *cl;
+    char *buffer = NULL;
 
-    if (!server)
-        return;
-    for (int i = 0; i < server->poll.client_index; i++) {
-        cl = &server->poll.client_list[i];
-        if (cl->whoAmI == GUI) {
-            fd = server->poll.pollfds[i].fd;
-            dprintf(fd, "msz %u %u\n", server->width, server->height);
-        }
-    }
+    if (asprintf(&buffer, "msz %u %u\n", server->width, server->height) == -1)
+        logger(server, "MSZ", ERROR, true);
+    send_to_all_gui(server, buffer);
+    if (buffer)
+        free(buffer);
 }

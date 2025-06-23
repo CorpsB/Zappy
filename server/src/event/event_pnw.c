@@ -11,20 +11,16 @@
 
 void event_pnw(server_t *server, player_t *player)
 {
-    client_t *cl;
-    int fd;
+    char *buffer = NULL;
 
-    fd = 0;
     if (!server || !player || !player->team)
         return;
-    for (int i = 0; i < server->poll.client_index; i++) {
-        cl = &server->poll.client_list[i];
-        if (cl->whoAmI != GUI)
-            continue;
-        fd = server->poll.pollfds[i].fd;
-        dprintf(fd, "pnw #%u %u %u %d %u %s\n", player->id,
-            player->position[0], player->position[1], player->direction,
-            player->lvl, player->team->name);
-    }
+    if (asprintf(&buffer, "pnw #%u %u %u %d %u %s\n",
+        player->id, player->position[0], player->position[1],
+        player->direction, player->lvl, player->team->name) == -1)
+        logger(server, "PNW", ERROR, true);
+    send_to_all_gui(server, buffer);
+    if (buffer)
+        free(buffer);
     event_pin(server, player);
 }

@@ -11,16 +11,13 @@
 
 void event_sgt(server_t *server)
 {
-    int fd;
-    client_t *cl;
+    char *buffer = NULL;
 
     if (!server)
         return;
-    for (int i = 0; i < server->poll.client_index; i++) {
-        cl = &server->poll.client_list[i];
-        if (cl->whoAmI == GUI) {
-            fd = server->poll.pollfds[i].fd;
-            dprintf(fd, "sgt %u\n", server->frequency);
-        }
-    }
+    if (asprintf(&buffer, "sgt %u\n", server->frequency) == -1)
+        logger(server, "SGT", ERROR, true);
+    send_to_all_gui(server, buffer);
+    if (buffer)
+        free(buffer);
 }

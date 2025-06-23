@@ -9,24 +9,13 @@
 #include "include/function.h"
 #include "include/structure.h"
 
-static void send_ebo(int fd, unsigned int egg_id)
-{
-    dprintf(fd, "ebo #%u\n", egg_id);
-}
-
 void event_ebo(server_t *server, unsigned int egg_id)
 {
-    client_t *cl;
-    int fd;
+    char *buffer = NULL;
 
-    fd = 0;
-    if (!server)
-        return;
-    for (int i = 0; i < server->poll.client_index; i++) {
-        cl = &server->poll.client_list[i];
-        if (cl->whoAmI != GUI)
-            continue;
-        fd = server->poll.pollfds[i].fd;
-        send_ebo(fd, egg_id);
-    }
+    if (asprintf(&buffer, "ebo #%u", egg_id) == -1)
+        logger(server, "EBO", ERROR, true);
+    send_to_all_gui(server, buffer);
+    if (buffer)
+        free(buffer);
 }

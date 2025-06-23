@@ -9,32 +9,21 @@
 #include "include/function.h"
 #include "include/structure.h"
 
-static void send_pin(int fd, player_t *player)
+void event_pin(server_t *server, player_t *player)
 {
-    if (!player)
+    char *buffer = NULL;
+
+    if (!server || !player || player->is_dead)
         return;
-    dprintf(fd,
+    if (asprintf(&buffer,
         "pin #%u %u %u %u %u %u %u %u %u %u\n",
         player->id, player->position[0], player->position[1],
         player->inventory.food, player->inventory.linemate,
         player->inventory.deraumere, player->inventory.sibur,
         player->inventory.mendiane, player->inventory.phiras,
-        player->inventory.thystame
-    );
-}
-
-void event_pin(server_t *server, player_t *player)
-{
-    client_t *cl;
-    int fd;
-
-    if (!server || !player || player->is_dead)
-        return;
-    for (int i = 0; i < server->poll.client_index; i++) {
-        cl = &server->poll.client_list[i];
-        if (cl->whoAmI != GUI)
-            continue;
-        fd = server->poll.pollfds[i].fd;
-        send_pin(fd, player);
-    }
+        player->inventory.thystame) == -1)
+        logger(server, "PIN", ERROR, true);
+    send_to_all_gui(server, buffer);
+    if (buffer)
+        free(buffer);
 }
