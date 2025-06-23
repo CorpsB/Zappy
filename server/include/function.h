@@ -195,4 +195,7 @@ void event_pdr(server_t *server, int id, r_ressource_t type);
 void event_all_plv(server_t *server);
 void event_plv(server_t *server, player_t *player);
 void event_pex(server_t *server, player_t *player);
+void event_pbc(server_t *server, player_t *player, char *message);
+void event_seg(server_t *server, char *name);
+
 #endif /* !FUCNTION_H_ */

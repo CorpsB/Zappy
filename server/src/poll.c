@@ -56,8 +56,10 @@ static void add_client(server_t *server, int socket, whoAmI_t state)
 static bool is_game_over(server_t *server)
 {
     for (teams_t *teams = server->teams; teams != NULL; teams = teams->next) {
-        if (teams->win)
+        if (teams->win) {
+            event_seg(server, teams->name);
             return true;
+        }
     }
     return false;
 }
