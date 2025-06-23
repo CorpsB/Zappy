@@ -15,7 +15,7 @@ SRC	=	src/main.c								\
 		src/cmd/cmd_IA/cmd_eject.c				\
 		src/cmd/cmd_IA/cmd_fork.c				\
 		src/cmd/cmd_IA/cmd_forward.c			\
-		src/cmd/cmd_IA/cmd_graphic.c			\
+		src/cmd/cmd_GUI/cmd_graphic.c			\
 		src/cmd/cmd_IA/cmd_inventory.c			\
 		src/cmd/cmd_IA/cmd_left.c				\
 		src/cmd/cmd_IA/cmd_player.c				\
