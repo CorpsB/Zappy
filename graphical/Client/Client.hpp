@@ -14,7 +14,7 @@
 class Client {
     public:
         Client() {};
-        ~Client() = default;
+        ~Client();
 
         static Client &GetInstance();
 

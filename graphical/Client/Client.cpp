@@ -14,6 +14,11 @@ Client &Client::GetInstance()
     return _client;
 }
 
+Client::~Client()
+{
+    closeSocket();
+}
+
 void Client::initSocket()
 {
     if (_fds.fd != -1)
