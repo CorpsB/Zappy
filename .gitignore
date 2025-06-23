@@ -3,3 +3,6 @@
 *.o
 *.log
 .vscode
+
+#Server binary : 
+zappy_server
