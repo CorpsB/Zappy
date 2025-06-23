@@ -53,6 +53,7 @@ namespace ai::entity
             void start(const ai::parser::Config &config);
             void run(const ai::parser::Config &config);
             std::string doAction(const std::string &action);
+            bool doKoAction(const std::string &action);
             void stop();
 
             // helper

@@ -53,7 +53,7 @@ ai::entity::Goal ai::entity::AI::getGoal(const std::string &look)
     if (hasEnoughRocks() || _sound_system.getNearestSoundDirection("MEETUP_" + std::to_string(_level + 1)) != NONE) {
         if (countPlayersOnTile(0, look) >= RECIPES[_level - 1].player)
             return ELEVATION;
-        return STONE; // MEETUP
+        return MEETUP;
     }
     return STONE;
 }
@@ -65,14 +65,14 @@ bool ai::entity::AI::handleGoal(std::string &look, const std::string &goal)
 
     if (item_idx == 0) {
         logger.log(goal + " on current tile. Taking.");
-        return doAction("Take " + goal) != "dead";
+        return doKoAction("Take " + goal);
     } else if (item_idx > 0) {
         const std::vector<Direction> moves = getMovesToTileLevel1Vision(item_idx);
         if (!moves.empty()) {
             logger.log(goal + " on tile " + std::to_string(item_idx) + ". Moving to take.");
             if (!executeMoves(look, moves))
                 return false;
-            return doAction("Take " + goal) != "dead";
+            return doKoAction("Take " + goal);
         } else {
             logger.log(goal + " at tile " + std::to_string(item_idx) + ", path too complex. Defaulting to spiral.");
             return executeSpiralMove(_spiral_state);

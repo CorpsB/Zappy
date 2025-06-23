@@ -40,25 +40,43 @@ void ai::entity::AI::stop()
 
 std::string ai::entity::AI::doAction(const std::string &action)
 {
-    const std::string result = _socket.doAction(action);
-    utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
+    if (!action.empty())
+        _socket.sendCommand(action);
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(ACTION_DELAY_MS));
-    if (result == "dead")
-        return "dead";
-    if (result.rfind("message", 0) == 0) {
-        const Direction dir = _sound_system.setSound(result);
-        if (dir != NONE) {
-            const SoundCell &cell = _sound_system.getDirectionSound(dir);
-            logger.log("Message received from " + std::to_string(cell.id) + " '" + cell.message + "'");
+    utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
+    while (true) {
+        const std::string result = _socket.readSocketBuffer();
+
+        if (result == "dead")
+            return "dead";
+        if (result.rfind("message", 0) == 0) {
+            const Direction dir = _sound_system.setSound(result);
+            if (dir != NONE) {
+                const SoundCell &cell = _sound_system.getDirectionSound(dir);
+                logger.log("Message received from " + std::to_string(cell.id) + " '" + cell.message + "'");
+            }
+            continue;
         }
-        return doAction(action);
+        if (result.rfind("eject", 0) == 0) {
+            logger.log("Got ejected! " + result);
+            continue;
+        }
+        return result;
     }
-    if (result.rfind("eject", 0) == 0) {
-        logger.log("Got ejected! " + result);
-        return doAction(action);
+}
+
+bool ai::entity::AI::doKoAction(const std::string &action)
+{
+    const std::string result = doAction(action);
+
+    if (result == "ko") {
+        utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
+        logger.log("[Warn] Action failed: '" + action + "'.");
+        return true;
     }
-    return result;
+    if (result == "dead")
+        return false;
+    return true;
 }
 
 void ai::entity::AI::run(const ai::parser::Config &config)

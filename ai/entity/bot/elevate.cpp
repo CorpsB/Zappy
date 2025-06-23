@@ -37,7 +37,7 @@ bool ai::entity::AI::setStonesForIncantation()
         return false;
 
     for (const std::string &stone : stones_to_set) {
-        if (doAction("Set " + stone) == "dead") {
+        if (!doKoAction("Set " + stone)) {
             logger.log("Failed to set " + stone + " during L" + std::to_string(_level + 1) + " prep.");
             return false;
         }
