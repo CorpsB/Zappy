@@ -17,10 +17,10 @@
 void event_msz(server_t *server)
 {
     char *buffer = NULL;
-    
+
     if (asprintf(&buffer, "msz %u %u\n", server->width, server->height) == -1)
-            logger(server, "MSZ", ERROR, true);
-        send_to_all_gui(server, buffer);
-        if (buffer)
-            free(buffer);
+        logger(server, "MSZ", ERROR, true);
+    send_to_all_gui(server, buffer);
+    if (buffer)
+        free(buffer);
 }

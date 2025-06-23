@@ -12,10 +12,10 @@
 void event_ebo(server_t *server, unsigned int egg_id)
 {
     char *buffer = NULL;
-    
+
     if (asprintf(&buffer, "ebo #%u", egg_id) == -1)
-            logger(server, "EBO", ERROR, true);
-        send_to_all_gui(server, buffer);
-        if (buffer)
-            free(buffer);
+        logger(server, "EBO", ERROR, true);
+    send_to_all_gui(server, buffer);
+    if (buffer)
+        free(buffer);
 }

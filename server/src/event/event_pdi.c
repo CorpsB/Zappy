@@ -22,15 +22,16 @@
 void event_pdi(server_t *server, player_t *player)
 {
     char *buffer = NULL;
-    
-    if (asprintf(&buffer, "pdi %d\n",player->id) == -1)
-            logger(server, "PDI", ERROR, true);
-        send_to_all_gui(server, buffer);
-        if (buffer)
-            free(buffer);
+
+    if (asprintf(&buffer, "pdi %d\n", player->id) == -1)
+        logger(server, "PDI", ERROR, true);
+    send_to_all_gui(server, buffer);
+    if (buffer)
+        free(buffer);
 }
 
 void event_pdi_by_index(void)
 {
+    //TO DO
     return;
 }
