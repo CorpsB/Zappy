@@ -35,12 +35,6 @@ bool ai::entity::AI::performActionForGoal(const std::string &look)
         }
 
         case ELEVATION: {
-            const std::string broadcast_msg = "Broadcast EVOLVE_" + std::to_string(_level + 1);
-            if (doAction(broadcast_msg) == "dead")
-                return false;
-
-            const std::vector<Direction> moves = getMovesTowardsSoundDirection(_sound_system.getNearestSoundDirection());
-            return executeMoves(look, moves);
         }
 
         case MEETUP: {

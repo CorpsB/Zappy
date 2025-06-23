@@ -78,6 +78,11 @@ namespace ai::entity
             bool performWanderAction();
             bool performActionForGoal(const std::string &look);
 
+            // elevate
+            bool setStoneForIncantation(const std::string &name, int qty,
+                std::vector<std::string> &stones_to_set);
+            bool setStonesForIncantation();
+
         private:
             static const ElevationRecipe RECIPES[7];
 

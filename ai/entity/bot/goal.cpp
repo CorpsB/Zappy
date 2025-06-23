@@ -46,7 +46,7 @@ std::string ai::entity::AI::getRarestMissingStone()
 
 ai::entity::Goal ai::entity::AI::getGoal(const std::string &look)
 {
-    if (_inventory.getItem("food") < FOOD_THRESHOLD)
+    if (_food_level < FOOD_THRESHOLD)
         return FOOD;
     if (_level == 8)
         return STONE;
