@@ -18,8 +18,6 @@ void cmd_tna(server_t *server, int index, char **args)
     if (!server || !server->poll.client_list ||
         index < 0 || index >= server->poll.client_index)
         return;
-    if (check_graphical(server, index) != 0)
-        return;
     fd = server->poll.pollfds[index].fd;
     for (team = server->teams; team; team = team->next) {
         if (team->name)

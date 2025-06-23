@@ -17,8 +17,6 @@ void cmd_fork(server_t *server, int index, char **args)
     if (!server || !server->poll.client_list ||
         index < 0 || index >= server->poll.client_index)
         return;
-    if (check_autorized(server, index) != 0)
-        return;
     pl = server->poll.client_list[index].player;
     pl->team->slots_max++;
     add_eggs(server, pl->id, pl->team, (int *)pl->position);

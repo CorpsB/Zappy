@@ -59,8 +59,6 @@ void cmd_sst(server_t *server, int index, char **args)
     long freq;
 
     fd = server->poll.pollfds[index].fd;
-    if (check_graphical(server, index) != 0)
-        return;
     if (!parse_sst_argument(args, &freq)) {
         dprintf(fd, "ko\n");
         return;

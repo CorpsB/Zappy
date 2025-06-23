@@ -38,7 +38,7 @@ void cmd_plv(server_t *server, int index, char **args)
     unsigned int id;
     player_t *pl;
 
-    if (!server || check_graphical(server, index) != 0)
+    if (!server)
         return;
     fd = server->poll.pollfds[index].fd;
     if (parse_plv_args(args, &id) != 0)
