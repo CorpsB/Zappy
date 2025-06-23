@@ -8,12 +8,12 @@
 #include "include/density_table.h"
 
 const density_t density_table[] = {
-    {"Food", 0.5, 2},
-    {"Linemate", 0.3, 3},
-    {"Deraumere", 0.15, 4},
-    {"Sibur", 0.1, 5},
-    {"Mendiane", 0.1, 5},
-    {"Phiras", 0.08, 6},
-    {"Thystame", 0.05, 7},
+    {"food", 0.5, 2},
+    {"linemate", 0.3, 3},
+    {"deraumere", 0.15, 4},
+    {"sibur", 0.1, 5},
+    {"mendiane", 0.1, 5},
+    {"phiras", 0.08, 6},
+    {"thystame", 0.05, 7},
     {"", 0, 0}
 };

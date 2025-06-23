@@ -8,158 +8,112 @@
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
+#include "include/density_table.h"
 
-// /**
-//  * @brief Resolve “mendiane”.
-// */
-// static unsigned int *select_src4(const char *args,
-//     resources_t *pos, resources_t *inv, unsigned int **dst)
-// {
-//     switch (args[0]) {
-//     case 'm':
-//         if (strcmp(args, "mendiane") == 0) {
-//             *dst = &inv->mendiane;
-//             return &pos->mendiane;
-//         }
-//         break;
-//     default:
-//         break;
-//     }
-//     return NULL;
-// }
+static int get_ressource(server_t *, player_t *pl, r_ressource_t type)
+{
+    if (type == FOOD)
+        return pl->inventory.food;
+    if (type == LINEMATE)
+        return pl->inventory.linemate;
+    if (type == DERAUMERE)
+        return pl->inventory.deraumere;
+    if (type == SIBUR)
+        return pl->inventory.sibur;
+    if (type == MENDIANE)
+        return pl->inventory.mendiane;
+    if (type == PHIRAS)
+        return pl->inventory.phiras;
+    if (type == THYSTAME)
+        return pl->inventory.thystame;
+    return 0;
+}
 
-// /**
-//  * @brief Resolve “deraumere” or “sibur”; otherwise delegates downward.
-// */
-// static unsigned int *select_src3(const char *args,
-//     resources_t *pos, resources_t *inv, unsigned int **dst)
-// {
-//     switch (args[0]) {
-//     case 'd':
-//         if (strcmp(args, "deraumere") == 0) {
-//             *dst = &inv->deraumere;
-//             return &pos->deraumere;
-//         }
-//         break;
-//     case 's':
-//         if (strcmp(args, "sibur") == 0) {
-//             *dst = &inv->sibur;
-//             return &pos->sibur;
-//         }
-//         break;
-//     default:
-//         break;
-//     }
-//     return select_src4(args, pos, inv, dst);
-// }
+static void pl_del_ressource(server_t *, player_t *pl,
+    r_ressource_t type)
+{
+    if (type == FOOD)
+        pl->inventory.food = 0;
+    if (type == LINEMATE)
+        pl->inventory.linemate = 0;
+    if (type == DERAUMERE)
+        pl->inventory.deraumere = 0;
+    if (type == SIBUR)
+        pl->inventory.sibur = 0;
+    if (type == MENDIANE)
+        pl->inventory.mendiane = 0;
+    if (type == PHIRAS)
+        pl->inventory.phiras = 0;
+    if (type == THYSTAME)
+        pl->inventory.thystame = 0;
+}
 
-// /**
-//  * @brief Resolve “phiras” or “thystame”; otherwise delegates downward.
-//  *
-//  * Identical semantics to select_src(), but for a second subset of names.
-// */
-// static unsigned int *select_src2(const char *args,
-//     resources_t *pos, resources_t *inv, unsigned int **dst)
-// {
-//     switch (args[0]) {
-//     case 'p':
-//         if (strcmp(args, "phiras") == 0) {
-//             *dst = &inv->phiras;
-//             return &pos->phiras;
-//         }
-//         break;
-//     case 't':
-//         if (strcmp(args, "thystame") == 0) {
-//             *dst = &inv->thystame;
-//             return &pos->thystame;
-//         }
-//         break;
-//     default:
-//         break;
-//     }
-//     return select_src3(args, pos, inv, dst);
-// }
+static void add_theorique_map_inventory(server_t *server,
+    r_ressource_t type, int nbr)
+{
+    if (type == FOOD)
+        server->actual_map_inventory.food += nbr;
+    if (type == LINEMATE)
+        server->actual_map_inventory.linemate += nbr;
+    if (type == DERAUMERE)
+        server->actual_map_inventory.deraumere += nbr;
+    if (type == SIBUR)
+        server->actual_map_inventory.sibur += nbr;
+    if (type == MENDIANE)
+        server->actual_map_inventory.mendiane += nbr;
+    if (type == PHIRAS)
+        server->actual_map_inventory.phiras += nbr;
+    if (type == THYSTAME)
+        server->actual_map_inventory.thystame += nbr;
+}
 
-// /**
-//  * @brief Resolve “food” or “linemate”.
-//  *
-//  * If @p args matches one of those names, sets *@p dst to the
-//  * player-inventory counter and returns the pointer to the
-//  * corresponding map-pos counter. Otherwise delegates to select_src2().
-//  * @param args      Resource name received from the client.
-//  * @param pos      Pointer to the map tile’s resource structure.
-//  * @param inv       Pointer to the player’s inventory structure.
-//  * @param dst       [out] receives the inventory counter to update.
-//  * @return Pointer to the map-pos counter, or NULL if the name is
-//  *         unknown at this level.
-// */
-// static unsigned int *select_src(char **args,
-//     resources_t *pos, resources_t *inv, unsigned int **dst)
-// {
-//     switch (args[0]) {
-//     case 'f':
-//         if (strcmp(args, "food") == 0) {
-//             *dst = &inv->food;
-//             return &pos->food;
-//         }
-//         break;
-//     case 'l':
-//         if (strcmp(args, "linemate") == 0) {
-//             *dst = &inv->linemate;
-//             return &pos->linemate;
-//         }
-//         break;
-//     default:
-//         break;
-//     }
-//     return select_src2(args, pos, inv, dst);
-// }
+static void map_add_ressource(server_t *server, int *pos,
+    r_ressource_t type, int quanity)
+{
+    if (type == FOOD)
+        server->map[pos[0]][pos[1]].food += quanity;
+    if (type == LINEMATE)
+        server->map[pos[0]][pos[1]].linemate += quanity;
+    if (type == DERAUMERE)
+        server->map[pos[0]][pos[1]].deraumere += quanity;
+    if (type == SIBUR)
+        server->map[pos[0]][pos[1]].sibur += quanity;
+    if (type == MENDIANE)
+        server->map[pos[0]][pos[1]].mendiane += quanity;
+    if (type == PHIRAS)
+        server->map[pos[0]][pos[1]].phiras += quanity;
+    if (type == THYSTAME)
+        server->map[pos[0]][pos[1]].thystame += quanity;
+}
 
-// /**
-//  * @brief Move one unit of a resource from @p src to @p dst.
-//  *
-//  * Does nothing if @p src is already zero.
-//  *
-//  * @param src Pointer to the source counter (will be decremented).
-//  * @param dst Pointer to the destination counter (will be incremented).
-//  * @return 0 on success (unit transferred), 1 on failure (src==0).
-// */
-// static int transfer_one_unit(unsigned int *src, unsigned int *dst)
-// {
-//     if (*src == 0)
-//         return 1;
-//     (*src)--;
-//     (*dst)++;
-//     return 0;
-// }
+static void take_obj(server_t *server, r_ressource_t obj, int index)
+{
+    player_t *pl = server->poll.client_list[index].player;
+    int nbr = get_ressource(server, pl, obj);
+    int *pos = malloc(sizeof(int) * 2);
 
-// void cmd_set_object(server_t *server, int index, char **args)
-// {
-//     resources_t *pos;
-//     resources_t *inv;
-//     unsigned int *src;
-//     unsigned int *dst;
-//     int is_ok;
-
-//     if (!server || !server->poll.client_list
-//         || !server->poll.client_list[index].player || !args)
-//         return;
-//     pos = &server->map[
-//         server->poll.client_list[index].player->position[1]]
-//         [server->poll.client_list[index].player->position[0]];
-//     inv = &server->poll.client_list[index].player->inventory;
-//     src = select_src(args, pos, inv, &dst);
-//     if (!src)
-//         return;
-//     is_ok = transfer_one_unit(dst, src);
-//     dprintf(server->poll.client_list[index].player->socket_fd,
-//         is_ok == 0 ? "ok\n" : "ko\n");
-// }
+    if (!pos)
+        logger(server, "MALLOC : POSITION", PERROR, true);
+    pos[0] = pl->position[0];
+    pos[1] = pl->position[1];
+    map_add_ressource(server, pos, obj, nbr);
+    pl_del_ressource(server, pl, obj);
+    change_arround(server, pos, obj, density_table[obj].repartition_value);
+    add_theorique_map_inventory(server, obj, nbr);
+    event_pdr(server, pl->id, obj);
+    event_pin(server, pl);
+    event_bct_per_tile(server, pl->position[0], pl->position[1]);
+    if (pos)
+        free(pos);
+}
 
 void cmd_set_object(server_t *server, int index, char **args)
 {
-    (void)args;
     if (check_autorized(server, index) != 0)
         return;
-    dprintf(server->poll.pollfds[index].fd, "Coming soon\n");
+    for (int i = FOOD; i < THYSTAME; i++) {
+        if (strncmp(args[1], density_table[i].name,
+            strlen(density_table[i].name)) == 0)
+                take_obj(server, (r_ressource_t)i, index);
+    }
 }

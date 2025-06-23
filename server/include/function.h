@@ -187,4 +187,9 @@ void event_ppo(server_t *server, player_t *player);
 void event_edi(server_t *server, unsigned int egg_id);
 
 void free_table(char **table);
+
+void event_bct_per_tile(server_t *server, int y, int x);
+
+void event_pgt(server_t *server, int id, r_ressource_t type);
+void event_pdr(server_t *server, int id, r_ressource_t type);
 #endif /* !FUCNTION_H_ */

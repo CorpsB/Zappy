@@ -42,3 +42,18 @@ void event_bct(server_t *server)
         send_full_map(fd, server);
     }
 }
+
+void event_bct_per_tile(server_t *server, int y, int x)
+{
+    char *buffer = NULL;
+    resources_t tile = server->map[y][x];
+
+    if (asprintf(&buffer, "bct %u %u %u %u %u %u %u %u %u",
+        y, x, tile.food, tile.linemate,
+        tile.deraumere, tile.sibur, tile.mendiane, tile.phiras,
+        tile.thystame) == -1)
+        logger(server, "BCT PER TILE", ERROR, true);
+    send_to_all_gui(server, buffer);
+    if (buffer)
+        free(buffer);
+}

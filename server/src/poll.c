@@ -139,5 +139,6 @@ void run_server(server_t *server)
         poll_func(server);
         check_each_teams(server);
         debug_server(server);
+        //=> Consomation de nourriture => Appel à pin
     }
 }

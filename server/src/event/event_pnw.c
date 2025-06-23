@@ -26,4 +26,5 @@ void event_pnw(server_t *server, player_t *player)
             player->position[0], player->position[1], player->direction,
             player->lvl, player->team->name);
     }
+    event_pin(server, player);
 }
