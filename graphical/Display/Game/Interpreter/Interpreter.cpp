@@ -303,17 +303,23 @@ void Interpreter::_pbc(int playerId, std::string data)
 
 void Interpreter::_pic(int x, int y, int level, std::vector<int> playersId)
 {
-    (void) x;
-    (void) y;
     (void) level;
     (void) playersId;
+    Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::RING, -1,
+    {0.0f + (x * TILE_SIZE), -10.0f, 0.0f + (y * TILE_SIZE)}, sf::Color {127, 0, 255}, "./Assets/IncantationRing.stl");
 }
 
 void Interpreter::_pie(int x, int y, std::string result)
 {
-    (void) x;
-    (void) y;
     (void) result;
+    for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
+        Renderer::Entity &e = *it;
+        if (e.position.x == 0.f + (x * TILE_SIZE) && e.position.z == 0.f + (y * TILE_SIZE) && e.type == Renderer::PartType::RING) {
+            it = Renderer::sceneEntities.erase(it);
+        } else {
+            ++it;
+        }
+    }
 }
 
 void Interpreter::_pfk(int playerId)

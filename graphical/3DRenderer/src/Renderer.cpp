@@ -200,6 +200,11 @@ namespace Renderer {
                     e.rotation.y = bodyRotY;
                 }
             }
+            if (e.type == Renderer::PartType::RING) {
+                e.rotation.y += 20.0f * dt;
+                if (e.rotation.y >= 360.f)
+                    e.rotation.y -= 360.f;
+            }
         }
         // HUD message à timer
         for (auto it = hudMessages.begin(); it != hudMessages.end();) {
