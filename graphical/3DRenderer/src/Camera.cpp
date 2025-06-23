@@ -37,7 +37,7 @@ namespace Renderer {
         Vec3 right   = { forward.z, 0.0f, -forward.x };
         
         // Mouvements
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))    { cameraPosition.x += forward.x * move; cameraPosition.z += forward.z * move; }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))    { cameraPosition.x += forward.x * move * 3; cameraPosition.z += forward.z * move * 3; }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))  { cameraPosition.x -= forward.x * move; cameraPosition.z -= forward.z * move; }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))  { cameraPosition.x -= right.x   * move; cameraPosition.z -= right.z   * move; }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) { cameraPosition.x += right.x   * move; cameraPosition.z += right.z   * move; }

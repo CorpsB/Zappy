@@ -16,10 +16,30 @@ namespace Renderer {
     std::vector<Entity> sceneEntities;
     int nextEntityID = 0;
     int rotatingEntityId = -1;
+    std::array<std::string, 8> pathEyes = {
+        "./Assets/Eyes_lv1.stl",
+        "./Assets/Eyes_lv2.stl",
+        "./Assets/Eyes_lv3.stl",
+        "./Assets/Eyes_lv4.stl",
+        "./Assets/Eyes_lv5.stl",
+        "./Assets/Eyes_lv6.stl",
+        "./Assets/Eyes_lv7.stl",
+        "./Assets/Eyes_lv8.stl"
+    };
+    std::array<float, 8> offsetEyesZ = {
+        -8.8f,
+        -7.8f,
+        -8.2f,
+        -5.5f,
+        -7.5f,
+        -6.5f,
+        -7.2f,
+        -6.4f
+    };
 
     int spawn(EntityType type, PartType partType, int clientId, const Vec3& pos,
               const sf::Color& c, const std::string& filepath, Compass orientation,
-              const Vec3& rotation) {
+              const Vec3& rotation, int level) {
         Entity newEnt;
         newEnt.id = nextEntityID++;
         newEnt.type = partType;
@@ -28,6 +48,7 @@ namespace Renderer {
         newEnt.rotation = rotation;
         newEnt.scale    = {1.f, 1.f, 1.f};
         newEnt.orientation = orientation;
+        newEnt.level = level;
         // newEnt.rotation.y = compassToAngle(orientation);
         try {
             switch (type) {

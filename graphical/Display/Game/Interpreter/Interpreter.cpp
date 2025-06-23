@@ -18,6 +18,7 @@ void Interpreter::interpret(const std::string &data)
         { bct, [&](const std::smatch &m) { _bct(std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), std::stoi(m[4]), std::stoi(m[5]), std::stoi(m[6]), std::stoi(m[7]), std::stoi(m[8]), std::stoi(m[9])); } },
         { pnw, [&](const std::smatch &m) { _pnw(std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), static_cast<Renderer::Compass>(std::stoi(m[4]) - 1), std::stoi(m[5]), m[6]); } },
         { ppo, [&](const std::smatch &m) { _ppo(std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), static_cast<Renderer::Compass>(std::stoi(m[4]) - 1)); } },
+        { plv, [&](const std::smatch &m) { _plv(std::stoi(m[1]), std::stoi(m[2])); } },
         { pin, [&](const std::smatch &m) { _pin(std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), std::stoi(m[4]), std::stoi(m[5]), std::stoi(m[6]), std::stoi(m[7]), std::stoi(m[8]), std::stoi(m[9]), std::stoi(m[10])); } },
         { pex, [&](const std::smatch &m) { _pex(std::stoi(m[1])); } },
         { pbc, [&](const std::smatch &m) { _pbc(std::stoi(m[1]), m[2]); } },
@@ -165,12 +166,13 @@ void Interpreter::_bct(int x, int y, int q0, int q1, int q2, int q3, int q4, int
 
 void Interpreter::_pnw(int playerId, int x, int y, Renderer::Compass orientation, int level, std::string teamName)
 {
-    (void) level;
+    std::cerr << "level: " << level << std::endl;
     (void) teamName;
     Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::BODY, playerId,
-        {0.f + (x * TILE_SIZE), -25.0f, 0.f + (y * TILE_SIZE)}, sf::Color::Cyan, "./Assets/body_golem.stl", orientation);
+        {0.f + (x * TILE_SIZE), OFFSET_FROM_GROUND, 0.f + (y * TILE_SIZE)}, sf::Color::Cyan, "./Assets/body_golem.stl", orientation, {0.f, 0.f, 0.f}, level);
     Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::EYES, playerId,
-        {0.f + (x * TILE_SIZE), -25.0f + -1.5f, 0.f + (y * TILE_SIZE) + -6.5f}, sf::Color::Black, "./Assets/eyes_golem.stl", orientation);
+        {0.f + (x * TILE_SIZE), OFFSET_FROM_GROUND + OFFSET_EYES_Y, 0.f + (y * TILE_SIZE) + Renderer::offsetEyesZ[0]}, sf::Color::Black,
+        Renderer::pathEyes[0], orientation, {0.f, 0.f, 0.f}, level);
     std::cerr << " (*TILE_SIZE) x: " << x * TILE_SIZE << " y: " << y * TILE_SIZE << std::endl;
     std::cerr << "PlayerID " << playerId << std::endl;
 }
@@ -241,9 +243,37 @@ void Interpreter::_ppo(int playerId, int x, int y, Renderer::Compass orientation
     }
 }
 
-void Interpreter::_plv(int playerId)
+void Interpreter::_plv(int playerId, int level)
 {
-    (void) playerId;
+    float x;
+    float z;
+    bool exists = false;
+
+    for (auto &e : Renderer::sceneEntities) {
+        if (e.clientId == playerId && e.type == Renderer::PartType::BODY) {
+            x = e.position.x;
+            z = e.position.z;
+            exists = true;
+            break;
+        }
+    }
+    if (!exists) {
+        std::cerr << "Somehow, the player " << playerId << " doesn't exists..." << std::endl;
+        return;
+    }
+    for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
+        Renderer::Entity &e = *it;
+        // Will also remove the eyes
+        if (e.clientId == playerId && e.type == Renderer::PartType::EYES && e.level != level) {
+            it = Renderer::sceneEntities.erase(it);
+            Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::EYES, playerId,
+            {x, OFFSET_FROM_GROUND + OFFSET_EYES_Y, z + Renderer::offsetEyesZ[0]}, sf::Color::Black,
+            Renderer::pathEyes[0], Renderer::Compass::NORTH, {0.f, 0.f, 0.f}, level);
+            // std::cerr << "PathEyes: " << Renderer::pathEyes[1] << std::endl;
+        } else {
+            ++it;
+        }
+    }
 }
 
 void Interpreter::_pin(int playerId, int x, int y, int q0, int q1, int q2, int q3, int q4, int q5, int q6)
@@ -305,7 +335,17 @@ void Interpreter::_pgt(int playerId, int resourceNumber)
 
 void Interpreter::_pdi(int playerId)
 {
-    (void) playerId;
+    for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
+        Renderer::Entity &e = *it;
+        // Will also remove the eyes
+        if (e.clientId == playerId) {
+            if (e.type == Renderer::PartType::BODY)
+                std::cerr << "Player " << e.clientId << " died. Rip." << std::endl;
+            it = Renderer::sceneEntities.erase(it);
+        } else {
+            ++it;
+        }
+    }
 }
 
 void Interpreter::_enw(int eggId, int playerId, int x, int y)

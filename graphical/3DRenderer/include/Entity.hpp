@@ -5,6 +5,7 @@
 #include "Geometry.hpp"
 #include "Math.hpp"
 #include <unordered_map>
+#include <array>
 
 namespace Renderer {
     enum class EntityType { CUBE, SPHERE, STL };
@@ -35,15 +36,18 @@ namespace Renderer {
         Compass orientation;
         Vec3 rotation;
         Vec3 scale;
+        int level;
     };
 
     extern std::vector<Entity> sceneEntities;
     extern int nextEntityID;
     extern int rotatingEntityId;
+    extern std::array<std::string, 8> pathEyes;
+    extern std::array<float, 8> offsetEyesZ;
 
     // Création d'entités
     int spawn(EntityType type, PartType partType, int clientId, const Vec3& pos,
               const sf::Color& c, const std::string& filepath = "", Compass orientation = Compass::NORTH,
-              const Vec3& rotation = {0.f, 0.f, 0.f});
+              const Vec3& rotation = {0.f, 0.f, 0.f}, int level = -1);
     float compassToAngle(Renderer::Compass c);
 }

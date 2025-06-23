@@ -13,6 +13,8 @@
 #include "RegexMatches.hpp"
 
 #define TILE_SIZE 70
+#define OFFSET_FROM_GROUND -25.f
+#define OFFSET_EYES_Y -1.5f
 
 class Interpreter {
     public:
@@ -61,7 +63,7 @@ class Interpreter {
          * @brief Kicks a player from the server
          * @param playerId ID of the player
          */
-        void _plv(int playerId); // A Garder ?
+        void _plv(int playerId, int level);
         void _pin(int playerId, int x, int y, int q0, int q1, int q2, int q3, int q4, int q5, int q6); // A Garder ?
         void _pex(int playerId); // Utile ?
         void _pbc(int playerId, std::string msg); // Utile ?

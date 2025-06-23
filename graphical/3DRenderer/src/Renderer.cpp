@@ -105,7 +105,7 @@ namespace Renderer {
     void update(float dt) {
         processInput(dt);
         cooldownAction -= dt;
-        Vec3 offset = {0.f, -1.5f, -6.5f};
+        Vec3 offset = {0.f, OFFSET_EYES_Y, Renderer::offsetEyesZ[0]};
         // Values in valuesForSynchro :
         // int -> client id
         // Vec3 -> body position
@@ -119,16 +119,16 @@ namespace Renderer {
                 m.timeElapsed += dt;
                 // X axis wrap
                 if (e.position.x < -35.f) {
-                    e.position.x = map_size_x * TILE_SIZE + e.position.x;
-                } else if (e.position.x > map_size_x * TILE_SIZE + 35.f) {
-                    e.position.x = map_size_x * TILE_SIZE - e.position.x;
+                    e.position.x = (map_size_x - 1) * TILE_SIZE + 35.f + (35.f + e.position.x);
+                } else if (e.position.x > (map_size_x - 1) * TILE_SIZE + 35.f) {
+                    e.position.x = (map_size_x - 1) * TILE_SIZE - e.position.x;
                 }
 
                 // Z axis wrap
                 if (e.position.z < -35.f) {
-                    e.position.z = map_size_y * TILE_SIZE + e.position.z;
-                } else if (e.position.z > map_size_y * TILE_SIZE + 35.f) {
-                    e.position.z = map_size_y * TILE_SIZE - e.position.z;
+                    e.position.z = (map_size_y - 1) * TILE_SIZE + 35.f + (35.f + e.position.z);
+                } else if (e.position.z > (map_size_y - 1) * TILE_SIZE + 35.f) {
+                    e.position.z = (map_size_y - 1) * TILE_SIZE - e.position.z;
                 }
                 while (m.stepsRemaining > 0 && m.timeElapsed >= 0.025f) {
                     m.timeElapsed -= 0.025f;

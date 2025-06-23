@@ -10,6 +10,7 @@
 #include "Math.hpp"
 
 #define TILE_SIZE 70
+#define OFFSET_EYES_Y -1.5f
 
 namespace Renderer {
     // Initialisation et boucle
