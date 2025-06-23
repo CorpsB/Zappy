@@ -43,3 +43,33 @@ bool ai::entity::AI::setStonesForIncantation()
     }
     return true;
 }
+
+bool ai::entity::AI::launchIncantation()
+{
+    ai::utils::debug::Logger &logger = ai::utils::debug::Logger::GetInstance();
+    logger.log("Attempting L" + std::to_string(_level + 1) + " Incantation.");
+
+    if (!setStonesForIncantation()) {
+        logger.log("L" + std::to_string(_level + 1) + " stone setting phase failed.");
+        return false;
+    }
+
+    const std::string response = doAction("Incantation");
+    if (response == "dead")
+        return false;
+    if (response.find("Elevation underway") != std::string::npos) {
+        const std::string final_response = doAction("");
+        if (final_response == "dead")
+            return false;
+        if (final_response.find("Current level: " + std::to_string(_level + 1)) != std::string::npos) {
+            ++_level;
+            logger.log("L" + std::to_string(_level) + " ELEVATION SUCCESS! Now Level " + std::to_string(_level) + ".");
+            return true;
+        } else {
+            logger.log("L" + std::to_string(_level + 1) + " Elevation failed or unexpected response: '" + final_response + "'.");
+        }
+    } else {
+        logger.log("L" + std::to_string(_level + 1) + " Incantation start failed: '" + response + "'.");
+    }
+    return false;
+}

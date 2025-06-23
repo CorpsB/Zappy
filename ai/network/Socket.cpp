@@ -159,7 +159,9 @@ bool ai::network::Socket::sendCommand(const std::string &cmd)
 
 std::string ai::network::Socket::doAction(const std::string &cmd)
 {
-    if (!sendCommand(cmd))
-        return "dead";
+    if (cmd != "") {
+        if (!sendCommand(cmd))
+            return "dead";
+    }
     return readSocketBuffer();
 }

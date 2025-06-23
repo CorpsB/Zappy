@@ -82,6 +82,7 @@ namespace ai::entity
             bool setStoneForIncantation(const std::string &name, int qty,
                 std::vector<std::string> &stones_to_set);
             bool setStonesForIncantation();
+            bool launchIncantation();
 
         private:
             static const ElevationRecipe RECIPES[7];
