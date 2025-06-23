@@ -197,5 +197,6 @@ void event_plv(server_t *server, player_t *player);
 void event_pex(server_t *server, player_t *player);
 void event_pbc(server_t *server, player_t *player, char *message);
 void event_seg(server_t *server, char *name);
+void event_smg(server_t *server, char *name);
 
 #endif /* !FUCNTION_H_ */
