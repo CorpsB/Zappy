@@ -105,7 +105,6 @@ namespace Renderer {
     void update(float dt) {
         processInput(dt);
         cooldownAction -= dt;
-        Vec3 offset = {0.f, OFFSET_EYES_Y, Renderer::offsetEyesZ[0]};
         // Values in valuesForSynchro :
         // int -> client id
         // Vec3 -> body position
@@ -113,6 +112,7 @@ namespace Renderer {
         std::vector<std::tuple<int, Vec3, Vec3>> valuesForSynchro;
 
         for (auto& e : sceneEntities) {
+            Vec3 offset = {0.f, OFFSET_EYES_Y, Renderer::offsetEyesZ[e.level - 1]};
             auto itMove = activeMovements.find(e.clientId);
             if (itMove != activeMovements.end() && itMove->second.active) {
                 MovementState& m = itMove->second;

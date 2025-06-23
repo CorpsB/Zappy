@@ -171,8 +171,8 @@ void Interpreter::_pnw(int playerId, int x, int y, Renderer::Compass orientation
     Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::BODY, playerId,
         {0.f + (x * TILE_SIZE), OFFSET_FROM_GROUND, 0.f + (y * TILE_SIZE)}, sf::Color::Cyan, "./Assets/body_golem.stl", orientation, {0.f, 0.f, 0.f}, level);
     Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::EYES, playerId,
-        {0.f + (x * TILE_SIZE), OFFSET_FROM_GROUND + OFFSET_EYES_Y, 0.f + (y * TILE_SIZE) + Renderer::offsetEyesZ[0]}, sf::Color::Black,
-        Renderer::pathEyes[0], orientation, {0.f, 0.f, 0.f}, level);
+        {0.f + (x * TILE_SIZE), OFFSET_FROM_GROUND + OFFSET_EYES_Y, 0.f + (y * TILE_SIZE) + Renderer::offsetEyesZ[level - 1]}, sf::Color::Black,
+        Renderer::pathEyes[level - 1], orientation, {0.f, 0.f, 0.f}, level);
     std::cerr << " (*TILE_SIZE) x: " << x * TILE_SIZE << " y: " << y * TILE_SIZE << std::endl;
     std::cerr << "PlayerID " << playerId << std::endl;
 }
@@ -267,8 +267,8 @@ void Interpreter::_plv(int playerId, int level)
         if (e.clientId == playerId && e.type == Renderer::PartType::EYES && e.level != level) {
             it = Renderer::sceneEntities.erase(it);
             Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::EYES, playerId,
-            {x, OFFSET_FROM_GROUND + OFFSET_EYES_Y, z + Renderer::offsetEyesZ[0]}, sf::Color::Black,
-            Renderer::pathEyes[0], Renderer::Compass::NORTH, {0.f, 0.f, 0.f}, level);
+            {x, OFFSET_FROM_GROUND + OFFSET_EYES_Y, z + Renderer::offsetEyesZ[level - 1]}, sf::Color::Black,
+            Renderer::pathEyes[level - 1], Renderer::Compass::NORTH, {0.f, 0.f, 0.f}, level);
             // std::cerr << "PathEyes: " << Renderer::pathEyes[1] << std::endl;
         } else {
             ++it;
