@@ -35,23 +35,18 @@ static void send_all_eggs(int fd, server_t *server)
 
 void event_enw(server_t *server, player_t *player, eggs_t *egg)
 {
-    client_t *cl;
-    int fd = 0;
+    char *buffer = NULL;
     unsigned int id;
 
     if (!server || !egg)
         return;
     id = player ? player->id : (unsigned int)egg->creator_id;
-    for (int i = 0; i < server->poll.client_index; i++) {
-        cl = &server->poll.client_list[i];
-        if (cl->whoAmI != GUI)
-            continue;
-        fd = server->poll.pollfds[i].fd;
-        dprintf(fd,
-            "enw #%u #%u %u %u\n", egg->id, id,
-            egg->position[0], egg->position[1]
-        );
-    }
+    if (asprintf(&buffer, "enw #%u #%u %u %u",
+        egg->id, id, egg->position[0], egg->position[1]) == -1)
+        logger(server, "ENW", ERROR, true);
+    send_to_all_gui(server, buffer);
+    if (buffer)
+        free(buffer);
 }
 
 void event_new_gui_enw(server_t *server)

@@ -27,27 +27,20 @@ eggs_t *create_egg_from_player(player_t *player)
     return new_egg;
 }
 
-static void send_pfk(int fd, unsigned int player_id)
-{
-    dprintf(fd, "pfk #%u\n", player_id);
-}
-
 void event_pfk(server_t *server, player_t *player)
 {
-    client_t *cl;
-    int fd = 0;
+    char *buffer = NULL;
     eggs_t *egg;
 
-    egg = create_egg_from_player(player);
-    cl = NULL;
-    if (!server || !player || !egg)
+    if (!server || !player)
         return;
-    for (int i = 0; i < server->poll.client_index; i++) {
-        cl = &server->poll.client_list[i];
-        if (cl->whoAmI != GUI)
-            continue;
-        fd = server->poll.pollfds[i].fd;
-        send_pfk(fd, player->id);
-        send_enw(fd, egg);
-    }
+    egg = create_egg_from_player(player);
+    if (!egg)
+        return;
+    if (asprintf(&buffer, "pfk #%u\n", player->id) == -1)
+        logger(server, "PFK", ERROR, true);
+    send_to_all_gui(server, buffer);
+    if (buffer)
+        free(buffer);
+    event_enw(server, player, egg);
 }

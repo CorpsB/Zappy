@@ -18,20 +18,16 @@
  * @param server Pointer to the game server.
  * @param player Pointer to the player who has died.
  */
+
 void event_pdi(server_t *server, player_t *player)
 {
-    client_t *cl;
-    int fd;
-
-    if (!server || !player)
-        return;
-    dprintf(player->socket_fd, "dead\n");
-    for (int i = 0; i < server->poll.client_index; i++) {
-        cl = &server->poll.client_list[i];
-        fd = server->poll.pollfds[i].fd;
-        if (cl->whoAmI == GUI)
-            dprintf(fd, "pdi %d\n", player->id);
-    }
+    char *buffer = NULL;
+    
+    if (asprintf(&buffer, "pdi %d\n",player->id) == -1)
+            logger(server, "PDI", ERROR, true);
+        send_to_all_gui(server, buffer);
+        if (buffer)
+            free(buffer);
 }
 
 void event_pdi_by_index(void)

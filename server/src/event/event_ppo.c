@@ -9,26 +9,17 @@
 #include "include/function.h"
 #include "include/structure.h"
 
-static void send_ppo(int fd, player_t *player)
-{
-    if (!player)
-        return;
-    dprintf(fd, "ppo #%u %u %u %u\n", player->id, player->position[0],
-        player->position[1], player->direction);
-}
-
 void event_ppo(server_t *server, player_t *player)
 {
-    client_t *cl;
-    int fd;
+    char *buffer = NULL;
 
     if (!server || !player || player->is_dead)
         return;
-    for (int i = 0; i < server->poll.client_index; i++) {
-        cl = &server->poll.client_list[i];
-        if (cl->whoAmI != GUI)
-            continue;
-        fd = server->poll.pollfds[i].fd;
-        send_ppo(fd, player);
-    }
+    if (asprintf(&buffer, "ppo #%u %u %u %u\n",
+        player->id, player->position[0],
+        player->position[1], player->direction) == -1)
+        logger(server, "PPO", ERROR, true);
+    send_to_all_gui(server, buffer);
+    if (buffer)
+        free(buffer);
 }
