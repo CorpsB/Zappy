@@ -16,6 +16,7 @@ static void start_gui_event(server_t *server)
     event_bct(server);
     event_tna(server);
     event_new_gui_enw(server);
+    event_all_plv(server);
 }
 
 void cmd_graphic(server_t *server, int index, char **)

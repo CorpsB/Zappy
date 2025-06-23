@@ -192,4 +192,6 @@ void event_bct_per_tile(server_t *server, int y, int x);
 
 void event_pgt(server_t *server, int id, r_ressource_t type);
 void event_pdr(server_t *server, int id, r_ressource_t type);
+void event_all_plv(server_t *server);
+void event_plv(server_t *server, player_t *player);
 #endif /* !FUCNTION_H_ */

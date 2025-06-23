@@ -9,6 +9,7 @@
 #include "include/function.h"
 #include "include/structure.h"
 
+//Don't forget : Event plz at the end of the lvl up;
 void cmd_incantation(server_t *server, int index, const char *args)
 {
     return;
