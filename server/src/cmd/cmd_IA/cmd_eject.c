@@ -120,4 +120,6 @@ void cmd_eject(server_t *server, int index, const char **args)
     for (teams_t *t = server->teams; t; t = t->next)
         total += eject_team(t, ag, server);
     dprintf(ag->socket_fd, total ? "ok\n" : "ko\n");
+    if (total)
+        event_pex(server, ag);
 }

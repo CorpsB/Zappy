@@ -76,6 +76,7 @@ SRC	=	src/main.c								\
 		src/utils/teams/complete_team_data.c	\
 		src/utils/event/send_to_all_gui.c		\
 		src/event/event_plv.c					\
+		src/event/event_pex.c					\
 
 OBJ	=	$(SRC:.c=.o)
 
