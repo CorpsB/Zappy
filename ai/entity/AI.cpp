@@ -86,7 +86,7 @@ void ai::entity::AI::run(const ai::parser::Config &config)
         }
 
         // look around
-        const std::string look_str = doAction("Look");
+        std::string look_str = doAction("Look");
         if (look_str == "dead") {
             logger.log("Died looking around.");
             break;

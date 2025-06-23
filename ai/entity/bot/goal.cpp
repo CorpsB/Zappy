@@ -50,15 +50,15 @@ ai::entity::Goal ai::entity::AI::getGoal(const std::string &look)
         return FOOD;
     if (_level == 8)
         return STONE;
-    const bool enough_rock = hasEnoughRocks();
-    if (enough_rock && countPlayersOnTile(0, look) >= RECIPES[_level - 1].player)
-        return ELEVATION;
-    if (enough_rock || _sound_system.getNearestSoundDirection() != -1)
-        return MEETUP;
+    if (hasEnoughRocks() || _sound_system.getNearestSoundDirection("MEETUP_" + std::to_string(_level + 1)) != NONE) {
+        if (countPlayersOnTile(0, look) >= RECIPES[_level - 1].player)
+            return ELEVATION;
+        return STONE; // MEETUP
+    }
     return STONE;
 }
 
-bool ai::entity::AI::handleGoal(const std::string &look, const std::string &goal)
+bool ai::entity::AI::handleGoal(std::string &look, const std::string &goal)
 {
     ai::utils::debug::Logger &logger = ai::utils::debug::Logger::GetInstance();
     const int item_idx = findItemInLook(look, goal);

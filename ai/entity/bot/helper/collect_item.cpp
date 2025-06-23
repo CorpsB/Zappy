@@ -10,11 +10,11 @@
 
 bool ai::entity::AI::collectItem(const std::string &look, const std::string &name, int recipe_qty)
 {
-    int nb_found = findItemInLook(look, name);
+    int pos = findItemInLook(look, name);
 
-    if (nb_found == -1)
+    if (pos == -1)
         return false;
-    if (nb_found == 0)
+    if (pos != 0)
         return true;
     if ((name == "food" && _food_level >= 12.0) || _level == 8 ||
     (name != "food" && _inventory.getItem(name) >= recipe_qty * 2 + 1))

@@ -55,7 +55,7 @@ ai::entity::SoundCell &ai::entity::SoundSystem::getDirectionSound(Direction ajus
     return _cells[ajusted];
 }
 
-ai::entity::Direction ai::entity::SoundSystem::getNearestSoundDirection()
+ai::entity::Direction ai::entity::SoundSystem::getNearestSoundDirection(const std::string &target)
 {
     Direction dir = NONE;
     int64_t min_duration = MAX_SOUND_DURATION;
@@ -63,7 +63,7 @@ ai::entity::Direction ai::entity::SoundSystem::getNearestSoundDirection()
     for (int i = 0; i < 8; ++i) {
         if (_cells[i].id == -1)
             continue;
-        if (_cells[i].delta < min_duration) {
+        if (_cells[i].delta < min_duration && _cells[i].message == target) {
             min_duration = _cells[i].delta;
             dir = static_cast<Direction>(i);
         }

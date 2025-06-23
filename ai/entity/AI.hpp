@@ -65,18 +65,18 @@ namespace ai::entity
             Goal getGoal(const std::string &look);
             bool hasEnoughRocks();
             std::string getRarestMissingStone();
-            bool handleGoal(const std::string &look, const std::string &goal);
+            bool handleGoal(std::string &look, const std::string &goal);
 
             // moves
             std::string getDirectionName(Direction dir);
             std::vector<Direction> getMovesToTileLevel1Vision(int idx);
             std::vector<Direction> getMovesTowardsSoundDirection(Direction dir);
-            bool executeMoves(const std::string &look, const std::vector<Direction> &moves);
+            bool executeMoves(std::string &look, const std::vector<Direction> &moves);
             bool executeSpiralMove(SpiralState &state);
 
             // action
             bool performWanderAction();
-            bool performActionForGoal(const std::string &look);
+            bool performActionForGoal(std::string &look);
 
             // elevate
             bool setStoneForIncantation(const std::string &name, int qty,

@@ -21,7 +21,7 @@ bool ai::entity::AI::performWanderAction()
     return doAction(action) != "dead";
 }
 
-bool ai::entity::AI::performActionForGoal(const std::string &look)
+bool ai::entity::AI::performActionForGoal(std::string &look)
 {
     utils::debug::Logger &logger = ai::utils::debug::Logger::GetInstance();
 
@@ -44,7 +44,7 @@ bool ai::entity::AI::performActionForGoal(const std::string &look)
             if (doAction(broadcast_msg) == "dead")
                 return false;
 
-            const Direction dir = _sound_system.getNearestSoundDirection();
+            const Direction dir = _sound_system.getNearestSoundDirection("MEETUP_" + std::to_string(_level + 1));
             if (dir != NONE && dir != HERE) {
                 const std::vector<Direction> moves = getMovesTowardsSoundDirection(dir);
                 return executeMoves(look, moves);

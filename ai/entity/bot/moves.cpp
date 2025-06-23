@@ -63,7 +63,7 @@ std::vector<ai::entity::Direction> ai::entity::AI::getMovesTowardsSoundDirection
     }
 }
 
-bool ai::entity::AI::executeMoves(const std::string &look, const std::vector<Direction> &moves)
+bool ai::entity::AI::executeMoves(std::string &look, const std::vector<Direction> &moves)
 {
     for (const auto &move : moves) {
         if (!collectAllItems(look))
@@ -76,6 +76,10 @@ bool ai::entity::AI::executeMoves(const std::string &look, const std::vector<Dir
 
         const std::string move_str = getDirectionName(move);
         if (doAction(move_str) == "dead")
+            return false;
+
+        look = doAction("Look");
+        if (look == "dead")
             return false;
     }
     return true;
