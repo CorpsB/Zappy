@@ -16,6 +16,7 @@ ai::entity::AI::AI(int id)
     _food_level = 1;
     _goal = FOOD;
     _thread_name = std::string("[Bot ") + std::to_string(id) + std::string("]");
+    _incantate = false;
 }
 
 void ai::entity::AI::start(const ai::parser::Config &config)
@@ -38,14 +39,14 @@ void ai::entity::AI::stop()
     logger.display();
 }
 
-std::string ai::entity::AI::doAction(const std::string &action)
+std::string ai::entity::AI::doAction(const std::string &action, int timeout)
 {
     if (!action.empty())
         _socket.sendCommand(action);
 
     utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
     while (true) {
-        const std::string result = _socket.readSocketBuffer();
+        const std::string result = _socket.readSocketBuffer(timeout);
 
         if (result == "dead")
             return "dead";
@@ -94,6 +95,13 @@ void ai::entity::AI::run(const ai::parser::Config &config)
     utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
 
     while (1) {
+        // incantate to level up
+        if (_incantate) {
+            if (!incantate(doAction("", 30000)))
+                break;
+            _incantate = false;
+        }
+
         // clear old broadcast messages
         _sound_system.update();
 

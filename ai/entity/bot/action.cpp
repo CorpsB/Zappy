@@ -46,7 +46,8 @@ bool ai::entity::AI::performActionForGoal(std::string &look)
             logger.log("Sending everyone incantation signal for level " + std::to_string(_level + 1));
             if (_level != 1 && !useBroadcast("INCANTATION_" + std::to_string(_level + 1)))
                 return false;
-            return launchIncantation();
+            _incantate = true;
+            return _socket.sendCommand("Incantation");
         }
 
         case ELEVATION_SLAVE: {
@@ -78,8 +79,12 @@ bool ai::entity::AI::performActionForGoal(std::string &look)
             return true;
         }
 
-        case INCANTATION:
-            return launchIncantation();
+        case INCANTATION: {
+            _incantate = true;
+            if (_level == 1)
+                return _socket.sendCommand("Incantation");
+            return true;
+        }
 
         default:
             logger.log("No specific action for current goal '" + std::to_string(_goal) + "' (Lvl " +

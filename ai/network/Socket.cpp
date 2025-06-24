@@ -36,7 +36,7 @@ void ai::network::Socket::initSocket(int port, const std::string &ip)
     _fds.events = POLLIN;
 }
 
-bool ai::network::Socket::readSocket()
+bool ai::network::Socket::readSocket(int timeout)
 {
     utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
     const auto start_time = std::chrono::high_resolution_clock::now();
@@ -47,9 +47,9 @@ bool ai::network::Socket::readSocket()
         const auto end_time = std::chrono::high_resolution_clock::now();
         const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
 
-        if (duration.count() > READ_TIMEOUT) {
+        if (duration.count() > timeout) {
             closeSocket();
-            logger.log("[Error] Socket receive timeout (" + std::to_string(READ_TIMEOUT) + "ms).");
+            logger.log("[Error] Socket receive timeout (" + std::to_string(timeout) + "ms).");
             return false;
         }
         switch (isServerReadable()) {
@@ -74,9 +74,9 @@ bool ai::network::Socket::readSocket()
     return true;
 }
 
-std::string ai::network::Socket::readSocketBuffer()
+std::string ai::network::Socket::readSocketBuffer(int timeout)
 {
-    if (!readSocket())
+    if (!readSocket(timeout))
         return "dead";
     for (size_t pos = _buffer.find("\n"); pos != std::string::npos;
     pos = _buffer.find("\n")) {
@@ -157,11 +157,11 @@ bool ai::network::Socket::sendCommand(const std::string &cmd)
     return true;
 }
 
-std::string ai::network::Socket::doAction(const std::string &cmd)
+std::string ai::network::Socket::doAction(const std::string &cmd, int timeout)
 {
     if (cmd != "") {
         if (!sendCommand(cmd))
             return "dead";
     }
-    return readSocketBuffer();
+    return readSocketBuffer(timeout);
 }

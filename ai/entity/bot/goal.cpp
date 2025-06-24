@@ -63,13 +63,11 @@ ai::entity::Goal ai::entity::AI::getGoal(const std::string &look)
         if (enough_rocks) {
             if (countPlayersOnTile(0, look) >= RECIPES[_level - 1].player)
                 return (cell.id < _id) ? ELEVATION_SLAVE : ELEVATION_MASTER;
-            ai::utils::debug::Logger &logger = ai::utils::debug::Logger::GetInstance();
-            logger.log("My delta is " + std::to_string(cell.delta) + " as a slave.");
-            return (cell.delta < 252 && cell.id >= _id) ? MEETUP_POINT : MEETUP;
+            return (cell.delta < 300 && cell.id >= _id) ? MEETUP_POINT : MEETUP;
         }
         if (countPlayersOnTile(0, look) >= RECIPES[_level - 1].player)
             return ELEVATION_SLAVE;
-        return (cell.delta < 252 && cell.id >= _id) ? MEETUP_POINT : MEETUP;
+        return (cell.delta < 300 && cell.id >= _id) ? MEETUP_POINT : MEETUP;
     } else {
         if (enough_rocks) {
             if (_level == 1)

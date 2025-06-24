@@ -45,16 +45,14 @@ bool ai::entity::AI::setStonesForIncantation()
     return true;
 }
 
-bool ai::entity::AI::launchIncantation()
+bool ai::entity::AI::incantate(const std::string &response)
 {
-    ai::utils::debug::Logger &logger = ai::utils::debug::Logger::GetInstance();
+    utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
 
-    const std::string response = doAction("Incantation");
-    std::this_thread::sleep_for(std::chrono::milliseconds(ACTION_DELAY_MS * 400));
     if (response == "dead")
         return false;
     if (response.find("Elevation underway") != std::string::npos) {
-        const std::string final_response = doAction("");
+        const std::string final_response = doAction("", 30000);
         if (final_response == "dead")
             return false;
         if (final_response == "ko")

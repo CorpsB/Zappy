@@ -9,6 +9,7 @@
 
 #define FOOD_THRESHOLD 8.0
 #define ACTION_DELAY_MS 50
+#define READ_TIMEOUT 2000
 
 #include <string>
 #include <memory>
@@ -55,7 +56,7 @@ namespace ai::entity
 
             void start(const ai::parser::Config &config);
             void run(const ai::parser::Config &config);
-            std::string doAction(const std::string &action);
+            std::string doAction(const std::string &action, int timeout = READ_TIMEOUT);
             bool doKoAction(const std::string &action);
             bool useBroadcast(const std::string &message);
             void stop();
@@ -87,11 +88,12 @@ namespace ai::entity
             bool setStoneForIncantation(const std::string &name, int qty,
                 std::vector<std::string> &stones_to_set);
             bool setStonesForIncantation();
-            bool launchIncantation();
+            bool incantate(const std::string &response);
 
         private:
             static const ElevationRecipe RECIPES[7];
 
+            bool _incantate;
             unsigned _id;
             unsigned _level;
             unsigned _food_level;

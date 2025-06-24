@@ -26,8 +26,8 @@ namespace ai::network
 
             void setup(const std::string &thread_name, const std::string &team_name);
             void initSocket(int port, const std::string &ip);
-            bool readSocket();
-            std::string readSocketBuffer();
+            bool readSocket(int timemout = READ_TIMEOUT);
+            std::string readSocketBuffer(int timeout = READ_TIMEOUT);
             void closeSocket();
 
             int isServerReadable();
@@ -35,7 +35,7 @@ namespace ai::network
             void greetsServer();
 
             bool sendCommand(const std::string &cmd);
-            std::string doAction(const std::string &cmd);
+            std::string doAction(const std::string &cmd, int timeout = READ_TIMEOUT);
 
         private:
             struct pollfd _fds;
