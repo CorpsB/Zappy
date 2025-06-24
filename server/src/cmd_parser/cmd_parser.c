@@ -11,6 +11,14 @@
 #include "include/cmd.h"
 #include "include/cmd_parser_table.h"
 
+int table_size(char **table)
+{
+    int i = 0;
+
+    for (; table[i] != NULL; i++);
+    return i;
+}
+
 static bool is_new_player(server_t *server, int index, char *cmd)
 {
     for (teams_t *team = server->teams; team != NULL; team = team->next)
@@ -25,11 +33,107 @@ static bool unknown_client(server_t *server, int index, char *cmd)
 {
     if (strncmp(cmd, "GRAPHIC", 7) == 0) {
         cmd_graphic(server, index, NULL);
+        logger(server, "NEW GUI CLIENT FOUND.", INFO, false);
         return true;
     }
-    if (is_new_player(server, index, cmd))
+    if (is_new_player(server, index, cmd)) {
+        logger(server, "NEW PLAYER FOUND.", INFO, false);
         return true;
+    }
     return false;
+}
+
+static void parse_unknown_client(server_t *server, int index, char *cmd)
+{
+    if (!unknown_client(server, index, cmd)) {
+        dprintf(server->poll.pollfds[index].fd, "kko\n");
+        logger(server, "UNKNOWN CLIENT SEND CMD BEFORE AUTHENTIFICATION CMD:",
+        INFO, false);
+        logger(server, cmd, INFO, false);
+        return;
+    }
+}
+
+static void gui_args_checker(server_t *server, int index, char **args,
+    int i)
+{
+    if (table_size(args) != gui_command_table[i].argument_nbr) {
+        dprintf(server->poll.pollfds[index].fd, "sbp\n");
+        logger(server, "INVALID ARGS NUMBER FOR THIS COMMAND", INFO, false);
+        if (server->debug) {
+            printf("CMD : %s\tARGS SIZE : %u\tEXPECTED SIZE : %u\n\n",
+                gui_command_table[i].name,
+                table_size(args),
+                gui_command_table[i].argument_nbr);
+            dprintf(server->debug_fd,
+                "CMD : %s\t ARGS SIZE : %u\tEXPECTED SIZE : %u\n\n",
+                gui_command_table[i].name,
+                table_size(args),
+                gui_command_table[i].argument_nbr);
+        }
+    } else {
+        gui_command_table[i].func(server, index, args);
+    }
+}
+
+static void parse_gui_client(server_t *server, int index, char **args)
+{
+    if (!args[0]) {
+        logger(server, "Command found, but str_to_array errors.",
+            ERROR, false);
+        return;
+    }
+    for (int i = 0; gui_command_table[i].name != NULL; i++) {
+        if (strncmp(args[0], gui_command_table[i].name,
+            strlen(gui_command_table[i].name)) == 0) {
+            gui_args_checker(server, index, args, i);
+            return;
+        }
+    }
+    dprintf(server->poll.pollfds[index].fd, "suc\n");
+    logger(server, "UNKNOW GUI COMMAND:", INFO, false);
+    logger(server, args[0], INFO, false);
+}
+
+static void player_args_checker(server_t *server, int index, char **args,
+    int i)
+{
+    if (table_size(args) != player_command_table[i].argument_nbr) {
+        dprintf(server->poll.pollfds[index].fd, "ko\n");
+        logger(server, "INVALID ARGS NUMBER FOR THIS COMMAND", INFO, false);
+        if (server->debug) {
+            printf("CMD : %s\tARGS SIZE : %u\tEXPECTED SIZE : %u\n\n",
+                player_command_table[i].name,
+                table_size(args),
+                player_command_table[i].argument_nbr);
+            dprintf(server->debug_fd,
+                "CMD : %s\t ARGS SIZE : %u\tEXPECTED SIZE : %u\n\n",
+                player_command_table[i].name,
+                table_size(args),
+                player_command_table[i].argument_nbr);
+        }
+    } else {
+        player_command_table[i].func(server, index, args);
+    }
+}
+
+static void parse_player_client(server_t *server, int index, char **args)
+{
+    if (!args[0]) {
+        logger(server, "Command found, but str_to_array errors.",
+            ERROR, false);
+        return;
+    }
+    for (int i = 0; player_command_table[i].name != NULL; i++) {
+        if (strncmp(args[0], player_command_table[i].name,
+            strlen(player_command_table[i].name)) == 0) {
+            player_args_checker(server, index, args, i);
+            return;
+        }
+    }
+    dprintf(server->poll.pollfds[index].fd, "ko\n");
+    logger(server, "UNKNOW PLAYER COMMAND:", INFO, false);
+    logger(server, args[0], INFO, false);
 }
 
 void cmd_parser(server_t *server, int index, char *cmd)
@@ -37,19 +141,19 @@ void cmd_parser(server_t *server, int index, char *cmd)
     char **args = str_to_array(cmd, " ");
 
     if (server->poll.client_list[index].whoAmI == UNKNOWN) {
-        if (!unknown_client(server, index, cmd))
-            dprintf(server->poll.pollfds[index].fd, "ko\n");
+        parse_unknown_client(server, index, cmd);
         free_table(args);
         return;
     }
-    for (int i = 0; command_table[i].name != NULL; i++) {
-        if (strncmp(cmd, command_table[i].name,
-            strlen(command_table[i].name)) == 0) {
-            command_table[i].func(server, index, args);
-            free_table(args);
-            return;
-        }
+    if (server->poll.client_list[index].whoAmI == GUI) {
+        parse_gui_client(server, index, args);
+        free_table(args);
+        return;
     }
-    dprintf(server->poll.pollfds[index].fd, "ko\n");
-    free_table(args);
+    if (server->poll.client_list[index].whoAmI == PLAYER) {
+        parse_player_client(server, index, args);
+        free_table(args);
+        return;
+    }
+    logger(server, "Unknown type of client send a command.", ERROR, false);
 }

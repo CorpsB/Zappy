@@ -140,7 +140,7 @@ void run_server(server_t *server)
     for (; !is_game_over(server);) {
         poll_func(server);
         check_each_teams(server);
-        debug_server(server);
+        // debug_server(server);
         //=> Consomation de nourriture => Appel à pin
     }
 }
