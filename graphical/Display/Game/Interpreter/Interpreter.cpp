@@ -7,61 +7,83 @@
 
 #include "Interpreter.hpp"
 
+Interpreter::Interpreter()
+{
+    _instructions = {{ "msz", std::make_pair(std::regex(R"(msz\s+(\d+)\s+(\d+))"), [&](const std::smatch &m) { _msz(m); }) },
+        { "bct", std::make_pair(std::regex(R"(bct\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+))"), [&](const std::smatch &m) { _bct(m); }) },
+        { "pnw", std::make_pair(std::regex(R"(pnw\s+#(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\S+))"), [&](const std::smatch &m) { _pnw(m); }) },
+        { "ppo", std::make_pair(std::regex(R"(ppo\s+#(\d+)\s+(\d+)\s+(\d+)\s+(\d+))"), [&](const std::smatch &m) { _ppo(m); }) },
+        { "plv", std::make_pair(std::regex(R"(plv\s+#(\d+)\s+(\d+))"), [&](const std::smatch &m) { _plv(m); }) },
+        { "pin", std::make_pair(std::regex(R"(pin\s+#(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+))"), [&](const std::smatch &m) { _pin(m); }) },
+        { "pex", std::make_pair(std::regex(R"(pex\s+#(\d+))"), [&](const std::smatch &m) { _pex(m); }) },
+        { "pbc", std::make_pair(std::regex(R"(pbc\s+#(\d+)\s+(.+))"), [&](const std::smatch &m) { _pbc(m); }) },
+        { "pic", std::make_pair(std::regex(R"(pic\s+(\d+)\s+(\d+)\s+(\d+)(?:\s+#(-?\d+))+)"), [&](const std::smatch &m) { _pic(m); }) },
+        { "pie", std::make_pair(std::regex(R"(pie\s+(\d+)\s+(\d+)\s+(\d+))"), [&](const std::smatch &m) { _pie(m); }) },
+        { "pfk", std::make_pair(std::regex(R"(pfk\s+#(\d+))"), [&](const std::smatch &m) { _pfk(m); }) },
+        { "pdr", std::make_pair(std::regex(R"(pdr\s+#(\d+)\s+(\d+))"), [&](const std::smatch &m) { _pdr(m); }) },
+        { "pgt", std::make_pair(std::regex(R"(pgt\s+#(\d+)\s+(\d+))"), [&](const std::smatch &m) { _pgt(m); }) },
+        { "pdi", std::make_pair(std::regex(R"(pdi\s+#(\d+))"), [&](const std::smatch &m) { _pdi(m); }) },
+        { "enw", std::make_pair(std::regex(R"(enw\s+#(\d+)\s+#(-?\d+)\s+(\d+)\s+(\d+))"), [&](const std::smatch &m) { _enw(m); }) },
+        { "ebo", std::make_pair(std::regex(R"(ebo\s+#(\d+))"), [&](const std::smatch &m) { _ebo(m); }) },
+        { "edi", std::make_pair(std::regex(R"(edi\s+#(\d+))"), [&](const std::smatch &m) { _edi(m); }) },
+        { "sgt", std::make_pair(std::regex(R"(sgt\s+(\d+))"), [&](const std::smatch &m) { _sgt(m); }) },
+        { "sst", std::make_pair(std::regex(R"(sst\s+(\d+))"), [&](const std::smatch &m) { _sst(m); }) },
+        { "seg", std::make_pair(std::regex(R"(seg\s+(\S+))"), [&](const std::smatch &m) { _seg(m); }) },
+        { "smg", std::make_pair(std::regex(R"(smg\s+(.+))"), [&](const std::smatch &m) { _smg(m); }) },
+    };
+
+    _resources = {{
+        { Renderer::PartType::Q0, {25.f, -6.5f, 25.f}, sf::Color::Yellow, "./Assets/Food.stl" },
+        { Renderer::PartType::Q1, {15.f, -6.5f, -25.f}, {96, 96, 96}, "./Assets/Crystals.stl" },
+        { Renderer::PartType::Q2, {25.f, -6.5f, -15.f}, sf::Color::Green, "./Assets/Crystals.stl" },
+        { Renderer::PartType::Q3, {-15.f, -6.5f, -25.f}, {204, 0, 102}, "./Assets/Crystals.stl" },
+        { Renderer::PartType::Q4, {-25.f, -6.5f, -15.f}, {255, 255, 255}, "./Assets/Crystals.stl" },
+        { Renderer::PartType::Q5, {-15.f, -6.5f, 25.f}, {127, 0, 255}, "./Assets/Crystals.stl" },
+        { Renderer::PartType::Q6, {-25.f, -5.0f, 15.f}, sf::Color::Red, "./Assets/Crystals.stl", -5.0f }
+    }};
+}
+
 void Interpreter::interpret(const std::string &data)
 {
     std::string line;
     std::smatch matches;
-    std::istringstream iss(data);
 
-    const std::vector<std::pair<std::regex, std::function<void(const std::smatch &)>>> commands = {
-        { msz, [&](const std::smatch &m) { _msz(std::stoi(m[1]), std::stoi(m[2])); } },
-        { bct, [&](const std::smatch &m) { _bct(std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), std::stoi(m[4]), std::stoi(m[5]), std::stoi(m[6]), std::stoi(m[7]), std::stoi(m[8]), std::stoi(m[9])); } },
-        { pnw, [&](const std::smatch &m) { _pnw(std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), static_cast<Renderer::Compass>(std::stoi(m[4]) - 1), std::stoi(m[5]), m[6]); } },
-        { ppo, [&](const std::smatch &m) { _ppo(std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), static_cast<Renderer::Compass>(std::stoi(m[4]) - 1)); } },
-        { plv, [&](const std::smatch &m) { _plv(std::stoi(m[1]), std::stoi(m[2])); } },
-        { pin, [&](const std::smatch &m) { _pin(std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), std::stoi(m[4]), std::stoi(m[5]), std::stoi(m[6]), std::stoi(m[7]), std::stoi(m[8]), std::stoi(m[9]), std::stoi(m[10])); } },
-        { pex, [&](const std::smatch &m) { _pex(std::stoi(m[1])); } },
-        { pbc, [&](const std::smatch &m) { _pbc(std::stoi(m[1]), m[2]); } },
-        { pie, [&](const std::smatch &m) { _pie(std::stoi(m[1]), std::stoi(m[2]), m[3]); } },
-        { pfk, [&](const std::smatch &m) { _pfk(std::stoi(m[1])); } },
-        { pdr, [&](const std::smatch &m) { _pdr(std::stoi(m[1]), std::stoi(m[2])); } },
-        { pgt, [&](const std::smatch &m) { _pgt(std::stoi(m[1]), std::stoi(m[2])); } },
-        { pdi, [&](const std::smatch &m) { _pdi(std::stoi(m[1])); } },
-        { enw, [&](const std::smatch &m) { _enw(std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), std::stoi(m[4])); } },
-        { ebo, [&](const std::smatch &m) { _ebo(std::stoi(m[1])); } },
-        { edi, [&](const std::smatch &m) { _edi(std::stoi(m[1])); } },
-        { sgt, [&](const std::smatch &m) { _sgt(std::stoi(m[1])); } },
-        { sst, [&](const std::smatch &m) { _sst(std::stoi(m[1])); } },
-        { seg, [&](const std::smatch &m) { _seg(m[1]); } },
-        { smg, [&](const std::smatch &m) { _smg(m[1]); } },
-        { sbp, [&](const std::smatch &) { _sbp(); } },
-        { pic, [&](const std::smatch &m) {
-            std::string rest = line.substr(m.position(3) + m.length(3));
-            std::vector<int> ids;
-
-            for (std::sregex_iterator it(rest.begin(), rest.end(), playerRegex), end; it != end; ++it)
-                ids.push_back(std::stoi((*it)[1]));
-            _pic(std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), ids);
-        } },
-    };
+    if (data == "WELCOME\n")
+        return;
+    _buffer += data;
+    std::istringstream iss(_buffer);
+    std::string newBuffer;
 
     while (std::getline(iss, line)) {
         bool matched = false;
 
-        for (const auto &[pattern, action] : commands) {
+        if (line.empty())
+            continue;
+        for (const auto &[key, pair] : _instructions) {
+            const std::regex &pattern = pair.first;
+            const auto &handler = pair.second;
+
             if (std::regex_match(line, matches, pattern)) {
-                action(matches);
+                handler(matches);
                 matched = true;
                 break;
             }
         }
-        if (!matched)
-            _suc(line);
+        if (!matched) {
+            if (_buffer.find(line) != std::string::npos && data.find(line) == std::string::npos)
+                std::cerr << "Unknown command: '" << line << "'" << std::endl;
+            else
+                newBuffer += line;
+        }
     }
+    _buffer = newBuffer;
 }
 
-void Interpreter::_msz(int x, int y)
+void Interpreter::_msz(const std::smatch &m)
 {
+    int x = std::stoi(m[1]);
+    int y = std::stoi(m[2]);
+
     for (int i = 0; i < x; i++)
         for (int j = 0; j < y; j++) {
             if (j == 0 && i == 0) {
@@ -75,110 +97,81 @@ void Interpreter::_msz(int x, int y)
     Renderer::map_size_y = y;
 }
 
-void Interpreter::_bct(int x, int y, int q0, int q1, int q2, int q3, int q4, int q5, int q6)
+void Interpreter::_bct(const std::smatch &m)
 {
-    bool q0Exists = false;
-    bool q1Exists = false;
-    bool q2Exists = false;
-    bool q3Exists = false;
-    bool q4Exists = false;
-    bool q5Exists = false;
-    bool q6Exists = false;
+    int x = std::stoi(m[1]);
+    int y = std::stoi(m[2]);
 
-    // If there is no more of a particular ressources, we have to verify if there was before, and if yes, we have to remove it.
+    std::array<int, 7> quantities = {
+        std::stoi(m[3]), std::stoi(m[4]), std::stoi(m[5]),
+        std::stoi(m[6]), std::stoi(m[7]), std::stoi(m[8]),
+        std::stoi(m[9])
+    };
+
+    std::array<bool, 7> exists = { false, false, false, false, false, false, false };
+
     for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
         Renderer::Entity &e = *it;
-        if (e.type == Renderer::PartType::Q0 && e.position.x == 25.0f + (x * TILE_SIZE) && e.position.z == 25.0f + (y * TILE_SIZE)) {
-            if (q0 == 0) {
-                it = Renderer::sceneEntities.erase(it);
-            } else
-                q0Exists = true;
-        } else if (e.type == Renderer::PartType::Q1 && e.position.x == 15.0f + (x * TILE_SIZE) && e.position.z == -25.0f + (y * TILE_SIZE)) {
-            if (q1 == 0) {
-                it = Renderer::sceneEntities.erase(it);
-            } else
-                q1Exists = true;
-        } else if (e.type == Renderer::PartType::Q2 && e.position.x == 25.0f + (x * TILE_SIZE) && e.position.z == -15.0f + (y * TILE_SIZE)) {
-            if (q2 == 0) {
-                it = Renderer::sceneEntities.erase(it);
-            } else
-                q2Exists = true;
-        } else if (e.type == Renderer::PartType::Q3 && e.position.x == -15.0f + (x * TILE_SIZE) && e.position.z == -25.0f + (y * TILE_SIZE)) {
-            if (q3 == 0) {
-                it = Renderer::sceneEntities.erase(it);
-            } else
-                q3Exists = true;
-        } else if (e.type == Renderer::PartType::Q4 && e.position.x == -25.0f + (x * TILE_SIZE) && e.position.z == -15.0f + (y * TILE_SIZE)) {
-            if (q4 == 0) {
-                it = Renderer::sceneEntities.erase(it);
-            } else
-                q4Exists = true;
-        } else if (e.type == Renderer::PartType::Q5 && e.position.x == -15.0f + (x * TILE_SIZE) && e.position.z == 25.0f + (y * TILE_SIZE)) {
-            if (q5 == 0) {
-                it = Renderer::sceneEntities.erase(it);
-            } else
-                q5Exists = true;
-        } else if (e.type == Renderer::PartType::Q6 && e.position.x == -25.0f + (x * TILE_SIZE) && e.position.z == 15.0f + (y * TILE_SIZE)) {
-            if (q6 == 0) {
-                it = Renderer::sceneEntities.erase(it);
-            } else
-                q6Exists = true;
-        } else {
-            ++it;
+        bool erased = false;
+
+        for (std::size_t i = 0; i < _resources.size(); i++) {
+            const auto &r = _resources[i];
+            sf::Vector3f expectedPos = {
+                r.offset.x + x * TILE_SIZE,
+                0.f,
+                r.offset.z + y * TILE_SIZE
+            };
+
+            if (e.type == r.type && e.position.x == expectedPos.x && e.position.z == expectedPos.z) {
+                if (quantities[i] == 0) {
+                    it = Renderer::sceneEntities.erase(it);
+                    erased = true;
+                } else {
+                    exists[i] = true;
+                }
+                break;
+            }
+        }
+        if (!erased)
+            it++;
+    }
+    for (std::size_t i = 0; i < _resources.size(); i++) {
+        if (quantities[i] != 0 && !exists[i]) {
+            const auto &r = _resources[i];
+            sf::Vector3f pos = {
+                r.offset.x + x * TILE_SIZE,
+                r.yAdjust,
+                r.offset.z + y * TILE_SIZE
+            };
+
+            Renderer::spawn(Renderer::EntityType::STL, r.type, -1, { pos.x, pos.y, pos.z }, r.color, r.assetPath, Renderer::Compass::NORTH, { 0.f, Renderer::getRandomAngle(), 0.f });
         }
     }
-    // food
-    if (q0 != 0 && !q0Exists)
-        Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q0, -1,
-        {25.0f + (x * TILE_SIZE), -6.5f, 25.0f + (y * TILE_SIZE)}, sf::Color::Yellow, "./Assets/Food.stl");
-    // Linemate
-    if (q1 != 0 && !q1Exists)
-        Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q1, -1,
-        {15.0f + (x * TILE_SIZE), -6.5f, -25.0f + (y * TILE_SIZE)}, sf::Color {96, 96, 96}, "./Assets/Crystals.stl",
-        Renderer::Compass::NORTH, {0.f, Renderer::getRandomAngle(), 0.f});
-    // Deraumere
-    if (q2 != 0 && !q2Exists)
-        Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q2, -1,
-        {25.0f + (x * TILE_SIZE), -6.5f, -15.0f + (y * TILE_SIZE)}, sf::Color::Green, "./Assets/Crystals.stl",
-        Renderer::Compass::NORTH, {0.f, Renderer::getRandomAngle(), 0.f});
-    // Sibur
-    if (q3 != 0 && !q3Exists)
-        Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q3, -1,
-        {-15.0f + (x * TILE_SIZE), -6.5f, -25.0f + (y * TILE_SIZE)}, sf::Color {204, 0, 102}, "./Assets/Crystals.stl",
-        Renderer::Compass::NORTH, {0.f, Renderer::getRandomAngle(), 0.f});
-    // Mendiane
-    if (q4 != 0 && !q4Exists)
-        Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q4, -1,
-        {-25.0f + (x * TILE_SIZE), -6.5f, -15.0f + (y * TILE_SIZE)}, sf::Color {255, 255, 255}, "./Assets/Crystals.stl",
-        Renderer::Compass::NORTH, {0.f, Renderer::getRandomAngle(), 0.f});
-    // Phiras
-    if (q5 != 0 && !q5Exists)
-        Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q5, -1,
-        {-15.0f + (x * TILE_SIZE), -6.5f, 25.0f + (y * TILE_SIZE)}, sf::Color {127, 0, 255}, "./Assets/Crystals.stl",
-        Renderer::Compass::NORTH, {0.f, Renderer::getRandomAngle(), 0.f});
-    // Thystame
-    if (q6 != 0 && !q6Exists)
-        Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::Q6, -1,
-        {-25.0f + (x * TILE_SIZE), -5.0f, 15.0f + (y * TILE_SIZE)}, sf::Color::Red, "./Assets/Crystals.stl",
-        Renderer::Compass::NORTH, {0.f, Renderer::getRandomAngle(), 0.f});
-    std::cerr << "Content of " << x << y << ": " << q0 << " " << q1 << " " << q2 << " " << q3 << " " << q4 << " " << q5 << " " << q6 << std::endl;
 }
 
-void Interpreter::_pnw(int playerId, int x, int y, Renderer::Compass orientation, int level, std::string teamName)
+void Interpreter::_pnw(const std::smatch &m)
 {
-    std::cerr << "level: " << level << std::endl;
-    (void) teamName;
+    int playerId = std::stoi(m[1]);
+    int x = std::stoi(m[2]);
+    int y = std::stoi(m[3]);
+    Renderer::Compass orientation = static_cast<Renderer::Compass>(std::stoi(m[4]));
+    int level = std::stoi(m[5]);
+    std::string teamName = m[6].str();
+
     Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::BODY, playerId,
         {0.f + (x * TILE_SIZE), OFFSET_FROM_GROUND, 0.f + (y * TILE_SIZE)}, sf::Color::Cyan, "./Assets/body_golem.stl", orientation, {0.f, 0.f, 0.f}, level);
     Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::EYES, playerId,
         {0.f + (x * TILE_SIZE), OFFSET_FROM_GROUND + OFFSET_EYES_Y, 0.f + (y * TILE_SIZE) + Renderer::offsetEyesZ[level - 1]}, sf::Color::Black,
         Renderer::pathEyes[level - 1], orientation, {0.f, 0.f, 0.f}, level);
-    std::cerr << " (*TILE_SIZE) x: " << x * TILE_SIZE << " y: " << y * TILE_SIZE << std::endl;
-    std::cerr << "PlayerID " << playerId << std::endl;
 }
 
-void Interpreter::_ppo(int playerId, int x, int y, Renderer::Compass orientation)
+void Interpreter::_ppo(const std::smatch &m)
 {
+    int playerId = std::stoi(m[1]);
+    int x = std::stoi(m[2]);
+    int y = std::stoi(m[3]);
+    Renderer::Compass orientation = static_cast<Renderer::Compass>(std::stoi(m[4]));
+
     float currentAngle = 0.f;
     Renderer::Vec3 currentPos;
 
@@ -189,8 +182,6 @@ void Interpreter::_ppo(int playerId, int x, int y, Renderer::Compass orientation
             break;
         }
     }
-    std::cerr << "Pos x: " << (int)currentPos.x << " Pos z: " << (int)currentPos.z << " (*TILE_SIZE) x: " << x * TILE_SIZE << " y: " << y * TILE_SIZE << std::endl;
-    std::cerr << "PPO : " << x << " " << y << std::endl;
 
     float targetAngle = Renderer::compassToAngle(orientation);
 
@@ -243,8 +234,11 @@ void Interpreter::_ppo(int playerId, int x, int y, Renderer::Compass orientation
     }
 }
 
-void Interpreter::_plv(int playerId, int level)
+void Interpreter::_plv(const std::smatch &m)
 {
+    int playerId = std::stoi(m[1]);
+    int level = std::stoi(m[2]);
+
     float x;
     float z;
     bool exists = false;
@@ -276,42 +270,37 @@ void Interpreter::_plv(int playerId, int level)
     }
 }
 
-void Interpreter::_pin(int playerId, int x, int y, int q0, int q1, int q2, int q3, int q4, int q5, int q6)
+void Interpreter::_pin(const std::smatch &m)
 {
-    (void) playerId;
-    (void) x;
-    (void) y;
-    (void) q0;
-    (void) q1;
-    (void) q2;
-    (void) q3;
-    (void) q4;
-    (void) q5;
-    (void) q6;
+    (void) m;
 }
 
-void Interpreter::_pex(int playerId)
+void Interpreter::_pex(const std::smatch &m)
 {
-    (void) playerId;
+    (void) m;
 }
 
-void Interpreter::_pbc(int playerId, std::string data)
+void Interpreter::_pbc(const std::smatch &m)
 {
-    (void) playerId;
-    (void) data;
+    (void) m;
 }
 
-void Interpreter::_pic(int x, int y, int level, std::vector<int> playersId)
+void Interpreter::_pic(const std::smatch &m)
 {
-    (void) level;
-    (void) playersId;
+    int x = std::stoi(m[1]);
+    int y = std::stoi(m[2]);
+    // int level = std::stoi(m[3]);
+
     Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::RING, -1,
     {0.0f + (x * TILE_SIZE), -10.0f, 0.0f + (y * TILE_SIZE)}, sf::Color {127, 0, 255}, "./Assets/IncantationRing.stl");
 }
 
-void Interpreter::_pie(int x, int y, std::string result)
+void Interpreter::_pie(const std::smatch &m)
 {
-    (void) result;
+    int x = std::stoi(m[1]);
+    int y = std::stoi(m[2]);
+    std::string result = m[3].str();
+
     for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
         Renderer::Entity &e = *it;
         if (e.position.x == 0.f + (x * TILE_SIZE) && e.position.z == 0.f + (y * TILE_SIZE) && e.type == Renderer::PartType::RING) {
@@ -322,28 +311,27 @@ void Interpreter::_pie(int x, int y, std::string result)
     }
 }
 
-void Interpreter::_pfk(int playerId)
+void Interpreter::_pfk(const std::smatch &m)
 {
-    (void) playerId;
+    (void) m;
 }
 
-void Interpreter::_pdr(int playerId, int resourceNumber)
+void Interpreter::_pdr(const std::smatch &m)
 {
-    (void) playerId;
-    (void) resourceNumber;
+    (void) m;
 }
 
-void Interpreter::_pgt(int playerId, int resourceNumber)
+void Interpreter::_pgt(const std::smatch &m)
 {
-    (void) playerId;
-    (void) resourceNumber;
+    (void) m;
 }
 
-void Interpreter::_pdi(int playerId)
+void Interpreter::_pdi(const std::smatch &m)
 {
+    int playerId = std::stoi(m[1]);
+
     for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
         Renderer::Entity &e = *it;
-        // Will also remove the eyes
         if (e.clientId == playerId) {
             if (e.type == Renderer::PartType::BODY)
                 std::cerr << "Player " << e.clientId << " died. Rip." << std::endl;
@@ -354,46 +342,43 @@ void Interpreter::_pdi(int playerId)
     }
 }
 
-void Interpreter::_enw(int eggId, int playerId, int x, int y)
+void Interpreter::_enw(const std::smatch &m)
 {
-    (void) eggId;
-    (void) playerId;
-    (void) x;
-    (void) y;
-    std::cerr << "ENW : " << x << " " << y << std::endl;
+    (void) m;
 }
 
-void Interpreter::_ebo(int eggId)
+void Interpreter::_ebo(const std::smatch &m)
 {
-    (void) eggId;
+    (void) m;
 }
 
-void Interpreter::_edi(int eggId)
+void Interpreter::_edi(const std::smatch &m)
 {
-    (void) eggId;
+    (void) m;
 }
 
-void Interpreter::_sgt(int timeUnit)
+void Interpreter::_sgt(const std::smatch &m)
 {
-    (void) timeUnit;
+    (void) m;
 }
 
-void Interpreter::_sst(int timeUnit)
+void Interpreter::_sst(const std::smatch &m)
 {
-    (void) timeUnit;
+    (void) m;
 }
 
-void Interpreter::_seg(std::string teamName)
+void Interpreter::_seg(const std::smatch &m)
 {
-    (void) teamName;
+    (void) m;
 }
 
-void Interpreter::_smg(std::string msg)
+void Interpreter::_smg(const std::smatch &m)
 {
-    (void) msg;
+    (void) m;
 }
 
-void Interpreter::_suc(std::string data)
+void Interpreter::_suc(const std::smatch &m)
 {
-    std::cerr << "Unknown command : (" << data << ")" << std::endl;
+    (void) m;
+    std::cerr << "Unknown command" << std::endl;
 }

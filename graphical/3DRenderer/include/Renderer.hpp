@@ -26,5 +26,4 @@ namespace Renderer {
     extern std::unordered_map<int, Renderer::MovementState> pendingMovementsAfterRotation;
     extern int map_size_x;
     extern int map_size_y;
-
 }
