@@ -12,7 +12,7 @@
 ai::entity::SoundSystem::SoundSystem()
 {
     _player = UP;
-    for (int i = 0; i < 8; ++i) {
+    for (int i = 0; i < 9; ++i) {
         _cells[i].id = -1;
         _cells[i].message = "";
     }
@@ -22,7 +22,7 @@ void ai::entity::SoundSystem::update()
 {
     const auto actual = std::chrono::high_resolution_clock::now();
 
-    for (int i = 0; i < 8; ++i) {
+    for (int i = 0; i < 9; ++i) {
         if (_cells[i].id == -1)
             continue;
 
@@ -31,8 +31,19 @@ void ai::entity::SoundSystem::update()
         if (duration.count() > MAX_SOUND_DURATION) {
             _cells[i].id = -1;
             _cells[i].message = "";
+            _cells[i].delta = 0;
         }
     }
+}
+
+void ai::entity::SoundSystem::clearIdMemory(int id)
+{
+    for (int i = 0; i < 9; ++i)
+        if (_cells[i].id == id) {
+            _cells[i].id = -1;
+            _cells[i].message = "";
+            _cells[i].delta = 0;
+        }
 }
 
 void ai::entity::SoundSystem::setPlayerOrientation(Direction orientation)
@@ -77,7 +88,7 @@ ai::entity::Direction ai::entity::SoundSystem::getNearestSoundDirection(const st
 ai::entity::Direction ai::entity::SoundSystem::setSound(const std::string &sound_str)
 {
     utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
-    std::regex pattern(R"(message\s*\[(\d+)\],\s*(\d+)\|(\d+)\|(.+))");
+    std::regex pattern(R"(message\s*(\d+),\s*(\d+)\|(\d+)\|(.+))");
     std::smatch match;
 
     if (!std::regex_match(sound_str, match, pattern)) {
@@ -97,8 +108,8 @@ ai::entity::Direction ai::entity::SoundSystem::setSound(const std::string &sound
         return NONE;
     }
 
-    if (direction < 0 || direction > 7) {
-        logger.log("[Error] Invalid direction index: must be between 0 and 7");
+    if (direction < 0 || direction > 8) {
+        logger.log("[Error] Invalid direction index: must be between 0 and 8");
         return NONE;
     }
 
@@ -113,11 +124,18 @@ ai::entity::Direction ai::entity::SoundSystem::setSound(const std::string &sound
     }
 
     const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(date_now - sended_at);
+    const int64_t delta = duration.count();
+
+    clearIdMemory(id);
+    if (delta > _cells[direction].delta * DISTANCE_MULTIPLE && _cells[direction].delta != 0) {
+        logger.log("I heard something too far away so I ignored it '" + sound_str + "'.");
+        return NONE;
+    }
 
     direction = getAjustedDirection(static_cast<Direction>(direction));
     _cells[direction].id = id;
     _cells[direction].message = message;
     _cells[direction].received_at = date_now;
-    _cells[direction].delta = duration.count();
+    _cells[direction].delta = delta;
     return static_cast<Direction>(direction);
 }

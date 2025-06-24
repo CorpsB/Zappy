@@ -6,6 +6,7 @@
 */
 
 #include "../AI.hpp"
+#include <chrono>
 
 bool ai::entity::AI::performWanderAction()
 {
@@ -40,7 +41,9 @@ bool ai::entity::AI::performActionForGoal(std::string &look)
         case MEETUP: {
             logger.log("Sending everyone a meetup request for level " + std::to_string(_level + 1));
 
-            const std::string broadcast_msg = "Broadcast MEETUP_" + std::to_string(_level + 1);
+            const std::string broadcast_msg = "Broadcast " + std::to_string(_id) + "|" +
+            std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count()) +
+            "|MEETUP_" + std::to_string(_level + 1);
             if (doAction(broadcast_msg) == "dead")
                 return false;
 

@@ -56,22 +56,24 @@ bool ai::entity::AI::launchIncantation()
     }
 
     const std::string response = doAction("Incantation");
-    std::this_thread::sleep_for(std::chrono::milliseconds(READ_TIMEOUT * 5));
+    std::this_thread::sleep_for(std::chrono::milliseconds(READ_TIMEOUT * 10));
     if (response == "dead")
         return false;
     if (response.find("Elevation underway") != std::string::npos) {
         const std::string final_response = doAction("");
         if (final_response == "dead")
             return false;
-        if (final_response.find("Current level: " + std::to_string(_level + 1)) != std::string::npos) {
+        if (final_response == "ko")
+            logger.log("L" + std::to_string(_level + 1) + " Elevation failed.");
+        else if (final_response.find("Current level: " + std::to_string(_level + 1)) != std::string::npos) {
             ++_level;
-            logger.log("L" + std::to_string(_level) + " ELEVATION SUCCESS! Now Level " + std::to_string(_level) + ".");
-            return true;
+            logger.log("L" + std::to_string(_level) + " Elevation success! Now Level " + std::to_string(_level) + ".");
         } else {
-            logger.log("L" + std::to_string(_level + 1) + " Elevation failed or unexpected response: '" + final_response + "'.");
+            logger.log("L" + std::to_string(_level + 1) + " Elevation led to unexpected response: '" + final_response + "'.");
+            return false;
         }
     } else {
         logger.log("L" + std::to_string(_level + 1) + " Incantation start failed: '" + response + "'.");
     }
-    return false;
+    return true;
 }

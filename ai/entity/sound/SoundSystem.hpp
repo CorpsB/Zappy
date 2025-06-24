@@ -8,6 +8,7 @@
 #pragma once
 
 #define MAX_SOUND_DURATION 2000
+#define DISTANCE_MULTIPLE 1.3
 
 #include <chrono>
 #include <string>
@@ -41,6 +42,7 @@ namespace ai::entity
 
             void update();
             void setPlayerOrientation(Direction orientation);
+            void clearIdMemory(int id);
             Direction getAjustedDirection(Direction raw);
             Direction getRawDirection(Direction adjusted);
             SoundCell &getDirectionSound(Direction direction);
@@ -49,6 +51,6 @@ namespace ai::entity
 
         private:
             Direction _player;
-            SoundCell _cells[8];
+            SoundCell _cells[9];
     };
 }
