@@ -241,6 +241,9 @@ void Interpreter::_ppo(int playerId, int x, int y, Renderer::Compass orientation
             .active = true
         };
     }
+    std::array<std::string, 4> orienToStr = {"NORTH", "EAST", "SOUTH", "WEST"};
+    Renderer::histInstruc.push_back("T" + std::to_string(playerId) + ": moved to {x: " + std::to_string(x)
+        + ", y: " + std::to_string(y) + ", o: " + orienToStr[static_cast<int>(orientation)] + "}");
 }
 
 void Interpreter::_plv(int playerId, int level)

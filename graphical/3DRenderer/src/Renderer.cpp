@@ -28,6 +28,8 @@ namespace Renderer {
     std::unordered_map<int, Renderer::MovementState> pendingMovementsAfterRotation;
     int map_size_x = 0;
     int map_size_y = 0;
+    bool tabToggle = false;
+    bool tabWasPressed = false;
 
     bool initRenderer(sf::RenderWindow &window) {
         // window = new sf::RenderWindow(sf::VideoMode(width, height), title);
@@ -38,7 +40,7 @@ namespace Renderer {
         depthBuffer.assign(window.getSize().x * window.getSize().y, std::numeric_limits<float>::max());
         backBufferTexture.create(window.getSize().x, window.getSize().y);
 
-        if (!hudFont.loadFromFile("./Assets/zappy_font.ttf")) {
+        if (!hudFont.loadFromFile("./Assets/Roboto/Roboto-VariableFont_wdth,wght.ttf")) {
             std::cerr << "Failed to load font\n";
             return false;
         }
@@ -105,6 +107,15 @@ namespace Renderer {
     void update(float dt) {
         processInput(dt);
         cooldownAction -= dt;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab)) {
+            if (!tabWasPressed) {
+                tabToggle = !tabToggle;
+                tabWasPressed = true;
+            }
+        } else {
+            tabWasPressed = false;
+        }
+
         // Values in valuesForSynchro :
         // int -> client id
         // Vec3 -> body position
@@ -214,6 +225,8 @@ namespace Renderer {
             else
                 ++it;
         }
+        while (histInstruc.size() > 20)
+            histInstruc.pop_front();
     }
 
     void render(float dt, sf::RenderWindow &window) {
@@ -353,6 +366,16 @@ namespace Renderer {
             hudText.setPosition(5.f, y);
             window.draw(hudText);
             y += 20.f;
+        }
+
+        if (tabToggle) {
+            float y = 100.f;
+            for (auto it = histInstruc.rbegin(); it != histInstruc.rend(); ++it) {
+                hudText.setString(*it);
+                hudText.setPosition(window.getSize().x - 300, y);
+                window.draw(hudText);
+                y += 40.f;
+            }
         }
 
         // window.display();

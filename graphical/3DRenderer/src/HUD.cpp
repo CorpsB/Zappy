@@ -10,6 +10,7 @@
 namespace Renderer {
 
     std::list<HudMessage> hudMessages;
+    std::deque<std::string> histInstruc;
 
     void displayText(const std::string& message, float duration) {
         hudMessages.push_back({message, duration});
