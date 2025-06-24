@@ -7,6 +7,7 @@
 
 #include "../AI.hpp"
 #include <chrono>
+#include <thread>
 
 bool ai::entity::AI::performWanderAction()
 {
@@ -35,16 +36,28 @@ bool ai::entity::AI::performActionForGoal(std::string &look)
             return handleGoal(look, rarest_missing);
         }
 
-        case ELEVATION:
+        case ELEVATION_MASTER: {
+            logger.log("Attempting L" + std::to_string(_level + 1) + " Incantation.");
+            if (!setStonesForIncantation()) {
+                logger.log("L" + std::to_string(_level + 1) + " stone setting phase failed.");
+                return false;
+            }
+
+            logger.log("Sending everyone incantation signal for level " + std::to_string(_level + 1));
+            if (_level != 1 && !useBroadcast("INCANTATION_" + std::to_string(_level + 1)))
+                return false;
             return launchIncantation();
+        }
+
+        case ELEVATION_SLAVE: {
+            logger.log("Waiting elevation signal for level " + std::to_string(_level + 1));
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            return true;
+        }
 
         case MEETUP: {
             logger.log("Sending everyone a meetup request for level " + std::to_string(_level + 1));
-
-            const std::string broadcast_msg = "Broadcast " + std::to_string(_id) + "|" +
-            std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count()) +
-            "|MEETUP_" + std::to_string(_level + 1);
-            if (doAction(broadcast_msg) == "dead")
+            if (!useBroadcast("MEETUP_" + std::to_string(_level + 1)))
                 return false;
 
             const Direction dir = _sound_system.getNearestSoundDirection("MEETUP_" + std::to_string(_level + 1));
@@ -52,8 +65,21 @@ bool ai::entity::AI::performActionForGoal(std::string &look)
                 const std::vector<Direction> moves = getMovesTowardsSoundDirection(dir);
                 return executeMoves(look, moves);
             }
+
+            logger.log("No one find for the meetup. Defaulting to food searching.");
             return handleGoal(look, "food");
         }
+
+        case MEETUP_POINT: {
+            logger.log("Sending everyone a point meetup request for level " + std::to_string(_level + 1));
+            if (!useBroadcast("MEETUP_" + std::to_string(_level + 1)))
+                return false;
+            std::this_thread::sleep_for(std::chrono::milliseconds(ACTION_DELAY_MS));
+            return true;
+        }
+
+        case INCANTATION:
+            return launchIncantation();
 
         default:
             logger.log("No specific action for current goal '" + std::to_string(_goal) + "' (Lvl " +

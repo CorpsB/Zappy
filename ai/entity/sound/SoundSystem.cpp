@@ -15,6 +15,7 @@ ai::entity::SoundSystem::SoundSystem()
     for (int i = 0; i < 9; ++i) {
         _cells[i].id = -1;
         _cells[i].message = "";
+        _cells[i].delta = 0;
     }
 }
 
@@ -71,7 +72,7 @@ ai::entity::Direction ai::entity::SoundSystem::getNearestSoundDirection(const st
     Direction dir = NONE;
     int64_t min_duration = MAX_SOUND_DURATION;
 
-    for (int i = 0; i < 8; ++i) {
+    for (int i = 0; i < 9; ++i) {
         if (_cells[i].id == -1)
             continue;
         if (_cells[i].delta < min_duration && _cells[i].message == target) {

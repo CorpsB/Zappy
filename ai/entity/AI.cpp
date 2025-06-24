@@ -79,6 +79,15 @@ bool ai::entity::AI::doKoAction(const std::string &action)
     return true;
 }
 
+bool ai::entity::AI::useBroadcast(const std::string &message)
+{
+    const std::string broadcast_msg = "Broadcast " + std::to_string(_id) + "|" +
+        std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count()) +
+        + "|" + message;
+    
+    return doAction(broadcast_msg) != "dead";
+}
+
 void ai::entity::AI::run(const ai::parser::Config &config)
 {
     start(config);

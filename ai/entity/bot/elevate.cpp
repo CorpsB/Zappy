@@ -48,15 +48,9 @@ bool ai::entity::AI::setStonesForIncantation()
 bool ai::entity::AI::launchIncantation()
 {
     ai::utils::debug::Logger &logger = ai::utils::debug::Logger::GetInstance();
-    logger.log("Attempting L" + std::to_string(_level + 1) + " Incantation.");
-
-    if (!setStonesForIncantation()) {
-        logger.log("L" + std::to_string(_level + 1) + " stone setting phase failed.");
-        return false;
-    }
 
     const std::string response = doAction("Incantation");
-    std::this_thread::sleep_for(std::chrono::milliseconds(READ_TIMEOUT * 10));
+    std::this_thread::sleep_for(std::chrono::milliseconds(ACTION_DELAY_MS * 400));
     if (response == "dead")
         return false;
     if (response.find("Elevation underway") != std::string::npos) {

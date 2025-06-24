@@ -26,7 +26,10 @@ namespace ai::entity
         FOOD,
         STONE,
         MEETUP,
-        ELEVATION
+        MEETUP_POINT,
+        ELEVATION_MASTER,
+        ELEVATION_SLAVE,
+        INCANTATION
     };
 
     struct ElevationRecipe {
@@ -54,6 +57,7 @@ namespace ai::entity
             void run(const ai::parser::Config &config);
             std::string doAction(const std::string &action);
             bool doKoAction(const std::string &action);
+            bool useBroadcast(const std::string &message);
             void stop();
 
             // helper

@@ -7,7 +7,7 @@
 
 #pragma once
 
-#define MAX_SOUND_DURATION 2000
+#define MAX_SOUND_DURATION 6000
 #define DISTANCE_MULTIPLE 1.3
 
 #include <chrono>
