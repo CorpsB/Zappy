@@ -188,5 +188,7 @@ void event_pex(server_t *server, player_t *player);
 void event_pbc(server_t *server, player_t *player, char *message);
 void event_seg(server_t *server, char *name);
 void event_smg(server_t *server, char *name);
-
+void event_suc(server_t *server, int index, char **args);
+void event_sbp(server_t *server, int index, char **args, int i);
+int table_size(char **table);
 #endif /* !FUCNTION_H_ */

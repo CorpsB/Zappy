@@ -11,14 +11,6 @@
 #include "include/cmd.h"
 #include "include/cmd_parser_table.h"
 
-int table_size(char **table)
-{
-    int i = 0;
-
-    for (; table[i] != NULL; i++);
-    return i;
-}
-
 static bool is_new_player(server_t *server, int index, char *cmd)
 {
     for (teams_t *team = server->teams; team != NULL; team = team->next)
@@ -46,7 +38,7 @@ static bool unknown_client(server_t *server, int index, char *cmd)
 static void parse_unknown_client(server_t *server, int index, char *cmd)
 {
     if (!unknown_client(server, index, cmd)) {
-        dprintf(server->poll.pollfds[index].fd, "kko\n");
+        dprintf(server->poll.pollfds[index].fd, "ko\n");
         logger(server, "UNKNOWN CLIENT SEND CMD BEFORE AUTHENTIFICATION CMD:",
         INFO, false);
         logger(server, cmd, INFO, false);
@@ -58,19 +50,7 @@ static void gui_args_checker(server_t *server, int index, char **args,
     int i)
 {
     if (table_size(args) != gui_command_table[i].argument_nbr) {
-        dprintf(server->poll.pollfds[index].fd, "sbp\n");
-        logger(server, "INVALID ARGS NUMBER FOR THIS COMMAND", INFO, false);
-        if (server->debug) {
-            printf("CMD : %s\tARGS SIZE : %u\tEXPECTED SIZE : %u\n\n",
-                gui_command_table[i].name,
-                table_size(args),
-                gui_command_table[i].argument_nbr);
-            dprintf(server->debug_fd,
-                "CMD : %s\t ARGS SIZE : %u\tEXPECTED SIZE : %u\n\n",
-                gui_command_table[i].name,
-                table_size(args),
-                gui_command_table[i].argument_nbr);
-        }
+
     } else {
         gui_command_table[i].func(server, index, args);
     }
@@ -90,9 +70,7 @@ static void parse_gui_client(server_t *server, int index, char **args)
             return;
         }
     }
-    dprintf(server->poll.pollfds[index].fd, "suc\n");
-    logger(server, "UNKNOW GUI COMMAND:", INFO, false);
-    logger(server, args[0], INFO, false);
+    event_suc(server, index, args);
 }
 
 static void player_args_checker(server_t *server, int index, char **args,

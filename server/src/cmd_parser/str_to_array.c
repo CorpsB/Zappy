@@ -79,6 +79,14 @@ void free_table(char **table)
     free(table);
 }
 
+int table_size(char **table)
+{
+    int i = 0;
+
+    for (; table[i] != NULL; i++);
+    return i;
+}
+
 void remove_newline(char *str)
 {
     size_t len = strlen(str);

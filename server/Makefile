@@ -80,6 +80,8 @@ SRC	=	src/main.c								\
 		src/event/event_pbc.c					\
 		src/event/event_seg.c					\
 		src/event/event_smg.c					\
+		src/event/event_sbp.c					\
+		src/event/event_suc.c					\
 
 OBJ	=	$(SRC:.c=.o)
 
