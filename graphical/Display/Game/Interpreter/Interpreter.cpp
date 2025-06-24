@@ -175,6 +175,9 @@ void Interpreter::_pnw(int playerId, int x, int y, Renderer::Compass orientation
         Renderer::pathEyes[level - 1], orientation, {0.f, 0.f, 0.f}, level);
     std::cerr << " (*TILE_SIZE) x: " << x * TILE_SIZE << " y: " << y * TILE_SIZE << std::endl;
     std::cerr << "PlayerID " << playerId << std::endl;
+    std::array<std::string, 4> orienToStr = {"NORTH", "EAST", "SOUTH", "WEST"};
+    Renderer::histInstruc.push_back("T" + std::to_string(playerId) + ": connected at {x: " + std::to_string(x)
+        + ", y: " + std::to_string(y) + ", o: " + orienToStr[static_cast<int>(orientation)] + "}");
 }
 
 void Interpreter::_ppo(int playerId, int x, int y, Renderer::Compass orientation)
@@ -300,8 +303,7 @@ void Interpreter::_pex(int playerId)
 
 void Interpreter::_pbc(int playerId, std::string data)
 {
-    (void) playerId;
-    (void) data;
+    Renderer::histInstruc.push_back("T" + std::to_string(playerId) +  ": broadcasts \"" + data + "\"");
 }
 
 void Interpreter::_pic(int x, int y, int level, std::vector<int> playersId)
@@ -310,6 +312,8 @@ void Interpreter::_pic(int x, int y, int level, std::vector<int> playersId)
     (void) playersId;
     Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::RING, -1,
     {0.0f + (x * TILE_SIZE), -10.0f, 0.0f + (y * TILE_SIZE)}, sf::Color {127, 0, 255}, "./Assets/IncantationRing.stl");
+    Renderer::histInstruc.push_back("T" + std::to_string(playersId.front()) +  ": start incantation at {x: " + std::to_string(x)
+        + ", y: " + std::to_string(y) + "}");
 }
 
 void Interpreter::_pie(int x, int y, std::string result)
@@ -323,6 +327,7 @@ void Interpreter::_pie(int x, int y, std::string result)
             ++it;
         }
     }
+    Renderer::histInstruc.push_back("SERVER : incantation at {x:" + std::to_string(x) + ", y: " + std::to_string(y) + "} ended");
 }
 
 void Interpreter::_pfk(int playerId)
@@ -332,14 +337,14 @@ void Interpreter::_pfk(int playerId)
 
 void Interpreter::_pdr(int playerId, int resourceNumber)
 {
-    (void) playerId;
-    (void) resourceNumber;
+    std::array<std::string, 6> ressources = {"LINEMATE", "DERAUMERE", "SIBUR", "MENDIANE", "PHIRAS", "THYSTAME"};
+    Renderer::histInstruc.push_back("T" + std::to_string(playerId) +  ": drops " + (ressources[resourceNumber - 1]));
 }
 
 void Interpreter::_pgt(int playerId, int resourceNumber)
 {
-    (void) playerId;
-    (void) resourceNumber;
+    std::array<std::string, 6> ressources = {"LINEMATE", "DERAUMERE", "SIBUR", "MENDIANE", "PHIRAS", "THYSTAME"};
+    Renderer::histInstruc.push_back("T" + std::to_string(playerId) +  ": takes " + (ressources[resourceNumber - 1]));
 }
 
 void Interpreter::_pdi(int playerId)
@@ -355,6 +360,7 @@ void Interpreter::_pdi(int playerId)
             ++it;
         }
     }
+    Renderer::histInstruc.push_back("T" + std::to_string(playerId) +  ": died");
 }
 
 void Interpreter::_enw(int eggId, int playerId, int x, int y)
