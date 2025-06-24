@@ -75,7 +75,6 @@ void Client::run(Game &game)
     std::string data;
 
     while (1) {
-        // std::cerr << "Hi there ! How's it going ?" << std::endl;
         queue = poll((struct pollfd *) &_fds, 1, 0);
         if (queue < 0) {
             std::cerr << "Poll failure." << std::endl;
@@ -87,13 +86,11 @@ void Client::run(Game &game)
             data = readSocket();
             if (data == "") {
                 closeSocket();
-                std::cerr << "What the fuck ?" << std::endl;
                 break;
             }
             game.processData(data);
         }
     }
-    std::cerr << "WHYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY !?" << std::endl;
 }
 
 NetConfig &Client::getConfig()

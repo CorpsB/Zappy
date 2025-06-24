@@ -30,6 +30,7 @@ namespace Renderer {
     int map_size_y = 0;
     bool tabToggle = false;
     bool tabWasPressed = false;
+    static sf::RectangleShape bgMenu;
 
     bool initRenderer(sf::RenderWindow &window) {
         // window = new sf::RenderWindow(sf::VideoMode(width, height), title);
@@ -50,6 +51,9 @@ namespace Renderer {
         hudText.setOutlineColor(sf::Color::Black);
         hudText.setOutlineThickness(1.0f);
 
+        bgMenu.setSize(sf::Vector2f(350.f, window.getSize().y));
+        bgMenu.setPosition(window.getSize().x - 350.f, 0.f);
+        bgMenu.setFillColor(sf::Color(0, 0, 0, 128));
         return true;
     }
 
@@ -369,6 +373,7 @@ namespace Renderer {
         }
 
         if (tabToggle) {
+            window.draw(bgMenu);
             float y = 100.f;
             for (auto it = histInstruc.rbegin(); it != histInstruc.rend(); ++it) {
                 hudText.setString(*it);

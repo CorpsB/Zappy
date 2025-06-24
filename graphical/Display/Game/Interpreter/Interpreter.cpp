@@ -192,6 +192,9 @@ void Interpreter::_ppo(int playerId, int x, int y, Renderer::Compass orientation
             break;
         }
     }
+    std::array<std::string, 4> orienToStr = {"NORTH", "WEST", "SOUTH", "EAST"};
+    Renderer::histInstruc.push_back("T" + std::to_string(playerId) + ": moved to {x: " + std::to_string(x)
+        + ", y: " + std::to_string(y) + ", o: " + orienToStr[static_cast<int>(orientation)] + "}");
     std::cerr << "Pos x: " << (int)currentPos.x << " Pos z: " << (int)currentPos.z << " (*TILE_SIZE) x: " << x * TILE_SIZE << " y: " << y * TILE_SIZE << std::endl;
     std::cerr << "PPO : " << x << " " << y << std::endl;
 
@@ -244,9 +247,6 @@ void Interpreter::_ppo(int playerId, int x, int y, Renderer::Compass orientation
             .active = true
         };
     }
-    std::array<std::string, 4> orienToStr = {"NORTH", "EAST", "SOUTH", "WEST"};
-    Renderer::histInstruc.push_back("T" + std::to_string(playerId) + ": moved to {x: " + std::to_string(x)
-        + ", y: " + std::to_string(y) + ", o: " + orienToStr[static_cast<int>(orientation)] + "}");
 }
 
 void Interpreter::_plv(int playerId, int level)
@@ -343,8 +343,8 @@ void Interpreter::_pdr(int playerId, int resourceNumber)
 
 void Interpreter::_pgt(int playerId, int resourceNumber)
 {
-    std::array<std::string, 6> ressources = {"LINEMATE", "DERAUMERE", "SIBUR", "MENDIANE", "PHIRAS", "THYSTAME"};
-    Renderer::histInstruc.push_back("T" + std::to_string(playerId) +  ": takes " + (ressources[resourceNumber - 1]));
+    std::array<std::string, 7> ressources = {"FOOD", "LINEMATE", "DERAUMERE", "SIBUR", "MENDIANE", "PHIRAS", "THYSTAME"};
+    Renderer::histInstruc.push_back("T" + std::to_string(playerId) +  ": takes " + (ressources[resourceNumber]));
 }
 
 void Interpreter::_pdi(int playerId)
