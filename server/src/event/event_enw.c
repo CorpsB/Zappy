@@ -16,6 +16,14 @@ void send_enw(int fd, eggs_t *egg)
     );
 }
 
+/**
+ * @brief Send an "enw" message for every egg in the game to a graphical
+ * client.
+ * Typically called when a new graphical client connects, so they
+ * can get information about all existing eggs.
+ * @param fd File descriptor of the graphical client.
+ * @param server Pointer to the global server structure.
+*/
 static void send_all_eggs(int fd, server_t *server)
 {
     teams_t *team;
