@@ -163,6 +163,9 @@ void Interpreter::_pnw(const std::smatch &m)
     Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::EYES, playerId,
         {0.f + (x * TILE_SIZE), OFFSET_FROM_GROUND + OFFSET_EYES_Y, 0.f + (y * TILE_SIZE) + Renderer::offsetEyesZ[level - 1]}, sf::Color::Black,
         Renderer::pathEyes[level - 1], orientation, {0.f, 0.f, 0.f}, level);
+    std::array<std::string, 4> orienToStr = { "NORTH", "EAST", "SOUTH", "WEST" };
+    Renderer::histInstruc.push_back("T" + std::to_string(playerId) + ": connected at {x: " + std::to_string(x) +
+        ", y: " + std::to_string(y) + ", o: " + orienToStr[static_cast<int>(orientation)] + "}");
 }
 
 void Interpreter::_ppo(const std::smatch &m)
@@ -282,17 +285,29 @@ void Interpreter::_pex(const std::smatch &m)
 
 void Interpreter::_pbc(const std::smatch &m)
 {
-    (void) m;
+    int playerId = std::stoi(m[1]);
+    std::string data = m[2].str();
+
+    Renderer::histInstruc.push_back("T" + std::to_string(playerId) + ": broadcast \"" + data + "\"");
 }
 
 void Interpreter::_pic(const std::smatch &m)
 {
     int x = std::stoi(m[1]);
     int y = std::stoi(m[2]);
-    // int level = std::stoi(m[3]);
+    int level = std::stoi(m[3]);
+    std::vector<int> playersId;
+    std::string full = m[0].str();
+    std::regex idRegex(R"#(#(-?\d+))#");
+    auto begin = std::sregex_iterator(full.begin(), full.end(), idRegex);
+    auto end = std::sregex_iterator();
 
+    for (auto it = begin; it != end; it++)
+        playersId.push_back(std::stoi((*it)[1].str()));
     Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::RING, -1,
-    {0.0f + (x * TILE_SIZE), -10.0f, 0.0f + (y * TILE_SIZE)}, sf::Color {127, 0, 255}, "./Assets/IncantationRing.stl");
+        {0.0f + (x * TILE_SIZE), -10.0f, 0.0f + (y * TILE_SIZE)}, sf::Color {127, 0, 255}, "./Assets/IncantationRing.stl");
+    Renderer::histInstruc.push_back("T" + std::to_string(playersId.front()) + ": start incantation at {x: " + std::to_string(x)
+        + ", y: " + std::to_string(y) + "}");
 }
 
 void Interpreter::_pie(const std::smatch &m)
@@ -309,6 +324,7 @@ void Interpreter::_pie(const std::smatch &m)
             ++it;
         }
     }
+    Renderer::histInstruc.push_back("SERVER : incantation at {x:" + std::to_string(y) + "} ended");
 }
 
 void Interpreter::_pfk(const std::smatch &m)
@@ -318,12 +334,20 @@ void Interpreter::_pfk(const std::smatch &m)
 
 void Interpreter::_pdr(const std::smatch &m)
 {
-    (void) m;
+    int playerId = std::stoi(m[1]);
+    int resourceNumber = std::stoi(m[2]);
+    std::array<std::string, 6> resourcesName = { "LINEMATE", "DERAUMERE", "SIBUR", "MENDIANE", "PHIRAS", "THYSTAME" };
+
+    Renderer::histInstruc.push_back("T" + std::to_string(playerId) + ": drops " + (resourcesName[resourceNumber - 1]));
 }
 
 void Interpreter::_pgt(const std::smatch &m)
 {
-    (void) m;
+    int playerId = std::stoi(m[1]);
+    int resourceNumber = std::stoi(m[2]);
+    std::array<std::string, 6> resourcesName = { "LINEMATE", "DERAUMERE", "SIBUR", "MENDIANE", "PHIRAS", "THYSTAME" };
+
+    Renderer::histInstruc.push_back("T" + std::to_string(playerId) + ": takes " + (resourcesName[resourceNumber - 1]));
 }
 
 void Interpreter::_pdi(const std::smatch &m)
@@ -340,6 +364,7 @@ void Interpreter::_pdi(const std::smatch &m)
             ++it;
         }
     }
+    Renderer::histInstruc.push_back("T" + std::to_string(playerId) + ": died");
 }
 
 void Interpreter::_enw(const std::smatch &m)

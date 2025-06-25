@@ -12,5 +12,6 @@ namespace Renderer {
     };
 
     extern std::list<HudMessage> hudMessages;
+    extern std::deque<std::string> histInstruc;
     void displayText(const std::string& message, float duration);
 }
