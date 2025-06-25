@@ -191,4 +191,5 @@ void event_smg(server_t *server, char *name);
 void event_suc(server_t *server, int index, char **args);
 void event_sbp(server_t *server, int index, char **args, int i);
 int table_size(char **table);
+void cmd_look(server_t *server, int index, char **);
 #endif /* !FUCNTION_H_ */
