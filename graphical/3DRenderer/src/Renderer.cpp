@@ -359,6 +359,7 @@ namespace Renderer {
             frameCount = 0;
             fpsTimer = 0.0f;
         }
+        hudText.setFillColor(sf::Color {255, 255, 255});
         hudText.setString("FPS: " + std::to_string(lastFps));
         hudText.setPosition(5.f, 5.f);
         window.draw(hudText);
@@ -375,7 +376,11 @@ namespace Renderer {
             window.draw(bgMenu);
             float y = 100.f;
             for (auto it = histInstruc.rbegin(); it != histInstruc.rend(); ++it) {
-                hudText.setString(*it);
+                const std::string& text = std::get<0>(*it);
+                const sf::Color& color = std::get<1>(*it);
+
+                hudText.setString(text);
+                hudText.setFillColor(color);
                 hudText.setPosition(window.getSize().x - 300, y);
                 window.draw(hudText);
                 y += 40.f;

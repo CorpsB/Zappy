@@ -13,6 +13,6 @@ namespace Renderer {
     };
 
     extern std::list<HudMessage> hudMessages;
-    extern std::deque<std::string> histInstruc;
+    extern std::deque<std::tuple<std::string, sf::Color>> histInstruc;
     void displayText(const std::string& message, float duration);
 }

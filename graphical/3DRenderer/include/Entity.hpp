@@ -37,6 +37,8 @@ namespace Renderer {
         Vec3 rotation;
         Vec3 scale;
         int level;
+        std::string teamName;
+        sf::Color color;
     };
 
     extern std::vector<Entity> sceneEntities;
@@ -48,6 +50,6 @@ namespace Renderer {
     // Création d'entités
     int spawn(EntityType type, PartType partType, int clientId, const Vec3& pos,
               const sf::Color& c, const std::string& filepath = "", Compass orientation = Compass::NORTH,
-              const Vec3& rotation = {0.f, 0.f, 0.f}, int level = -1);
+              const Vec3& rotation = {0.f, 0.f, 0.f}, int level = -1, std::string teamName = "");
     float compassToAngle(Renderer::Compass c);
 }

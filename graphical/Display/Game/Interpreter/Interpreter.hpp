@@ -49,7 +49,6 @@ class Interpreter {
          * @param bigEnoughdiffColor If the color randomly generated is different enough from existing colors, return true
          */
         std::unordered_map<std::string, sf::Color> teamColor;
-        std::vector<std::string> allTeamNames;
         bool bigEnoughDiffColor(sf::Color newColor);
 
         /**

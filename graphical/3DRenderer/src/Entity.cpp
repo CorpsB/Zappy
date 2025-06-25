@@ -39,7 +39,7 @@ namespace Renderer {
 
     int spawn(EntityType type, PartType partType, int clientId, const Vec3& pos,
               const sf::Color& c, const std::string& filepath, Compass orientation,
-              const Vec3& rotation, int level) {
+              const Vec3& rotation, int level, std::string teamName) {
         Entity newEnt;
         newEnt.id = nextEntityID++;
         newEnt.type = partType;
@@ -49,6 +49,8 @@ namespace Renderer {
         newEnt.scale    = {1.f, 1.f, 1.f};
         newEnt.orientation = orientation;
         newEnt.level = level;
+        newEnt.teamName = teamName;
+        newEnt.color = c;
         // newEnt.rotation.y = compassToAngle(orientation);
         try {
             switch (type) {
