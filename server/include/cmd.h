@@ -12,8 +12,37 @@
     #include "include/function.h"
     #include "include/structure.h"
 
+/**
+ * @brief Execute the "Forward" command for a player.
+ * The player moves one tile forward based on their current direction.
+ * After movement, the graphical clients are notified with a "ppo" event,
+ * and the player receives an "ok" confirmation.
+ * @param server Pointer to the global server structure.
+ * @param index Index of the player within the poll structure.
+ * @param args Argument array received from the client (ignored in this case).
+*/
 void cmd_forward(server_t *server, int index, char **args);
+
+/**
+ * @brief Execute the "Right" command for a player.
+ * Rotates the player 90 degrees to the right. After rotation,
+ * the graphical clients are notified with a "ppo" event,
+ * and the player receives an "ok" confirmation.
+ * @param server Pointer to the global server structure.
+ * @param index Index of the player within the poll structure.
+ * @param args Argument array received from the client (ignored in this case).
+*/
 void cmd_right(server_t *server, int index, char **args);
+
+/**
+ * @brief Execute the "Left" command for a player.
+ * Rotates the player 90 degrees to the left. After rotation,
+ * the graphical clients are notified with a "ppo" event,
+ * and the player receives an "ok" confirmation.
+ * @param server Pointer to the global server structure.
+ * @param index Index of the player within the poll structure.
+ * @param args Argument array received from the client (ignored in this case).
+*/
 void cmd_left(server_t *server, int index, char **args);
 void cmd_player(server_t *server, int index, teams_t *teams);
 void cmd_test(server_t *server, int index, char **);
@@ -77,7 +106,7 @@ void cmd_fork(server_t *server, int index, char **args);
 /**
  * @brief Handle “Connect_nbr”: send remaining free slots for the team.
  *
- * Format de réponse : "<number>\n".
+ * Response format : "<number>\n".
 */
 void cmd_connect_nbr(server_t *server, int index, char **args);
 
@@ -111,14 +140,19 @@ void cmd_bct(server_t *server, int index, char **args);
 
 
 /**
- * @brief Handle the GUI command "mct" (map content).
- *
- * This command returns the resource content of every tile on the map
- * using the same format as the "bct" command.
- *
+ * @brief Send the content of the entire map to the requesting graphical
+ * client.
+ * This function iterates over every tile of the map and sends a "bct" line
+ * for each tile, following the protocol:
+ * @code
+ * bct X Y food linemate deraumere sibur mendiane phiras thystame\n
+ * @endcode
+ * This allows the graphical client to obtain a full snapshot of the map
+ * state.
  * @param server Pointer to the global server structure.
- * @param index  Index of the client in the poll list.
- * @param args   Command arguments (unused).
+ * @param index Index of the client making the request
+ * (must be a valid GUI client).
+ * @param args Argument array received from the client (ignored in this case).
 */
 void cmd_mct(server_t *server, int index, char **args);
 

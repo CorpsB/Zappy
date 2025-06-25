@@ -9,6 +9,18 @@
 #include "include/function.h"
 #include "include/structure.h"
 
+/**
+ * @brief Send the resource content of a specific map tile to a graphical
+ * client.
+ * Format sent follows the protocol:
+ * @code
+ * bct X Y food linemate deraumere sibur mendiane phiras thystame\n
+ * @endcode
+ * @param fd File descriptor of the graphical client.
+ * @param x X coordinate of the tile.
+ * @param y Y coordinate of the tile.
+ * @param tile Pointer to the resources structure of the tile.
+*/
 static void send_bct_tile(int fd, int x, int y, resources_t *tile)
 {
     dprintf(fd,
@@ -18,6 +30,13 @@ static void send_bct_tile(int fd, int x, int y, resources_t *tile)
     );
 }
 
+/**
+ * @brief Send the entire map content to a graphical client.
+ * Iterates over all tiles of the map and sends their resource content
+ * using the "bct" protocol line.
+ * @param fd File descriptor of the graphical client.
+ * @param server Pointer to the global server structure.
+*/
 static void send_full_map(int fd, server_t *server)
 {
     for (int y = 0; y < (int)server->height; y++) {

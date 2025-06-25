@@ -9,16 +9,6 @@
 #include "include/function.h"
 #include "include/structure.h"
 
-/**
- * @brief Notify the GUI and the player that a player has died.
- *
- * GUI clients receive: pdi <id>
- * The player receives: dead
- *
- * @param server Pointer to the game server.
- * @param player Pointer to the player who has died.
- */
-
 void event_pdi(server_t *server, player_t *player)
 {
     char *buffer = NULL;

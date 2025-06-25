@@ -121,6 +121,13 @@ void change_arround(server_t *server, int *pos, r_ressource_t type,
 void send_to_all_gui(server_t *server, char *message);
 int eggs_size(eggs_t *eggs);
 void generate_starter_eggs(server_t *server, teams_t *teams);
+/**
+ * @brief Notify the GUI and the player that a player has died.
+ * GUI clients receive: pdi <id>
+ * The player receives: dead
+ * @param server Pointer to the game server.
+ * @param player Pointer to the player who has died.
+*/
 void event_pdi(server_t *server, player_t *player);
 
 
@@ -144,51 +151,308 @@ void event_msz(server_t *server);
  */
 void event_pdi(server_t *server, player_t *player);
 
+/**
+ * @brief Broadcast the entire map content to all connected graphical clients.
+ * This function is typically called when a new graphical client connects,
+ * allowing them to synchronize their map view.
+ * @param server Pointer to the global server structure.
+*/
 void event_bct(server_t *server);
 
 void event_pdi_by_index(void);
 
+/**
+ * @brief Sends a "sgt" event broadcasting the server's frequency value.
+ * This function formats and broadcasts a message containing the server's
+ * frequency parameter to all connected GUI clients.
+ * If the server pointer is NULL or message formatting fails, it safely
+ * returns or logs an error.
+ * @param server Pointer to the server containing the frequency value.
+*/
 void event_sgt(server_t *server);
 
+/**
+ * @brief Sends "tna" events listing all team names.
+ * This function iterates through the linked list of teams in the server,
+ * sending a "tna" message with each team's name to all connected GUI clients.
+ * If the server or team list is NULL, the function returns immediately.
+ * If message formatting fails, an error is logged.
+ * @param server Pointer to the server containing the teams.
+*/
 void event_tna(server_t *server);
 
+/**
+ * @brief Handles the "pfk" event triggered by a player laying an egg.
+ * This function creates a new egg from the player, then broadcasts a
+ * "pfk" event
+ * to all connected GUI clients. It also triggers the "enw" event with
+ * the new egg.
+ * If any step fails, the function safely returns without action.
+ * @param server Pointer to the server structure managing the
+ * game state and clients.
+ * @param player Pointer to the player who triggered the event.
+*/
 void event_pfk(server_t *server, player_t *player);
 
+
+/**
+ * @brief Notify all graphical clients that an egg has been laid.
+ * Sends an "enw" message with information about the new egg.
+ * If the player pointer is provided, their ID is used as the creator;
+ * otherwise, the egg's creator_id is used.
+ * Protocol format:
+ * @code
+ * enw #<egg_id> #<creator_id> <x> <y>\n
+ * @endcode
+ * @param server Pointer to the global server structure.
+ * @param player Pointer to the player who laid the egg
+ * (optional, can be NULL).
+ * @param egg Pointer to the egg structure.
+*/
 void event_enw(server_t *server, player_t *player, eggs_t *egg);
 
+/**
+ * @brief Send "enw" messages for all existing eggs to all connected
+ * graphical clients.
+ * This is typically called when a graphical client connects,
+ * to synchronize them with the current state of the game.
+ * @param server Pointer to the global server structure.
+*/
 void event_new_gui_enw(server_t *server);
 
+/**
+ * @brief Notify all graphical clients that an egg has hatched.
+ * Sends the "ebo" protocol line to all graphical clients to indicate
+ * that the egg with the given ID has successfully hatched.
+ * Protocol format:
+ * @code
+ * ebo #<egg_id>\n
+ * @endcode
+ * @param server Pointer to the global server structure.
+ * @param egg_id Unique identifier of the hatched egg.
+*/
 void event_ebo(server_t *server, unsigned int egg_id);
 
+/**
+ * @brief Send an "enw" message to a graphical client for a specific egg.
+ * This message informs the client that an egg has been laid.
+ * Protocol format:
+ * @code
+ * enw #<egg_id> #<creator_id> <x> <y>\n
+ * @endcode
+ * @param fd File descriptor of the graphical client.
+ * @param egg Pointer to the egg structure.
+*/
 void send_enw(int fd, eggs_t *egg);
 
+/**
+ * @brief Creates a new egg associated with the given player.
+ * This function allocates and initializes a new egg structure
+ * based on the player's
+ * team and position. The egg's ID is generated using the team's ID combined
+ * with a random number.
+ * The new egg is added to the front of the team's egg linked list.
+ * @param player Pointer to the player from whom the egg is created.
+ * @return Pointer to the newly created egg, or NULL if player
+ * or player's team is invalid, or if memory allocation fails.
+*/
 eggs_t *create_egg_from_player(player_t *player);
 
 void del_egg(server_t *server, teams_t *teams, eggs_t *egg);
 unsigned int *hatching_egg(server_t *server, teams_t *teams);
 void complete_team_data(server_t *server);
 
+/**
+ * @brief Sends a "pnw" event announcing a new player on the map.
+ * This function constructs and broadcasts a message containing the
+ * player's ID,
+ * position coordinates, direction, level, and team name to all
+ * connected GUI clients.
+ * After broadcasting the "pnw" event, it also sends a "pin"
+ * event to report the player's status.
+ * The function returns early if the server, player, or
+ * player's team is NULL.
+ * If message formatting fails, an error is logged.
+ * @param server Pointer to the server managing the game state
+ * and connected clients.
+ * @param player Pointer to the player being announced.
+*/
 void event_pnw(server_t *server, player_t *player);
 
+/**
+ * @brief Sends a "pin" event broadcasting the player's current status.
+ * This function constructs and sends a message containing the player's ID,
+ * position coordinates, and the quantities of each resource in their
+ * inventory.
+ * It ignores the call if the server or player is NULL, or if the player
+ * is marked as dead.
+ * The message is broadcast to all connected GUI clients.
+ * If message formatting fails, an error is logged.
+ * @param server Pointer to the server managing game state and clients.
+ * @param player Pointer to the player whose status is being reported.
+*/
 void event_pin(server_t *server, player_t *player);
 
+/**
+ * @brief Sends a "ppo" event broadcasting a player's position and direction.
+ * This function formats a message containing the player's ID, position
+ * coordinates,
+ * and direction, then broadcasts it to all connected GUI clients.
+ * The event is skipped if the server or player pointer is NULL, or if
+ * the player is marked as dead.
+ * If message formatting fails, an error is logged.
+ * @param server Pointer to the server managing game state and clients.
+ * @param player Pointer to the player whose position is being reported.
+*/
 void event_ppo(server_t *server, player_t *player);
 
+/**
+ * @brief Notify all graphical clients that an egg has been destroyed.
+ * Sends the "edi" protocol line to all graphical clients to indicate
+ * that the egg with the given ID has been removed from the game
+ * (e.g., destroyed).
+ * Protocol format:
+ * @code
+ * edi #<egg_id>\n
+ * @endcode
+ * @param server Pointer to the global server structure.
+ * @param egg_id Unique identifier of the destroyed egg.
+*/
 void event_edi(server_t *server, unsigned int egg_id);
 
 void free_table(char **table);
 
+/**
+ * @brief Notify all graphical clients of a resource change on a specific
+ * tile.
+ * Sends the "bct" line for the given tile to all graphical clients,
+ * typically after an action modifies the resources of the tile.
+ * @param server Pointer to the global server structure.
+ * @param y Y coordinate of the tile.
+ * @param x X coordinate of the tile.
+*/
 void event_bct_per_tile(server_t *server, int y, int x);
 
+/**
+ * @brief Sends a "pgt" event indicating a resource update for a player.
+ * This function formats a message reporting that a player identified by `id`
+ * has performed an action related to a resource of the given `type`.
+ * The message is then broadcast to all connected GUI clients.
+ * If message formatting fails, an error is logged.
+ * @param server Pointer to the server managing the game state
+ * and connected clients.
+ * @param id The unique identifier of the player associated
+ * with the event.
+ * @param type The type of resource involved in the event
+ * (cast to int for message).
+*/
 void event_pgt(server_t *server, int id, r_ressource_t type);
+
+/**
+ * @brief Notify all graphical clients that a player has dropped a resource.
+ * Sends a "pdr" message indicating that the player with the given ID
+ * dropped a specific resource type on their current tile.
+ * Protocol format:
+ * @code
+ * pdr #<player_id> <resource_type>\n
+ * @endcode
+ * @param server Pointer to the global server structure.
+ * @param id Unique identifier of the player.
+ * @param type Type of resource that was dropped
+ * (as defined by r_ressource_t).
+*/
 void event_pdr(server_t *server, int id, r_ressource_t type);
+
+/**
+ * @brief Sends "plv" events for all connected players.
+ * This function iterates through all connected clients on the server,
+ * and for each client identified as a player, it calls `event_plv`
+ * to broadcast their current level to all GUI clients.
+ * @param server Pointer to the server managing the game state and clients.
+*/
 void event_all_plv(server_t *server);
+
+/**
+ * @brief Sends a "plv" event indicating a player's current level.
+ * This function formats a message with the player's ID and level,
+ * then broadcasts it to all connected GUI clients.
+ * If message formatting fails, an error is logged.
+ * @param server Pointer to the server managing the game state and clients.
+ * @param player Pointer to the player whose level is being reported.
+*/
 void event_plv(server_t *server, player_t *player);
+
+/**
+ * @brief Sends a "pex" event to all connected GUI clients.
+ * This function formats a message of type "pex" containing the
+ * given player's ID,
+ * then broadcasts it to all GUI clients connected to the server.
+ * If message creation fails, an error is logged.
+ * @param server Pointer to the server structure containing the list
+ * of GUI clients.
+ * @param player Pointer to the player structure whose ID is included
+ * in the event.
+*/
 void event_pex(server_t *server, player_t *player);
+
+/**
+ * @brief Notify all graphical clients that a player has broadcast a message.
+ * Sends a "pbc" message to all graphical clients indicating that
+ * the player has performed a broadcast with the given message content.
+ * Protocol format:
+ * @code
+ * pbc #<player_id> <message>\n
+ * @endcode
+ * @param server Pointer to the global server structure.
+ * @param player Pointer to the player who sent the broadcast.
+ * @param message Null-terminated string containing the broadcast message.
+*/
 void event_pbc(server_t *server, player_t *player, char *message);
+
+/**
+ * @brief Sends a "seg" event with a given name string.
+ * This function formats and broadcasts a message containing the given name
+ * to all connected GUI clients.
+ * If message formatting fails, an error is logged.
+ * @param server Pointer to the server managing clients.
+ * @param name String to be included in the "seg" event.
+*/
 void event_seg(server_t *server, char *name);
+
+/**
+ * @brief Sends an "SMG" event with a specified name string.
+ * This function formats a message containing the given name prefixed by
+ * "SMG",
+ * then broadcasts it to all connected GUI clients.
+ * If message formatting fails, an error is logged.
+ * @param server Pointer to the server managing clients.
+ * @param name String to be included in the "SMG" event message.
+*/
 void event_smg(server_t *server, char *name);
+
+/**
+ * @brief Sends a "suc" event indicating an unknown GUI command received.
+ * This function writes "suc" to the client socket at the specified index,
+ * logs that an unknown GUI command was received, and logs the command string.
+ * @param server Pointer to the server managing client connections.
+ * @param index Index of the client in the server's pollfd array.
+ * @param args Array of argument strings where args[0] is the unknown command.
+*/
 void event_suc(server_t *server, int index, char **args);
+
+/**
+ * @brief Sends an "sbp" event indicating invalid arguments or wrong
+ * number of arguments for a command.
+ * This function sends the "sbp" message to the client socket
+ * at the specified index,
+ * logs an informational message about invalid arguments,
+ * and, if debug mode is enabled, prints detailed command and
+ * argument information to stdout and debug file.
+ * @param server Pointer to the server managing client connections.
+ * @param index Index of the client in the server's pollfd array.
+ * @param args Array of argument strings passed to the command.
+ * @param i Index of the command in the gui_command_table.
+*/
 void event_sbp(server_t *server, int index, char **args, int i);
 int table_size(char **table);
 void cmd_look(server_t *server, int index, char **);
