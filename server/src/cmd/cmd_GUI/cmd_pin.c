@@ -8,6 +8,8 @@
 #include "include/include.h"
 #include "include/structure.h"
 #include "include/function.h"
+#include "include/cmd.h"
+#include "include/cmd_parser_table.h"
 
 /**
  * @brief Sends inventory of a player to GUI.
@@ -22,23 +24,33 @@ static void send_pin(int fd, const player_t *p)
         p->inventory.thystame);
 }
 
+static int find_gui_command_index(const char *name)
+{
+    for (int i = 0; gui_command_table[i].name; i++) {
+        if (strcmp(gui_command_table[i].name, name) == 0)
+            return i;
+    }
+    return -1;
+}
+
 void cmd_pin(server_t *server, int index, char **args)
 {
     int fd;
     long id;
     char *e;
     player_t *p;
+    int i = find_gui_command_index("pin");
 
     fd = server->poll.pollfds[index].fd;
     if (!args || !args[1])
-        return (void)dprintf(fd, "ko\n");
+        return event_sbp(server, index, args, i);
     id = strtol(args[1], &e, 10);
     while (*e && isspace((unsigned char)*e))
         e++;
     if (*e || id < 0)
-        return (void)dprintf(fd, "ko\n");
+        return event_sbp(server, index, args, i);
     p = find_player_by_id(server, (unsigned int)id);
     if (!p)
-        return (void)dprintf(fd, "ko\n");
+        return event_sbp(server, index, args, i);
     send_pin(fd, p);
 }

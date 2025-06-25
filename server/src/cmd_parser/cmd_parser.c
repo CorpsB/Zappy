@@ -50,7 +50,7 @@ static void gui_args_checker(server_t *server, int index, char **args,
     int i)
 {
     if (table_size(args) != gui_command_table[i].argument_nbr) {
-
+        event_sbp(server, index, args, i);
     } else {
         gui_command_table[i].func(server, index, args);
     }
