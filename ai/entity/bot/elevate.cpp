@@ -49,10 +49,11 @@ bool ai::entity::AI::incantate(const std::string &response)
 {
     utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
 
+    logger.log("I take part in the incantation for level " + std::to_string(_level + 1) + ".");
     if (response == "dead")
         return false;
     if (response.find("Elevation underway") != std::string::npos) {
-        const std::string final_response = doAction("", 30000);
+        const std::string final_response = doAction("");
         if (final_response == "dead")
             return false;
         if (final_response == "ko")

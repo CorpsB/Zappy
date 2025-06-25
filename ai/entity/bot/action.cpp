@@ -44,10 +44,15 @@ bool ai::entity::AI::performActionForGoal(std::string &look)
             }
 
             logger.log("Sending everyone incantation signal for level " + std::to_string(_level + 1));
-            if (_level != 1 && !useBroadcast("INCANTATION_" + std::to_string(_level + 1)))
-                return false;
-            _incantate = true;
-            return _socket.sendCommand("Incantation");
+            if (_level == 1) {
+                if (!_socket.sendCommand("Incantation"))
+                    return false;
+                return incantate(doAction(""));
+            } else {
+                if (!useBroadcast("INCANTATION_" + std::to_string(_level + 1)))
+                    return false;
+                return incantate(doAction("Incantation"));
+            }
         }
 
         case ELEVATION_SLAVE: {
@@ -57,10 +62,6 @@ bool ai::entity::AI::performActionForGoal(std::string &look)
         }
 
         case MEETUP: {
-            logger.log("Sending everyone a meetup request for level " + std::to_string(_level + 1));
-            if (!useBroadcast("MEETUP_" + std::to_string(_level + 1)))
-                return false;
-
             const Direction dir = _sound_system.getNearestSoundDirection("MEETUP_" + std::to_string(_level + 1));
             if (dir != NONE && dir != HERE) {
                 const std::vector<Direction> moves = getMovesTowardsSoundDirection(dir);
@@ -76,13 +77,6 @@ bool ai::entity::AI::performActionForGoal(std::string &look)
             if (!useBroadcast("MEETUP_" + std::to_string(_level + 1)))
                 return false;
             std::this_thread::sleep_for(std::chrono::milliseconds(ACTION_DELAY_MS));
-            return true;
-        }
-
-        case INCANTATION: {
-            _incantate = true;
-            if (_level == 1)
-                return _socket.sendCommand("Incantation");
             return true;
         }
 

@@ -15,7 +15,6 @@ ai::entity::SoundSystem::SoundSystem()
     for (int i = 0; i < 9; ++i) {
         _cells[i].id = -1;
         _cells[i].message = "";
-        _cells[i].delta = 0;
     }
 }
 
@@ -32,7 +31,6 @@ void ai::entity::SoundSystem::update()
         if (duration.count() > MAX_SOUND_DURATION) {
             _cells[i].id = -1;
             _cells[i].message = "";
-            _cells[i].delta = 0;
         }
     }
 }
@@ -43,7 +41,6 @@ void ai::entity::SoundSystem::clearIdMemory(int id)
         if (_cells[i].id == id) {
             _cells[i].id = -1;
             _cells[i].message = "";
-            _cells[i].delta = 0;
         }
 }
 
@@ -69,27 +66,17 @@ ai::entity::SoundCell &ai::entity::SoundSystem::getDirectionSound(Direction ajus
 
 ai::entity::Direction ai::entity::SoundSystem::getNearestSoundDirection(const std::string &target)
 {
-    Direction dir = NONE;
-    int64_t min_duration = MAX_SOUND_DURATION;
-
-    for (int i = 0; i < 9; ++i) {
-        if (_cells[i].id == -1)
-            continue;
-        if (_cells[i].delta < min_duration && _cells[i].message == target) {
-            min_duration = _cells[i].delta;
-            dir = static_cast<Direction>(i);
-        }
-    }
-    if (dir != NONE)
-        return getRawDirection(dir);
-    return dir;
+    for (int i = 0; i < 9; ++i)
+        if (_cells[i].id != -1 && _cells[i].message == target)
+            return getRawDirection(static_cast<Direction>(i));
+    return NONE;
 }
 
 // message [direction], [id]|[timestamp]|[message]
 ai::entity::Direction ai::entity::SoundSystem::setSound(const std::string &sound_str)
 {
     utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
-    std::regex pattern(R"(message\s*(\d+),\s*(\d+)\|(\d+)\|(.+))");
+    std::regex pattern(R"(message\s*(\d+),\s*(\d+)\|(.+))");
     std::smatch match;
 
     if (!std::regex_match(sound_str, match, pattern)) {
@@ -99,15 +86,7 @@ ai::entity::Direction ai::entity::SoundSystem::setSound(const std::string &sound
 
     int direction = std::stoi(match[1].str());
     const int id = std::stoi(match[2].str());
-    const std::string message = match[4].str();
-    int64_t sended_at_64;
-
-    try {
-        sended_at_64 = std::stoll(match[3].str());
-    } catch (...) {
-        logger.log("[Error] Invalid timestamp: must be a valid int64");
-        return NONE;
-    }
+    const std::string message = match[3].str();
 
     if (direction < 0 || direction > 8) {
         logger.log("[Error] Invalid direction index: must be between 0 and 8");
@@ -115,28 +94,11 @@ ai::entity::Direction ai::entity::SoundSystem::setSound(const std::string &sound
     }
 
     const auto date_now = std::chrono::high_resolution_clock::now();
-    const auto sended_at = std::chrono::high_resolution_clock::time_point{
-        std::chrono::milliseconds{sended_at_64}
-    };
-
-    if (sended_at > date_now) {
-        logger.log("[Error] Invalid timestamp: message from the future");
-        return NONE;
-    }
-
-    const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(date_now - sended_at);
-    const int64_t delta = duration.count();
 
     clearIdMemory(id);
-    if (delta > _cells[direction].delta * DISTANCE_MULTIPLE && _cells[direction].delta != 0) {
-        logger.log("I heard something too far away so I ignored it '" + sound_str + "'.");
-        return NONE;
-    }
-
     direction = getAjustedDirection(static_cast<Direction>(direction));
     _cells[direction].id = id;
     _cells[direction].message = message;
     _cells[direction].received_at = date_now;
-    _cells[direction].delta = delta;
     return static_cast<Direction>(direction);
 }

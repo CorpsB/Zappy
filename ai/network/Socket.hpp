@@ -7,7 +7,7 @@
 
 #pragma once
 
-#define READ_TIMEOUT 2000
+#define READ_TIMEOUT 30000
 #define READ_BUFFER_SIZE 2048
 
 #include <poll.h>
@@ -26,8 +26,8 @@ namespace ai::network
 
             void setup(const std::string &thread_name, const std::string &team_name);
             void initSocket(int port, const std::string &ip);
-            bool readSocket(int timemout = READ_TIMEOUT);
-            std::string readSocketBuffer(int timeout = READ_TIMEOUT);
+            bool readSocket();
+            std::string readSocketBuffer();
             void closeSocket();
 
             int isServerReadable();
@@ -35,7 +35,7 @@ namespace ai::network
             void greetsServer();
 
             bool sendCommand(const std::string &cmd);
-            std::string doAction(const std::string &cmd, int timeout = READ_TIMEOUT);
+            std::string doAction(const std::string &cmd);
 
         private:
             struct pollfd _fds;

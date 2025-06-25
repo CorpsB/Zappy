@@ -29,7 +29,6 @@ namespace ai::entity
     };
 
     struct SoundCell {
-        int64_t delta;
         std::chrono::_V2::system_clock::time_point received_at;
         std::string message;
         int id;

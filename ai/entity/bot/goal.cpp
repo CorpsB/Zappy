@@ -52,9 +52,6 @@ ai::entity::Goal ai::entity::AI::getGoal(const std::string &look)
     if (_level == 8)
         return STONE;
 
-    if (_sound_system.getNearestSoundDirection("INCANTATION_" + std::to_string(_level + 1)) == HERE)
-        return INCANTATION;
-
     const bool enough_rocks = hasEnoughRocks();
     const Direction meetup = _sound_system.getNearestSoundDirection("MEETUP_" + std::to_string(_level + 1));
     if (meetup != NONE) {
@@ -63,17 +60,15 @@ ai::entity::Goal ai::entity::AI::getGoal(const std::string &look)
         if (enough_rocks) {
             if (countPlayersOnTile(0, look) >= RECIPES[_level - 1].player)
                 return (cell.id < _id) ? ELEVATION_SLAVE : ELEVATION_MASTER;
-            return (cell.delta < 300 && cell.id >= _id) ? MEETUP_POINT : MEETUP;
+            return (cell.id < _id) ? MEETUP : MEETUP_POINT;
         }
         if (countPlayersOnTile(0, look) >= RECIPES[_level - 1].player)
             return ELEVATION_SLAVE;
-        return (cell.delta < 300 && cell.id >= _id) ? MEETUP_POINT : MEETUP;
-    } else {
-        if (enough_rocks) {
-            if (_level == 1)
-                return ELEVATION_MASTER;
-            return MEETUP;
-        }
+        return MEETUP;
+    } else if (enough_rocks) {
+        if (_level == 1 || countPlayersOnTile(0, look) >= RECIPES[_level - 1].player)
+            return ELEVATION_MASTER;
+        return MEETUP_POINT;
     }
     return STONE;
 }

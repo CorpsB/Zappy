@@ -16,7 +16,6 @@ ai::entity::AI::AI(int id)
     _food_level = 1;
     _goal = FOOD;
     _thread_name = std::string("[Bot ") + std::to_string(id) + std::string("]");
-    _incantate = false;
 }
 
 void ai::entity::AI::start(const ai::parser::Config &config)
@@ -39,14 +38,14 @@ void ai::entity::AI::stop()
     logger.display();
 }
 
-std::string ai::entity::AI::doAction(const std::string &action, int timeout)
+std::string ai::entity::AI::doAction(const std::string &action)
 {
     if (!action.empty())
         _socket.sendCommand(action);
 
     utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
     while (true) {
-        const std::string result = _socket.readSocketBuffer(timeout);
+        const std::string result = _socket.readSocketBuffer();
 
         if (result == "dead")
             return "dead";
@@ -55,6 +54,11 @@ std::string ai::entity::AI::doAction(const std::string &action, int timeout)
             if (dir != NONE) {
                 const SoundCell &cell = _sound_system.getDirectionSound(dir);
                 logger.log("Message received from " + std::to_string(cell.id) + " '" + cell.message + "'");
+
+                // incantate to level up
+                if (cell.message == "INCANTATION_" + std::to_string(_level + 1))
+                    if (!incantate(doAction("")))
+                        return "dead";
             }
             continue;
         }
@@ -82,11 +86,7 @@ bool ai::entity::AI::doKoAction(const std::string &action)
 
 bool ai::entity::AI::useBroadcast(const std::string &message)
 {
-    const std::string broadcast_msg = "Broadcast " + std::to_string(_id) + "|" +
-        std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count()) +
-        + "|" + message;
-    
-    return doAction(broadcast_msg) != "dead";
+    return doAction("Broadcast " + std::to_string(_id) + "|" + message) != "dead";
 }
 
 void ai::entity::AI::run(const ai::parser::Config &config)
@@ -95,13 +95,6 @@ void ai::entity::AI::run(const ai::parser::Config &config)
     utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
 
     while (1) {
-        // incantate to level up
-        if (_incantate) {
-            if (!incantate(doAction("", 30000)))
-                break;
-            _incantate = false;
-        }
-
         // clear old broadcast messages
         _sound_system.update();
 

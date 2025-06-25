@@ -9,7 +9,6 @@
 
 #define FOOD_THRESHOLD 8.0
 #define ACTION_DELAY_MS 50
-#define READ_TIMEOUT 2000
 
 #include <string>
 #include <memory>
@@ -29,8 +28,7 @@ namespace ai::entity
         MEETUP,
         MEETUP_POINT,
         ELEVATION_MASTER,
-        ELEVATION_SLAVE,
-        INCANTATION
+        ELEVATION_SLAVE
     };
 
     struct ElevationRecipe {
@@ -56,7 +54,7 @@ namespace ai::entity
 
             void start(const ai::parser::Config &config);
             void run(const ai::parser::Config &config);
-            std::string doAction(const std::string &action, int timeout = READ_TIMEOUT);
+            std::string doAction(const std::string &action);
             bool doKoAction(const std::string &action);
             bool useBroadcast(const std::string &message);
             void stop();
@@ -93,7 +91,6 @@ namespace ai::entity
         private:
             static const ElevationRecipe RECIPES[7];
 
-            bool _incantate;
             unsigned _id;
             unsigned _level;
             unsigned _food_level;
