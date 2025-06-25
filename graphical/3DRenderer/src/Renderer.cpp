@@ -31,6 +31,10 @@ namespace Renderer {
     bool tabToggle = false;
     bool tabWasPressed = false;
     static sf::RectangleShape bgMenu;
+    // We need it to display it even though it's not really supposed to be here
+    std::unordered_map<int, std::array<int, 7>> _resourcesOnTiles;
+    static std::array<std::tuple<std::string, int, sf::Color>, 7> totalResources;
+    bool resourcesChange;
 
     bool initRenderer(sf::RenderWindow &window) {
         // window = new sf::RenderWindow(sf::VideoMode(width, height), title);
@@ -54,6 +58,17 @@ namespace Renderer {
         bgMenu.setSize(sf::Vector2f(350.f, window.getSize().y));
         bgMenu.setPosition(window.getSize().x - 350.f, 0.f);
         bgMenu.setFillColor(sf::Color(0, 0, 0, 128));
+
+        totalResources = {
+            std::make_tuple("FOOD: ", 0, sf::Color::Yellow),
+            std::make_tuple("LINEMATE: ", 0, sf::Color {96, 96, 96}),
+            std::make_tuple("DERAUMERE: ", 0, sf::Color::Green),
+            std::make_tuple("SIBUR: ", 0, sf::Color {204, 0, 102}),
+            std::make_tuple("MENDIANE: ", 0, sf::Color {255, 255, 255}),
+            std::make_tuple("PHIRAS: ", 0, sf::Color {127, 0, 255}),
+            std::make_tuple("THYSTAME: ", 0, sf::Color::Red)
+        };
+        resourcesChange = true;
         return true;
     }
 
@@ -228,7 +243,8 @@ namespace Renderer {
             else
                 ++it;
         }
-        while (histInstruc.size() > 20)
+        // Remove first message if more than 30
+        while (histInstruc.size() > 34)
             histInstruc.pop_front();
     }
 
@@ -372,9 +388,41 @@ namespace Renderer {
             y += 20.f;
         }
 
+        // display menu
         if (tabToggle) {
             window.draw(bgMenu);
-            float y = 100.f;
+            // Calculate only if something changed
+            if (resourcesChange) {
+                totalResources = {
+                    std::make_tuple("FOOD: ", 0, sf::Color::Yellow),
+                    std::make_tuple("LINEMATE: ", 0, sf::Color {96, 96, 96}),
+                    std::make_tuple("DERAUMERE: ", 0, sf::Color::Green),
+                    std::make_tuple("SIBUR: ", 0, sf::Color {204, 0, 102}),
+                    std::make_tuple("MENDIANE: ", 0, sf::Color {255, 255, 255}),
+                    std::make_tuple("PHIRAS: ", 0, sf::Color {127, 0, 255}),
+                    std::make_tuple("THYSTAME: ", 0, sf::Color::Red)
+                };
+                // Calculate the total of resources
+                for (int i = 0; i < map_size_x; i++) {
+                    for (int j = 0; j < map_size_y; j++) {
+                        if (_resourcesOnTiles.find(i * map_size_y + j) != _resourcesOnTiles.end()) {
+                            const auto& tileResources = _resourcesOnTiles[i * map_size_y + j];
+                            for (int resIndex = 0; resIndex < 7; ++resIndex)
+                                std::get<1>(totalResources[resIndex]) += tileResources[resIndex];
+                        }
+                    }
+                }
+            }
+            resourcesChange = false;
+            float y = 10.f;
+            for (int i = 0; i < 7; i++) {
+                hudText.setString(std::get<0>(totalResources[i]) + std::to_string(std::get<1>(totalResources[i])));
+                hudText.setFillColor(std::get<2>(totalResources[i]));
+                hudText.setPosition(window.getSize().x - 300, y);
+                window.draw(hudText);
+                y += 25.f;
+            }
+            y = 200.f;
             for (auto it = histInstruc.rbegin(); it != histInstruc.rend(); ++it) {
                 const std::string& text = std::get<0>(*it);
                 const sf::Color& color = std::get<1>(*it);
@@ -383,7 +431,7 @@ namespace Renderer {
                 hudText.setFillColor(color);
                 hudText.setPosition(window.getSize().x - 300, y);
                 window.draw(hudText);
-                y += 40.f;
+                y += 25.f;
             }
         }
 

@@ -92,6 +92,7 @@ void Interpreter::_msz(const std::smatch &m)
             } else
                 Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::GROUND, -1,
                 {0.0f + (i * TILE_SIZE), 0.0f, 0.0f + (j * TILE_SIZE)}, sf::Color {65, 65, 65}, "./bonus/Assets/ground.stl");
+            Renderer::_resourcesOnTiles[i * y + j] = {0, 0, 0, 0, 0, 0, 0};
         }
     Renderer::map_size_x = x;
     Renderer::map_size_y = y;
@@ -107,6 +108,9 @@ void Interpreter::_bct(const std::smatch &m)
         std::stoi(m[6]), std::stoi(m[7]), std::stoi(m[8]),
         std::stoi(m[9])
     };
+
+    Renderer::resourcesChange = true;
+    Renderer::_resourcesOnTiles[x * Renderer::map_size_y + y] = quantities;
 
     std::array<bool, 7> exists = { false, false, false, false, false, false, false };
 

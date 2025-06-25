@@ -24,6 +24,8 @@ namespace Renderer {
     extern std::unordered_map<int, MovementState> activeMovements;
     extern std::unordered_map<int, RotationState> activeRotations;
     extern std::unordered_map<int, Renderer::MovementState> pendingMovementsAfterRotation;
+    extern std::unordered_map<int, std::array<int, 7>> _resourcesOnTiles;
+    extern bool resourcesChange;
     extern int map_size_x;
     extern int map_size_y;
 }
