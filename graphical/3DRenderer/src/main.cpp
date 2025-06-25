@@ -17,7 +17,7 @@ int main() {
 
     // Spawn un golem Bricien
     Renderer::rotatingEntityId = Renderer::spawn(Renderer::EntityType::STL,
-        {0.0f, 0.0f, 5.0f}, sf::Color::Cyan, "./Assets/body_golem.stl");
+        {0.0f, 0.0f, 5.0f}, sf::Color::Cyan, "./bonus/Assets/body_golem.stl");
 
     sf::Clock clock;
     while (Renderer::getIsRunning()) {

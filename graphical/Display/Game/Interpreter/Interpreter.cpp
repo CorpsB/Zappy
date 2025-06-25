@@ -33,13 +33,13 @@ Interpreter::Interpreter()
     };
 
     _resources = {{
-        { Renderer::PartType::Q0, {25.f, -6.5f, 25.f}, sf::Color::Yellow, "./Assets/Food.stl" },
-        { Renderer::PartType::Q1, {15.f, -6.5f, -25.f}, {96, 96, 96}, "./Assets/Crystals.stl" },
-        { Renderer::PartType::Q2, {25.f, -6.5f, -15.f}, sf::Color::Green, "./Assets/Crystals.stl" },
-        { Renderer::PartType::Q3, {-15.f, -6.5f, -25.f}, {204, 0, 102}, "./Assets/Crystals.stl" },
-        { Renderer::PartType::Q4, {-25.f, -6.5f, -15.f}, {255, 255, 255}, "./Assets/Crystals.stl" },
-        { Renderer::PartType::Q5, {-15.f, -6.5f, 25.f}, {127, 0, 255}, "./Assets/Crystals.stl" },
-        { Renderer::PartType::Q6, {-25.f, -5.0f, 15.f}, sf::Color::Red, "./Assets/Crystals.stl", -5.0f }
+        { Renderer::PartType::Q0, {25.f, -6.5f, 25.f}, sf::Color::Yellow, "./bonus/Assets/Food.stl" },
+        { Renderer::PartType::Q1, {15.f, -6.5f, -25.f}, {96, 96, 96}, "./bonus/Assets/Crystals.stl" },
+        { Renderer::PartType::Q2, {25.f, -6.5f, -15.f}, sf::Color::Green, "./bonus/Assets/Crystals.stl" },
+        { Renderer::PartType::Q3, {-15.f, -6.5f, -25.f}, {204, 0, 102}, "./bonus/Assets/Crystals.stl" },
+        { Renderer::PartType::Q4, {-25.f, -6.5f, -15.f}, {255, 255, 255}, "./bonus/Assets/Crystals.stl" },
+        { Renderer::PartType::Q5, {-15.f, -6.5f, 25.f}, {127, 0, 255}, "./bonus/Assets/Crystals.stl" },
+        { Renderer::PartType::Q6, {-25.f, -5.0f, 15.f}, sf::Color::Red, "./bonus/Assets/Crystals.stl", -5.0f }
     }};
 }
 
@@ -88,10 +88,10 @@ void Interpreter::_msz(const std::smatch &m)
         for (int j = 0; j < y; j++) {
             if (j == 0 && i == 0) {
                 Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::GROUND, -1,
-                {0.0f + (i * TILE_SIZE), 0.0f, 0.0f + (j * TILE_SIZE)}, sf::Color::Red, "./Assets/ground.stl");
+                {0.0f + (i * TILE_SIZE), 0.0f, 0.0f + (j * TILE_SIZE)}, sf::Color::Red, "./bonus/Assets/ground.stl");
             } else
                 Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::GROUND, -1,
-                {0.0f + (i * TILE_SIZE), 0.0f, 0.0f + (j * TILE_SIZE)}, sf::Color {65, 65, 65}, "./Assets/ground.stl");
+                {0.0f + (i * TILE_SIZE), 0.0f, 0.0f + (j * TILE_SIZE)}, sf::Color {65, 65, 65}, "./bonus/Assets/ground.stl");
         }
     Renderer::map_size_x = x;
     Renderer::map_size_y = y;
@@ -187,7 +187,7 @@ void Interpreter::_pnw(const std::smatch &m)
         teamColor[teamName] = color;
     }
     Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::BODY, playerId,
-        {0.f + (x * TILE_SIZE), OFFSET_FROM_GROUND, 0.f + (y * TILE_SIZE)}, teamColor[teamName], "./Assets/body_golem.stl",
+        {0.f + (x * TILE_SIZE), OFFSET_FROM_GROUND, 0.f + (y * TILE_SIZE)}, teamColor[teamName], "./bonus/Assets/body_golem.stl",
         orientation, {0.f, 0.f, 0.f}, level, teamName);
     Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::EYES, playerId,
         {0.f + (x * TILE_SIZE), OFFSET_FROM_GROUND + OFFSET_EYES_Y, 0.f + (y * TILE_SIZE) + Renderer::offsetEyesZ[level - 1]}, sf::Color::Black,
@@ -349,7 +349,7 @@ void Interpreter::_pic(const std::smatch &m)
     for (auto it = begin; it != end; it++)
         playersId.push_back(std::stoi((*it)[1].str()));
     Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::RING, -1,
-        {0.0f + (x * TILE_SIZE), -10.0f, 0.0f + (y * TILE_SIZE)}, sf::Color {127, 0, 255}, "./Assets/IncantationRing.stl");
+        {0.0f + (x * TILE_SIZE), -10.0f, 0.0f + (y * TILE_SIZE)}, sf::Color {127, 0, 255}, "./bonus/Assets/IncantationRing.stl");
 
     sf::Color color = {255, 255, 255};
     for (auto &e : Renderer::sceneEntities) {

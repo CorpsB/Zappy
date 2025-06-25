@@ -17,14 +17,14 @@ namespace Renderer {
     int nextEntityID = 0;
     int rotatingEntityId = -1;
     std::array<std::string, 8> pathEyes = {
-        "./Assets/Eyes_lv1.stl",
-        "./Assets/Eyes_lv2.stl",
-        "./Assets/Eyes_lv3.stl",
-        "./Assets/Eyes_lv4.stl",
-        "./Assets/Eyes_lv5.stl",
-        "./Assets/Eyes_lv6.stl",
-        "./Assets/Eyes_lv7.stl",
-        "./Assets/Eyes_lv8.stl"
+        "./bonus/Assets/Eyes_lv1.stl",
+        "./bonus/Assets/Eyes_lv2.stl",
+        "./bonus/Assets/Eyes_lv3.stl",
+        "./bonus/Assets/Eyes_lv4.stl",
+        "./bonus/Assets/Eyes_lv5.stl",
+        "./bonus/Assets/Eyes_lv6.stl",
+        "./bonus/Assets/Eyes_lv7.stl",
+        "./bonus/Assets/Eyes_lv8.stl"
     };
     std::array<float, 8> offsetEyesZ = {
         -8.8f,

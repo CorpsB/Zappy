@@ -41,7 +41,7 @@ namespace Renderer {
         depthBuffer.assign(window.getSize().x * window.getSize().y, std::numeric_limits<float>::max());
         backBufferTexture.create(window.getSize().x, window.getSize().y);
 
-        if (!hudFont.loadFromFile("./Assets/zappy_font.ttf")) {
+        if (!hudFont.loadFromFile("./bonus/Assets/zappy_font.ttf")) {
             std::cerr << "Failed to load font\n";
             return false;
         }

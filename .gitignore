@@ -3,3 +3,6 @@
 *.o
 *.log
 .vscode
+zappy_gui.AppImage
+zappy_server
+ai/
