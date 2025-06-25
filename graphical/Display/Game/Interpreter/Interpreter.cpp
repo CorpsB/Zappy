@@ -180,13 +180,14 @@ void Interpreter::_pnw(const std::smatch &m)
         // 2 conditions to find a color :
         // - sum > 55 --> the eyes are black, it will prevent to have a dark skin
         // - big enough difference between the new color and the existing ones
-        while (color.r + color.g + color.b < 55 && !bigEnoughDiffColor(color)) {
+        while (color.r + color.g + color.b < 55 || !bigEnoughDiffColor(color)) {
             color.r = rand() % 256;
             color.g = rand() % 256;
             color.b = rand() % 256;
         }
         teamColor[teamName] = color;
     }
+    std::cout << "Color " << teamName << ": {" << (int)teamColor[teamName].r << ", " << (int)teamColor[teamName].g << ", " << (int)teamColor[teamName].b << "}" << std::endl;
     Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::BODY, playerId,
         {0.f + (x * TILE_SIZE), OFFSET_FROM_GROUND, 0.f + (y * TILE_SIZE)}, teamColor[teamName], "./Assets/body_golem.stl", orientation, {0.f, 0.f, 0.f}, level);
     Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::EYES, playerId,
