@@ -457,11 +457,12 @@ void event_sbp(server_t *server, int index, char **args, int i);
 int table_size(char **table);
 void cmd_look(server_t *server, int index, char **);
 
+void cmd_broadcast_text(server_t *server, int index, char **args);
 typedef char *(*line_builder_t)(server_t *, int, int, int);
 
 char *build_line(server_t *srv, player_t *pl, int lvl);
 char *append_token(char *dest, const char *token, server_t *srv);
 unsigned int eggs_at(server_t *srv, int y, int x);
 unsigned int players_at(server_t *srv, int y, int x);
-
+void free_map(int y, int **map);
 #endif /* !FUCNTION_H_ */

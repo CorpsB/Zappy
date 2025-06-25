@@ -76,7 +76,8 @@ static void parse_gui_client(server_t *server, int index, char **args)
 static void player_args_checker(server_t *server, int index, char **args,
     int i)
 {
-    if (table_size(args) != player_command_table[i].argument_nbr) {
+    if (table_size(args) != player_command_table[i].argument_nbr &&
+        player_command_table[i].argument_nbr != -1) {
         dprintf(server->poll.pollfds[index].fd, "ko\n");
         logger(server, "INVALID ARGS NUMBER FOR THIS COMMAND", INFO, false);
         if (server->debug) {

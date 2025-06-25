@@ -18,7 +18,7 @@ const player_command_t player_command_table[] = {
     {"Left", cmd_left, 1, 7},
     {"Look", cmd_look, 1, 7},
     {"Inventory", cmd_inventory, 1, 1},
-    {"Broadcast", cmd_test, -1, 0},
+    {"Broadcast", cmd_broadcast_text, -1, 0},
     {"Connect_nbr", cmd_connect_nbr, 1, 0},
     {"Fork", cmd_fork, 1, 42},
     {"Eject", cmd_eject, 1, 7},

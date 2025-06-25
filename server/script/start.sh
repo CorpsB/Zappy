@@ -5,4 +5,4 @@
 ## flunch
 ##
 
-./zappy_server -p 4240 -x 10 -y 10 -n blue red green -c 2 -f 100 -d
+./zappy_server -p 4241 -x 10 -y 10 -n blue red green -c 2 -f 100 -d
