@@ -43,6 +43,18 @@ class Interpreter {
         std::string _buffer;
 
         /**
+         * @brief Determine the teams' color
+         * @param teamColor Contains the color of each team
+         * @param allTeamNames Contains the list of all team names
+         * @param bigEnoughdiffColor If the color randomly generated is different enough from existing colors, return true
+         */
+        std::unordered_map<std::string, sf::Color> teamColor;
+        std::vector<std::string> allTeamNames;
+        bool bigEnoughDiffColor(sf::Color newColor);
+
+
+        bool checkSMatch(const std::smatch &m, std::size_t expectedSize, std::string instruc);
+        /**
          * @brief Set the map size
          * @param x Map width
          * @param y Map height

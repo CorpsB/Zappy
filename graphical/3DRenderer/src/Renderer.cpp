@@ -41,7 +41,7 @@ namespace Renderer {
         depthBuffer.assign(window.getSize().x * window.getSize().y, std::numeric_limits<float>::max());
         backBufferTexture.create(window.getSize().x, window.getSize().y);
 
-        if (!hudFont.loadFromFile("./Assets/Roboto/Roboto-VariableFont_wdth,wght.ttf")) {
+        if (!hudFont.loadFromFile("./Assets/zappy_font.ttf")) {
             std::cerr << "Failed to load font\n";
             return false;
         }
@@ -111,6 +111,14 @@ namespace Renderer {
     void update(float dt) {
         processInput(dt);
         cooldownAction -= dt;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab)) {
+            if (!tabWasPressed) {
+                tabToggle = !tabToggle;
+                tabWasPressed = true;
+            }
+        } else {
+            tabWasPressed = false;
+        }
         // Values in valuesForSynchro :
         // int -> client id
         // Vec3 -> body position

@@ -79,8 +79,25 @@ void Interpreter::interpret(const std::string &data)
     _buffer = newBuffer;
 }
 
+bool Interpreter::checkSMatch(const std::smatch &m, std::size_t expectedSize, std::string instruc)
+{
+    if (m.size() < expectedSize + 1) {
+        std::cerr << "[" << instruc << "] Not enough regex matches (" << m.size() << " found)" << std::endl;
+        return false;
+    }
+    for (std::size_t i = 1; i <= expectedSize; ++i) {
+        if (!m[i].matched) {
+            std::cerr << "[" << instruc << "] Match[" << i << "] not matched" << std::endl;
+            return false;
+        }
+    }
+    return true;
+}
+
 void Interpreter::_msz(const std::smatch &m)
 {
+    if (!checkSMatch(m, 2, "msz"))
+        return;
     int x = std::stoi(m[1]);
     int y = std::stoi(m[2]);
 
@@ -99,6 +116,8 @@ void Interpreter::_msz(const std::smatch &m)
 
 void Interpreter::_bct(const std::smatch &m)
 {
+    if (!checkSMatch(m, 9, "bct"))
+        return;
     int x = std::stoi(m[1]);
     int y = std::stoi(m[2]);
 
@@ -149,17 +168,48 @@ void Interpreter::_bct(const std::smatch &m)
     }
 }
 
+bool Interpreter::bigEnoughDiffColor(sf::Color newColor)
+{
+    if (teamColor.empty())
+        return true;
+    for (auto &name : allTeamNames) {
+        sf::Color color = teamColor[name];
+        // minimum euclidian distance > 100 --> about 15-25 teams
+        int dr = int(color.r) - int(newColor.r);
+        int dg = int(color.g) - int(newColor.g);
+        int db = int(color.b) - int(newColor.b);
+        if (std::sqrt(dr * dr + dg * dg + db * db) < 100.0f)
+            return false;
+    }
+    return true;
+}
+
 void Interpreter::_pnw(const std::smatch &m)
 {
+    if (!checkSMatch(m, 6, "pnw"))
+        return;
     int playerId = std::stoi(m[1]);
     int x = std::stoi(m[2]);
     int y = std::stoi(m[3]);
-    Renderer::Compass orientation = static_cast<Renderer::Compass>(std::stoi(m[4]));
+    Renderer::Compass orientation = static_cast<Renderer::Compass>(std::stoi(m[4]) - 1);
     int level = std::stoi(m[5]);
     std::string teamName = m[6].str();
 
+    if (teamColor.find(teamName) == teamColor.end()) {
+        allTeamNames.push_back(teamName);
+        sf::Color color = {0, 0, 0};
+        // 2 conditions to find a color :
+        // - sum > 55 --> the eyes are black, it will prevent to have a dark skin
+        // - big enough difference between the new color and the existing ones
+        while (color.r + color.g + color.b < 55 && !bigEnoughDiffColor(color)) {
+            color.r = rand() % 256;
+            color.g = rand() % 256;
+            color.b = rand() % 256;
+        }
+        teamColor[teamName] = color;
+    }
     Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::BODY, playerId,
-        {0.f + (x * TILE_SIZE), OFFSET_FROM_GROUND, 0.f + (y * TILE_SIZE)}, sf::Color::Cyan, "./Assets/body_golem.stl", orientation, {0.f, 0.f, 0.f}, level);
+        {0.f + (x * TILE_SIZE), OFFSET_FROM_GROUND, 0.f + (y * TILE_SIZE)}, teamColor[teamName], "./Assets/body_golem.stl", orientation, {0.f, 0.f, 0.f}, level);
     Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::EYES, playerId,
         {0.f + (x * TILE_SIZE), OFFSET_FROM_GROUND + OFFSET_EYES_Y, 0.f + (y * TILE_SIZE) + Renderer::offsetEyesZ[level - 1]}, sf::Color::Black,
         Renderer::pathEyes[level - 1], orientation, {0.f, 0.f, 0.f}, level);
@@ -170,10 +220,12 @@ void Interpreter::_pnw(const std::smatch &m)
 
 void Interpreter::_ppo(const std::smatch &m)
 {
+    if (!checkSMatch(m, 4, "ppo"))
+        return;
     int playerId = std::stoi(m[1]);
     int x = std::stoi(m[2]);
     int y = std::stoi(m[3]);
-    Renderer::Compass orientation = static_cast<Renderer::Compass>(std::stoi(m[4]));
+    Renderer::Compass orientation = static_cast<Renderer::Compass>(std::stoi(m[4]) - 1);
 
     float currentAngle = 0.f;
     Renderer::Vec3 currentPos;
@@ -242,6 +294,8 @@ void Interpreter::_ppo(const std::smatch &m)
 
 void Interpreter::_plv(const std::smatch &m)
 {
+    if (!checkSMatch(m, 2, "plv"))
+        return;
     int playerId = std::stoi(m[1]);
     int level = std::stoi(m[2]);
 
@@ -288,6 +342,8 @@ void Interpreter::_pex(const std::smatch &m)
 
 void Interpreter::_pbc(const std::smatch &m)
 {
+    if (!checkSMatch(m, 2, "pbc"))
+        return;
     int playerId = std::stoi(m[1]);
     std::string data = m[2].str();
 
@@ -296,6 +352,8 @@ void Interpreter::_pbc(const std::smatch &m)
 
 void Interpreter::_pic(const std::smatch &m)
 {
+    if (!checkSMatch(m, m.size(), "pic"))
+        return;
     int x = std::stoi(m[1]);
     int y = std::stoi(m[2]);
     // int level = std::stoi(m[3]);
@@ -315,6 +373,8 @@ void Interpreter::_pic(const std::smatch &m)
 
 void Interpreter::_pie(const std::smatch &m)
 {
+    if (!checkSMatch(m, 3, "pie"))
+        return;
     int x = std::stoi(m[1]);
     int y = std::stoi(m[2]);
     std::string result = m[3].str();
@@ -337,6 +397,8 @@ void Interpreter::_pfk(const std::smatch &m)
 
 void Interpreter::_pdr(const std::smatch &m)
 {
+    if (!checkSMatch(m, 2, "pdr"))
+        return;
     int playerId = std::stoi(m[1]);
     int resourceNumber = std::stoi(m[2]);
     std::array<std::string, 7> resourcesName = { "FOOD", "LINEMATE", "DERAUMERE", "SIBUR", "MENDIANE", "PHIRAS", "THYSTAME" };
@@ -346,6 +408,8 @@ void Interpreter::_pdr(const std::smatch &m)
 
 void Interpreter::_pgt(const std::smatch &m)
 {
+    if (!checkSMatch(m, 2, "pgt"))
+        return;
     int playerId = std::stoi(m[1]);
     int resourceNumber = std::stoi(m[2]);
     std::array<std::string, 7> resourcesName = { "FOOD", "LINEMATE", "DERAUMERE", "SIBUR", "MENDIANE", "PHIRAS", "THYSTAME" };
@@ -355,6 +419,8 @@ void Interpreter::_pgt(const std::smatch &m)
 
 void Interpreter::_pdi(const std::smatch &m)
 {
+    if (!checkSMatch(m, 1, "pdi"))
+        return;
     int playerId = std::stoi(m[1]);
 
     for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
