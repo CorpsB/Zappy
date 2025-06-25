@@ -26,7 +26,7 @@ static player_t *init_player_node(server_t *server, int index,
     node->id = server->player_count;
     node->position[0] = pos[0];
     node->position[1] = pos[1];
-    node->lvl = 6;
+    node->lvl = 1;
     node->team = teams;
     node->is_dead = false;
     node->cycle_before_death = 1260;

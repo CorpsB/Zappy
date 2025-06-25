@@ -83,6 +83,7 @@ SRC	=	src/main.c								\
 		src/event/event_sbp.c					\
 		src/event/event_suc.c					\
 		src/cmd/cmd_IA/cmd_look.c				\
+		src/cmd/cmd_IA/cmd_look_next.c			\
 
 OBJ	=	$(SRC:.c=.o)
 
