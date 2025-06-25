@@ -52,8 +52,6 @@ class Interpreter {
         std::vector<std::string> allTeamNames;
         bool bigEnoughDiffColor(sf::Color newColor);
 
-
-        bool checkSMatch(const std::smatch &m, std::size_t expectedSize, std::string instruc);
         /**
          * @brief Set the map size
          * @param x Map width

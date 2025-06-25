@@ -79,25 +79,8 @@ void Interpreter::interpret(const std::string &data)
     _buffer = newBuffer;
 }
 
-bool Interpreter::checkSMatch(const std::smatch &m, std::size_t expectedSize, std::string instruc)
-{
-    if (m.size() < expectedSize + 1) {
-        std::cerr << "[" << instruc << "] Not enough regex matches (" << m.size() << " found)" << std::endl;
-        return false;
-    }
-    for (std::size_t i = 1; i <= expectedSize; ++i) {
-        if (!m[i].matched) {
-            std::cerr << "[" << instruc << "] Match[" << i << "] not matched" << std::endl;
-            return false;
-        }
-    }
-    return true;
-}
-
 void Interpreter::_msz(const std::smatch &m)
 {
-    if (!checkSMatch(m, 2, "msz"))
-        return;
     int x = std::stoi(m[1]);
     int y = std::stoi(m[2]);
 
@@ -116,8 +99,6 @@ void Interpreter::_msz(const std::smatch &m)
 
 void Interpreter::_bct(const std::smatch &m)
 {
-    if (!checkSMatch(m, 9, "bct"))
-        return;
     int x = std::stoi(m[1]);
     int y = std::stoi(m[2]);
 
@@ -186,8 +167,6 @@ bool Interpreter::bigEnoughDiffColor(sf::Color newColor)
 
 void Interpreter::_pnw(const std::smatch &m)
 {
-    if (!checkSMatch(m, 6, "pnw"))
-        return;
     int playerId = std::stoi(m[1]);
     int x = std::stoi(m[2]);
     int y = std::stoi(m[3]);
@@ -220,8 +199,6 @@ void Interpreter::_pnw(const std::smatch &m)
 
 void Interpreter::_ppo(const std::smatch &m)
 {
-    if (!checkSMatch(m, 4, "ppo"))
-        return;
     int playerId = std::stoi(m[1]);
     int x = std::stoi(m[2]);
     int y = std::stoi(m[3]);
@@ -294,8 +271,6 @@ void Interpreter::_ppo(const std::smatch &m)
 
 void Interpreter::_plv(const std::smatch &m)
 {
-    if (!checkSMatch(m, 2, "plv"))
-        return;
     int playerId = std::stoi(m[1]);
     int level = std::stoi(m[2]);
 
@@ -342,8 +317,6 @@ void Interpreter::_pex(const std::smatch &m)
 
 void Interpreter::_pbc(const std::smatch &m)
 {
-    if (!checkSMatch(m, 2, "pbc"))
-        return;
     int playerId = std::stoi(m[1]);
     std::string data = m[2].str();
 
@@ -352,8 +325,6 @@ void Interpreter::_pbc(const std::smatch &m)
 
 void Interpreter::_pic(const std::smatch &m)
 {
-    if (!checkSMatch(m, m.size(), "pic"))
-        return;
     int x = std::stoi(m[1]);
     int y = std::stoi(m[2]);
     // int level = std::stoi(m[3]);
@@ -373,8 +344,6 @@ void Interpreter::_pic(const std::smatch &m)
 
 void Interpreter::_pie(const std::smatch &m)
 {
-    if (!checkSMatch(m, 3, "pie"))
-        return;
     int x = std::stoi(m[1]);
     int y = std::stoi(m[2]);
     std::string result = m[3].str();
@@ -397,8 +366,6 @@ void Interpreter::_pfk(const std::smatch &m)
 
 void Interpreter::_pdr(const std::smatch &m)
 {
-    if (!checkSMatch(m, 2, "pdr"))
-        return;
     int playerId = std::stoi(m[1]);
     int resourceNumber = std::stoi(m[2]);
     std::array<std::string, 7> resourcesName = { "FOOD", "LINEMATE", "DERAUMERE", "SIBUR", "MENDIANE", "PHIRAS", "THYSTAME" };
@@ -408,8 +375,6 @@ void Interpreter::_pdr(const std::smatch &m)
 
 void Interpreter::_pgt(const std::smatch &m)
 {
-    if (!checkSMatch(m, 2, "pgt"))
-        return;
     int playerId = std::stoi(m[1]);
     int resourceNumber = std::stoi(m[2]);
     std::array<std::string, 7> resourcesName = { "FOOD", "LINEMATE", "DERAUMERE", "SIBUR", "MENDIANE", "PHIRAS", "THYSTAME" };
@@ -419,8 +384,6 @@ void Interpreter::_pgt(const std::smatch &m)
 
 void Interpreter::_pdi(const std::smatch &m)
 {
-    if (!checkSMatch(m, 1, "pdi"))
-        return;
     int playerId = std::stoi(m[1]);
 
     for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
