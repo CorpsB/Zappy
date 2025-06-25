@@ -40,6 +40,7 @@ jobs:
         uses: actions/checkout@v3
       - name: Run coding-style checker
         run: |
+          cd server
           check.sh "$PWD" "$PWD"
           if test -s coding-style-reports.log; then
             while IFS= read -r line; do
