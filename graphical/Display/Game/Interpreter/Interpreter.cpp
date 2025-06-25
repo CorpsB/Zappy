@@ -185,6 +185,9 @@ void Interpreter::_ppo(const std::smatch &m)
             break;
         }
     }
+    std::array<std::string, 4> orienToStr = { "NORTH", "WEST", "SOUTH", "EAST" };
+    Renderer::histInstruc.push_back("T" + std::to_string(playerId) + ": moved to {x: " + std::to_string(x)
+        + ", y: " + std::to_string(y) + ", o: " + orienToStr[static_cast<int>(orientation)] + "}");
 
     float targetAngle = Renderer::compassToAngle(orientation);
 
@@ -295,7 +298,7 @@ void Interpreter::_pic(const std::smatch &m)
 {
     int x = std::stoi(m[1]);
     int y = std::stoi(m[2]);
-    int level = std::stoi(m[3]);
+    // int level = std::stoi(m[3]);
     std::vector<int> playersId;
     std::string full = m[0].str();
     std::regex idRegex(R"#(#(-?\d+))#");
@@ -336,18 +339,18 @@ void Interpreter::_pdr(const std::smatch &m)
 {
     int playerId = std::stoi(m[1]);
     int resourceNumber = std::stoi(m[2]);
-    std::array<std::string, 6> resourcesName = { "LINEMATE", "DERAUMERE", "SIBUR", "MENDIANE", "PHIRAS", "THYSTAME" };
+    std::array<std::string, 7> resourcesName = { "FOOD", "LINEMATE", "DERAUMERE", "SIBUR", "MENDIANE", "PHIRAS", "THYSTAME" };
 
-    Renderer::histInstruc.push_back("T" + std::to_string(playerId) + ": drops " + (resourcesName[resourceNumber - 1]));
+    Renderer::histInstruc.push_back("T" + std::to_string(playerId) +  ": drops " + (resourcesName[resourceNumber - 1]));
 }
 
 void Interpreter::_pgt(const std::smatch &m)
 {
     int playerId = std::stoi(m[1]);
     int resourceNumber = std::stoi(m[2]);
-    std::array<std::string, 6> resourcesName = { "LINEMATE", "DERAUMERE", "SIBUR", "MENDIANE", "PHIRAS", "THYSTAME" };
+    std::array<std::string, 7> resourcesName = { "FOOD", "LINEMATE", "DERAUMERE", "SIBUR", "MENDIANE", "PHIRAS", "THYSTAME" };
 
-    Renderer::histInstruc.push_back("T" + std::to_string(playerId) + ": takes " + (resourcesName[resourceNumber - 1]));
+    Renderer::histInstruc.push_back("T" + std::to_string(playerId) +  ": takes " + (resourcesName[resourceNumber]));
 }
 
 void Interpreter::_pdi(const std::smatch &m)

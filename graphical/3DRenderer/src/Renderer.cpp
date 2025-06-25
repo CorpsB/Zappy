@@ -28,6 +28,9 @@ namespace Renderer {
     std::unordered_map<int, Renderer::MovementState> pendingMovementsAfterRotation;
     int map_size_x = 0;
     int map_size_y = 0;
+    bool tabToggle = false;
+    bool tabWasPressed = false;
+    static sf::RectangleShape bgMenu;
 
     bool initRenderer(sf::RenderWindow &window) {
         // window = new sf::RenderWindow(sf::VideoMode(width, height), title);
@@ -38,7 +41,7 @@ namespace Renderer {
         depthBuffer.assign(window.getSize().x * window.getSize().y, std::numeric_limits<float>::max());
         backBufferTexture.create(window.getSize().x, window.getSize().y);
 
-        if (!hudFont.loadFromFile("./Assets/zappy_font.ttf")) {
+        if (!hudFont.loadFromFile("./Assets/Roboto/Roboto-VariableFont_wdth,wght.ttf")) {
             std::cerr << "Failed to load font\n";
             return false;
         }
@@ -48,6 +51,9 @@ namespace Renderer {
         hudText.setOutlineColor(sf::Color::Black);
         hudText.setOutlineThickness(1.0f);
 
+        bgMenu.setSize(sf::Vector2f(350.f, window.getSize().y));
+        bgMenu.setPosition(window.getSize().x - 350.f, 0.f);
+        bgMenu.setFillColor(sf::Color(0, 0, 0, 128));
         return true;
     }
 
@@ -214,6 +220,8 @@ namespace Renderer {
             else
                 ++it;
         }
+        while (histInstruc.size() > 20)
+            histInstruc.pop_front();
     }
 
     void render(float dt, sf::RenderWindow &window) {
@@ -353,6 +361,17 @@ namespace Renderer {
             hudText.setPosition(5.f, y);
             window.draw(hudText);
             y += 20.f;
+        }
+
+        if (tabToggle) {
+            window.draw(bgMenu);
+            float y = 100.f;
+            for (auto it = histInstruc.rbegin(); it != histInstruc.rend(); ++it) {
+                hudText.setString(*it);
+                hudText.setPosition(window.getSize().x - 300, y);
+                window.draw(hudText);
+                y += 40.f;
+            }
         }
 
         // window.display();

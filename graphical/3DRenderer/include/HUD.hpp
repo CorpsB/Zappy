@@ -4,6 +4,7 @@
 #include <list>
 #include <SFML/Graphics.hpp>
 #include "Math.hpp"
+#include <queue>
 
 namespace Renderer {
     struct HudMessage {
