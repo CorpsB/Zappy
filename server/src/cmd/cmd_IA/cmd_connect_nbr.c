@@ -19,8 +19,6 @@ void cmd_connect_nbr(server_t *server, int index, char **args)
     if (!server || !server->poll.client_list ||
         index < 0 || index >= server->poll.client_index)
         return;
-    if (check_autorized(server, index) != 0)
-        return;
     pl = server->poll.client_list[index].player;
     team = pl->team;
     free_slots = (int)server->starter_eggs_number - team->slots_used;

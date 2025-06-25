@@ -109,8 +109,6 @@ static void take_obj(server_t *server, r_ressource_t obj, int index)
 
 void cmd_set_object(server_t *server, int index, char **args)
 {
-    if (check_autorized(server, index) != 0)
-        return;
     for (int i = FOOD; i < THYSTAME; i++) {
         if (strncmp(args[1], density_table[i].name,
             strlen(density_table[i].name)) == 0)

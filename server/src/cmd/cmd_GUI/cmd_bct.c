@@ -95,8 +95,6 @@ void cmd_bct(server_t *server, int index, char **args)
     if (!server || !server->poll.client_list ||
         index < 0 || index >= server->poll.client_index)
         return;
-    if (check_graphical(server, index) != 0)
-        return;
     fd = server->poll.pollfds[index].fd;
     if (parse_bct_coords(args, server, &x, &y) != 0) {
         dprintf(fd, "ko\n");

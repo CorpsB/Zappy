@@ -38,7 +38,7 @@ void cmd_ppo(server_t *server, int index, char **args)
     long id;
     player_t *target;
 
-    if (!server || !args || !args[1] || check_graphical(server, index) != 0) {
+    if (!server || !args || !args[1]) {
         if (server && args && !args[1])
             dprintf(server->poll.pollfds[index].fd, "ko\n");
         return;

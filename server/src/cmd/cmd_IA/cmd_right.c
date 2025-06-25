@@ -34,8 +34,6 @@ void cmd_right(server_t *server, int index, char **args)
     player_t *p;
 
     (void)args;
-    if (check_autorized(server, index) != 0)
-        return;
     p = server->poll.client_list[index].player;
     if (!p || p->is_dead)
         return;

@@ -11,15 +11,6 @@
     #include "include/structure.h"
 
 //utils
-/**
- * @brief Function that check if the client is a PLAYER.
- *
- * @param server Global server pointer (for id & counters).
- * @param index The index of the player.
- * @return return 1 if the client is not a PLAYER (GRAPHICAL, LISTEN, UNKNOW)
- * return 0 if the client is a PLAYER.
-*/
-int check_autorized(server_t *server, int index);
 
 /**
  * @brief Function that check if the client is a GUI.
@@ -30,7 +21,6 @@ int check_autorized(server_t *server, int index);
  * return 0 if the client is a GUI.
 */
 
-int check_graphical(server_t *server, int index);
 void see_inventory(resources_t inv, int fd);
 void see_all_players(player_t *players, int fd);
 //server
@@ -198,5 +188,8 @@ void event_pex(server_t *server, player_t *player);
 void event_pbc(server_t *server, player_t *player, char *message);
 void event_seg(server_t *server, char *name);
 void event_smg(server_t *server, char *name);
-
+void event_suc(server_t *server, int index, char **args);
+void event_sbp(server_t *server, int index, char **args, int i);
+int table_size(char **table);
+void cmd_look(server_t *server, int index, char **);
 #endif /* !FUCNTION_H_ */

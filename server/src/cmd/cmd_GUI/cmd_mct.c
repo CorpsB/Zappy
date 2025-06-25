@@ -18,8 +18,6 @@ void cmd_mct(server_t *server, int index, char **args)
     if (!server || !server->poll.client_list || index < 0 ||
         index >= server->poll.client_index)
         return;
-    if (check_graphical(server, index) != 0)
-        return;
     fd = server->poll.pollfds[index].fd;
     for (unsigned y = 0; y < server->height; y++) {
         for (unsigned x = 0; x < server->width; x++) {

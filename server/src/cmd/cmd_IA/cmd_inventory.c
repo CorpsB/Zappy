@@ -9,20 +9,6 @@
 #include "include/function.h"
 #include "include/structure.h"
 
-int check_autorized(server_t *server, int index)
-{
-    client_t *cl;
-    int fd;
-
-    cl = &server->poll.client_list[index];
-    fd = server->poll.pollfds[index].fd;
-    if (cl->whoAmI != PLAYER) {
-        dprintf(fd, "ko\n");
-        return 1;
-    }
-    return 0;
-}
-
 void cmd_inventory(server_t *server, int index, const char **args)
 {
     player_t *player;
@@ -31,8 +17,6 @@ void cmd_inventory(server_t *server, int index, const char **args)
     (void)args;
     if (!server || !server->poll.client_list ||
         index < 0 || index >= server->poll.client_index)
-        return;
-    if (check_autorized(server, index) != 0)
         return;
     player = server->poll.client_list[index].player;
     snprintf(buf, sizeof(buf),

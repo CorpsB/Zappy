@@ -15,7 +15,5 @@ void cmd_sgt(server_t *server, int index, char **args)
 
     (void)args;
     fd = server->poll.pollfds[index].fd;
-    if (check_graphical(server, index) != 0)
-        return;
     dprintf(fd, "sgt %u\n", server->frequency);
 }

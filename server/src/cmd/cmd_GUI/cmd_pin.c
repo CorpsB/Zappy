@@ -30,7 +30,7 @@ void cmd_pin(server_t *server, int index, char **args)
     player_t *p;
 
     fd = server->poll.pollfds[index].fd;
-    if (!args || !args[1] || check_graphical(server, index))
+    if (!args || !args[1])
         return (void)dprintf(fd, "ko\n");
     id = strtol(args[1], &e, 10);
     while (*e && isspace((unsigned char)*e))

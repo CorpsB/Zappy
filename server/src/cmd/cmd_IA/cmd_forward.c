@@ -28,8 +28,6 @@ void cmd_forward(server_t *server, int index, char **args)
     player_t *player;
 
     (void)args;
-    if (check_autorized(server, index) != 0)
-        return;
     player = server->poll.client_list[index].player;
     if (!player || player->is_dead)
         return;
