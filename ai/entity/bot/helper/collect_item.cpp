@@ -19,7 +19,7 @@ bool ai::entity::AI::collectItem(const std::string &look, const std::string &nam
     if ((name == "food" && _food_level >= 12.0) || _level == 8 ||
     (name != "food" && _inventory.getItem(name) >= recipe_qty * 2 + 1))
         return true;
-    return _socket.doAction("Take " + name) != "dead";
+    return doKoAction("Take " + name);
 }
 
 bool ai::entity::AI::collectAllItems(const std::string &look)

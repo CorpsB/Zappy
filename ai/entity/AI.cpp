@@ -5,12 +5,14 @@
 ** AI
 */
 
+#include "../worker/WorkerManager.hpp"
 #include "AI.hpp"
 #include "../network/Socket.hpp"
 #include <thread>
 
 ai::entity::AI::AI(int id)
 {
+    _free_slots = 0;
     _id = id;
     _level = 1;
     _food_level = 1;
@@ -40,25 +42,53 @@ void ai::entity::AI::stop()
 
 std::string ai::entity::AI::doAction(const std::string &action)
 {
-    const std::string result = _socket.doAction(action);
-    utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
+    if (!action.empty())
+        _socket.sendCommand(action);
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(ACTION_DELAY_MS));
-    if (result == "dead")
-        return "dead";
-    if (result.rfind("message", 0) == 0) {
-        const Direction dir = _sound_system.setSound(result);
-        if (dir != NONE) {
-            const SoundCell &cell = _sound_system.getDirectionSound(dir);
-            logger.log("Message received from " + std::to_string(cell.id) + " '" + cell.message + "'");
+    utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
+    while (true) {
+        const std::string result = _socket.readSocketBuffer();
+
+        if (result == "dead")
+            return "dead";
+        if (result.rfind("message", 0) == 0) {
+            const Direction dir = _sound_system.setSound(result);
+            if (dir != NONE) {
+                const SoundCell &cell = _sound_system.getDirectionSound(dir);
+                logger.log("Message received from " + std::to_string(cell.id) + " '" + cell.message + "'");
+
+                // incantate to level up
+                if (cell.message == "INCANTATION_" + std::to_string(_level + 1) && dir == HERE)
+                    if (!incantate(doAction("")))
+                        return "dead";
+            }
+            continue;
         }
-        return doAction(action);
+        if (result.rfind("eject", 0) == 0) {
+            logger.log("Got ejected! " + result);
+            continue;
+        }
+        return result;
     }
-    if (result.rfind("eject", 0) == 0) {
-        logger.log("Got ejected! " + result);
-        return doAction(action);
+}
+
+bool ai::entity::AI::doKoAction(const std::string &action)
+{
+    const std::string result = doAction(action);
+
+    if (result == "ko") {
+        utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
+        logger.log("[Warn] Action failed: '" + action + "'.");
+        return true;
     }
-    return result;
+    if (result == "dead")
+        return false;
+    return true;
+}
+
+bool ai::entity::AI::useBroadcast(const std::string &message)
+{
+    return doAction("Broadcast " + std::to_string(_id) + "|" + message) != "dead";
 }
 
 void ai::entity::AI::run(const ai::parser::Config &config)
@@ -92,16 +122,35 @@ void ai::entity::AI::run(const ai::parser::Config &config)
             break;
         }
 
+        // check available slots to reproduce
+        if (_level < 8 && _food_level >= FOOD_THRESHOLD &&
+        findItemInLook(look_str, "egg") != 0) {
+            const int wcount = worker::WorkerManager::getInstance().getWorkerCount();
+
+            try {
+                if (wcount >= REPRODUCE_THRESHOLD)
+                    _free_slots = 0;
+                else {
+                    _free_slots = std::stoi(doAction("Connect_nbr"));
+                    if (_free_slots + wcount > REPRODUCE_THRESHOLD)
+                        _free_slots = REPRODUCE_THRESHOLD - wcount;
+                }
+            } catch (...) {
+                logger.log("Died checking slots to reproduce.");
+                break;
+            }
+        } else
+            _free_slots = 0;
+
         // goal fullfill
         _goal = getGoal(look_str);
-        // logger.log("Tick: Lvl:" + std::to_string(_level) + ", Food:" +
-        // std::to_string(_food_level) + ", Goal:" + std::to_string(_goal) +
-        // ", Inv:" + _inventory.print());
 
         if (!performActionForGoal(look_str)) {
             logger.log("Action failed or led to 'dead' state. Terminating.");
             break;
         }
+        if (_goal == REPRODUCE)
+            worker::WorkerManager::getInstance().spawnWorker(config);
     }
     stop();
 }

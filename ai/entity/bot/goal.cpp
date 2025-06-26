@@ -48,12 +48,30 @@ ai::entity::Goal ai::entity::AI::getGoal(const std::string &look)
 {
     if (_food_level < FOOD_THRESHOLD)
         return FOOD;
+
     if (_level == 8)
         return STONE;
-    if (hasEnoughRocks() || _sound_system.getNearestSoundDirection("MEETUP_" + std::to_string(_level + 1)) != NONE) {
+
+    if (_free_slots > 0)
+        return REPRODUCE;
+
+    const bool enough_rocks = hasEnoughRocks();
+    const Direction meetup = _sound_system.getNearestSoundDirection("MEETUP_" + std::to_string(_level + 1));
+    if (meetup != NONE) {
+        SoundCell &cell = _sound_system.getDirectionSound(meetup);
+
+        if (enough_rocks) {
+            if (countPlayersOnTile(0, look) >= RECIPES[_level - 1].player)
+                return (cell.id < _id) ? ELEVATION_SLAVE : ELEVATION_MASTER;
+            return (cell.id < _id) ? MEETUP : MEETUP_POINT;
+        }
         if (countPlayersOnTile(0, look) >= RECIPES[_level - 1].player)
-            return ELEVATION;
-        return STONE; // MEETUP
+            return ELEVATION_SLAVE;
+        return MEETUP;
+    } else if (enough_rocks) {
+        if (_level == 1 || countPlayersOnTile(0, look) >= RECIPES[_level - 1].player)
+            return ELEVATION_MASTER;
+        return MEETUP_POINT;
     }
     return STONE;
 }
@@ -65,18 +83,13 @@ bool ai::entity::AI::handleGoal(std::string &look, const std::string &goal)
 
     if (item_idx == 0) {
         logger.log(goal + " on current tile. Taking.");
-        return doAction("Take " + goal) != "dead";
+        return doKoAction("Take " + goal);
     } else if (item_idx > 0) {
-        const std::vector<Direction> moves = getMovesToTileLevel1Vision(item_idx);
-        if (!moves.empty()) {
-            logger.log(goal + " on tile " + std::to_string(item_idx) + ". Moving to take.");
-            if (!executeMoves(look, moves))
-                return false;
-            return doAction("Take " + goal) != "dead";
-        } else {
-            logger.log(goal + " at tile " + std::to_string(item_idx) + ", path too complex. Defaulting to spiral.");
-            return executeSpiralMove(_spiral_state);
-        }
+        const std::vector<Direction> moves = getMovesToTileLevelVision(item_idx);
+        logger.log(goal + " on tile " + std::to_string(item_idx) + ". Moving to take.");
+        if (!executeMoves(look, moves))
+            return false;
+        return doKoAction("Take " + goal);
     } else if (item_idx == -2) {
         logger.log(goal + " not seen. Executing spiral move.");
         return executeSpiralMove(_spiral_state);

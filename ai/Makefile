@@ -27,7 +27,8 @@ SRC	=	main.cpp	\
 		utils/random/number.cpp	\
 		utils/string/split.cpp	\
 		utils/validation/integer.cpp	\
-		utils/validation/ipv4.cpp
+		utils/validation/ipv4.cpp	\
+		worker/WorkerManager.cpp
 
 OBJ	=	$(SRC:.cpp=.o)
 

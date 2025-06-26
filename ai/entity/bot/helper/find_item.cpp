@@ -9,6 +9,18 @@
 #include "../../../utils/utils.hpp"
 #include <algorithm>
 
+int ai::entity::AI::determineLookDistance(int idx)
+{
+    int i = 0;
+    int lvl = 0;
+
+    while (i + (2 * lvl + 1) <= idx) {
+        i += (2 * lvl + 1);
+        ++lvl;
+    }
+    return lvl;
+}
+
 int ai::entity::AI::findItemInLook(const std::string &look, const std::string &item)
 {
     ai::utils::debug::Logger &logger = ai::utils::debug::Logger::GetInstance();
