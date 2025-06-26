@@ -35,6 +35,9 @@ namespace Renderer {
     std::unordered_map<int, std::array<int, 7>> _resourcesOnTiles;
     static std::array<std::tuple<std::string, int, sf::Color>, 7> totalResources;
     bool resourcesChange;
+    static sf::RectangleShape topLeftButton;
+    static sf::Color buttonIdleColor = sf::Color(100, 100, 100);
+    static sf::Color buttonHoverColor = sf::Color(150, 150, 150);
 
     bool initRenderer(sf::RenderWindow &window) {
         // window = new sf::RenderWindow(sf::VideoMode(width, height), title);
@@ -58,6 +61,9 @@ namespace Renderer {
         bgMenu.setSize(sf::Vector2f(350.f, window.getSize().y));
         bgMenu.setPosition(window.getSize().x - 350.f, 0.f);
         bgMenu.setFillColor(sf::Color(0, 0, 0, 128));
+        topLeftButton.setSize(sf::Vector2f(100.f, 40.f));
+        topLeftButton.setPosition(120.f, 10.f);
+        topLeftButton.setFillColor(buttonIdleColor);
 
         totalResources = {
             std::make_tuple("FOOD: ", 0, sf::Color::Yellow),
@@ -251,6 +257,26 @@ namespace Renderer {
     void render(float dt, sf::RenderWindow &window) {
         int w = window.getSize().x;
         int h = window.getSize().y;
+        static bool isButtonClicked = false;
+        static sf::Clock clickClock;
+        sf::Time clickDuration = sf::seconds(1.f);
+        sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+        sf::Vector2f mousePosF(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
+
+        //Top left button
+        if (topLeftButton.getGlobalBounds().contains(mousePosF)) {
+            topLeftButton.setFillColor(buttonHoverColor);
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && !isButtonClicked) {
+                std::cout << "Bouton cliqué" << std::endl;
+                isButtonClicked = true;
+                clickClock.restart();
+            }
+        } else {
+            topLeftButton.setFillColor(buttonIdleColor);
+        }
+        if (isButtonClicked && clickClock.getElapsedTime() > clickDuration) {
+            isButtonClicked = false;
+        }
 
         // Gradient ciel
         for (int y = 0; y < h; ++y) {
@@ -378,7 +404,7 @@ namespace Renderer {
         hudText.setFillColor(sf::Color {255, 255, 255});
         hudText.setString("FPS: " + std::to_string(lastFps));
         hudText.setPosition(5.f, 5.f);
-        window.draw(hudText);
+
 
         float y = 30.f;
         for (const auto& m : hudMessages) {
@@ -394,6 +420,8 @@ namespace Renderer {
             window.draw(bgMenu);
             bgMenu.setPosition(0.f, 0.f);
             window.draw(bgMenu);
+            window.draw(hudText);
+            window.draw(topLeftButton);
             // Calculate only if something changed
             if (resourcesChange) {
                 totalResources = {
