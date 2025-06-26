@@ -9,7 +9,7 @@
 
 void Window::init(unsigned int width, unsigned int height)
 {
-    _window.create(sf::VideoMode({width, height}), "Zappy");
+    _window.create(sf::VideoMode({width, height}), "Zappy", sf::Style::Titlebar | sf::Style::Close);
     _window.setFramerateLimit(FRAMERATE);
 }
 
