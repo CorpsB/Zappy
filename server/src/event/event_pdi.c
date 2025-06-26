@@ -13,9 +13,10 @@ void event_pdi(server_t *server, player_t *player)
 {
     char *buffer = NULL;
 
-    if (asprintf(&buffer, "pdi %d\n", player->id) == -1)
+    if (asprintf(&buffer, "pdi %d", player->id) == -1)
         logger(server, "PDI", ERROR, true);
     send_to_all_gui(server, buffer);
+    dprintf(player->socket_fd, "dead\n");
     if (buffer)
         free(buffer);
 }
