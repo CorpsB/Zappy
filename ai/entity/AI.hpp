@@ -73,7 +73,7 @@ namespace ai::entity
 
             // moves
             std::string getDirectionName(Direction dir);
-            std::vector<Direction> getMovesToTileLevel1Vision(int idx);
+            std::vector<Direction> getMovesToTileLevelVision(int idx);
             std::vector<Direction> getMovesTowardsSoundDirection(Direction dir);
             bool executeMoves(std::string &look, const std::vector<Direction> &moves);
             bool executeSpiralMove(SpiralState &state);

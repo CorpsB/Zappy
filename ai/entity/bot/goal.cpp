@@ -82,16 +82,11 @@ bool ai::entity::AI::handleGoal(std::string &look, const std::string &goal)
         logger.log(goal + " on current tile. Taking.");
         return doKoAction("Take " + goal);
     } else if (item_idx > 0) {
-        const std::vector<Direction> moves = getMovesToTileLevel1Vision(item_idx);
-        if (!moves.empty()) {
-            logger.log(goal + " on tile " + std::to_string(item_idx) + ". Moving to take.");
-            if (!executeMoves(look, moves))
-                return false;
-            return doKoAction("Take " + goal);
-        } else {
-            logger.log(goal + " at tile " + std::to_string(item_idx) + ", path too complex. Defaulting to spiral.");
-            return executeSpiralMove(_spiral_state);
-        }
+        const std::vector<Direction> moves = getMovesToTileLevelVision(item_idx);
+        logger.log(goal + " on tile " + std::to_string(item_idx) + ". Moving to take.");
+        if (!executeMoves(look, moves))
+            return false;
+        return doKoAction("Take " + goal);
     } else if (item_idx == -2) {
         logger.log(goal + " not seen. Executing spiral move.");
         return executeSpiralMove(_spiral_state);

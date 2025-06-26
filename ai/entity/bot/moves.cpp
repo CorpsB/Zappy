@@ -21,20 +21,35 @@ std::string ai::entity::AI::getDirectionName(Direction dir)
     }
 }
 
-std::vector<ai::entity::Direction> ai::entity::AI::getMovesToTileLevel1Vision(int idx)
+std::vector<ai::entity::Direction> ai::entity::AI::getMovesToTileLevelVision(int idx)
 {
-    switch (idx) {
-        case 0:
-            return {NONE};
-        case 1:
-            return {UP, LEFT, UP};
-        case 2:
-            return {UP};
-        case 3:
-            return {UP, RIGHT, UP};
-        default:
-            return {};
+    std::vector<Direction> moves;
+    int depth = 0;
+    int total = 0;
+
+    while (true) {
+        int width = 2 * depth + 1;
+        if (total + width > idx)
+            break;
+        total += width;
+        ++depth;
     }
+
+    const int x = idx - total - depth;
+    if (x < 0) {
+        moves.push_back(LEFT);
+        for (int i = 0; i < -x; ++i)
+            moves.push_back(UP);
+        moves.push_back(RIGHT);
+    } else if (x > 0) {
+        moves.push_back(RIGHT);
+        for (int i = 0; i < x; ++i)
+            moves.push_back(UP);
+        moves.push_back(LEFT);
+    }
+    for (int i = 0; i < depth; ++i)
+        moves.push_back(UP);
+    return moves;
 }
 
 std::vector<ai::entity::Direction> ai::entity::AI::getMovesTowardsSoundDirection(Direction dir)
