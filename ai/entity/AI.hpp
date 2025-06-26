@@ -8,6 +8,7 @@
 #pragma once
 
 #define FOOD_THRESHOLD 8.0
+#define REPRODUCE_THRESHOLD 10
 #define ACTION_DELAY_MS 50
 
 #include <string>

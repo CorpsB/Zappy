@@ -52,7 +52,7 @@ ai::entity::Goal ai::entity::AI::getGoal(const std::string &look)
     if (_level == 8)
         return STONE;
 
-    if (_free_slots > 0 && findItemInLook(look, "egg") != 0)
+    if (_free_slots > 0)
         return REPRODUCE;
 
     const bool enough_rocks = hasEnoughRocks();

@@ -123,14 +123,24 @@ void ai::entity::AI::run(const ai::parser::Config &config)
         }
 
         // check available slots to reproduce
-        if (_level < 8 && _food_level >= FOOD_THRESHOLD) {
+        if (_level < 8 && _food_level >= FOOD_THRESHOLD &&
+        findItemInLook(look_str, "egg") != 0) {
+            const int wcount = worker::WorkerManager::getInstance().getWorkerCount();
+
             try {
-                _free_slots = std::stoi(doAction("Connect_nbr"));
+                if (wcount >= REPRODUCE_THRESHOLD)
+                    _free_slots = 0;
+                else {
+                    _free_slots = std::stoi(doAction("Connect_nbr"));
+                    if (_free_slots + wcount > REPRODUCE_THRESHOLD)
+                        _free_slots = REPRODUCE_THRESHOLD - wcount;
+                }
             } catch (...) {
                 logger.log("Died checking slots to reproduce.");
                 break;
             }
-        }
+        } else
+            _free_slots = 0;
 
         // goal fullfill
         _goal = getGoal(look_str);

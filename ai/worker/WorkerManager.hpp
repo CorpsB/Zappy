@@ -18,6 +18,7 @@ namespace ai::worker {
         public:
             static WorkerManager &getInstance();
             void spawnWorker(const ai::parser::Config &config);
+            int getWorkerCount();
             void joinAll();
 
         private:

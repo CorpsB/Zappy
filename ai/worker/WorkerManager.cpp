@@ -39,6 +39,12 @@ void ai::worker::WorkerManager::spawnWorker(const ai::parser::Config &config)
     });
 }
 
+int ai::worker::WorkerManager::getWorkerCount()
+{
+    std::lock_guard<std::mutex> lock(_mutex);
+    return _threads.size();
+}
+
 void ai::worker::WorkerManager::joinAll()
 {
     while (true) {
