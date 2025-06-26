@@ -243,8 +243,8 @@ namespace Renderer {
             else
                 ++it;
         }
-        // Remove first message if more than 30
-        while (histInstruc.size() > 34)
+        // Remove old messages
+        while (histInstruc.size() > 21)
             histInstruc.pop_front();
     }
 
@@ -390,6 +390,9 @@ namespace Renderer {
 
         // display menu
         if (tabToggle) {
+            bgMenu.setPosition(window.getSize().x - 350.f, 0.f);
+            window.draw(bgMenu);
+            bgMenu.setPosition(0.f, 0.f);
             window.draw(bgMenu);
             // Calculate only if something changed
             if (resourcesChange) {
