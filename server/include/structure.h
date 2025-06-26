@@ -254,6 +254,7 @@ struct player {
     resources_t inventory;
 
     bool is_dead;
+    bool is_freeze;
 
     /// Pointer to the next player in the linked list (same team).
     struct player *next;

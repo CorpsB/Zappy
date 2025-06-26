@@ -27,6 +27,7 @@ static player_t *init_player_node(server_t *server, int index,
     node->position[0] = pos[0];
     node->position[1] = pos[1];
     node->lvl = 1;
+    node->is_freeze = false;
     node->team = teams;
     node->is_dead = false;
     node->cycle_before_death = 1260;
