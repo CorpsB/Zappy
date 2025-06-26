@@ -33,7 +33,7 @@ Interpreter::Interpreter()
     };
 
     _resources = {{
-        { Renderer::PartType::Q0, {25.f, -6.5f, 25.f}, sf::Color::Yellow, "./bonus/Assets/Food.stl" },
+        { Renderer::PartType::Q0, {25.f, -6.5f, 15.f}, sf::Color::Yellow, "./bonus/Assets/Food.stl" },
         { Renderer::PartType::Q1, {15.f, -6.5f, -25.f}, {96, 96, 96}, "./bonus/Assets/Crystals.stl" },
         { Renderer::PartType::Q2, {25.f, -6.5f, -15.f}, sf::Color::Green, "./bonus/Assets/Crystals.stl" },
         { Renderer::PartType::Q3, {-15.f, -6.5f, -25.f}, {204, 0, 102}, "./bonus/Assets/Crystals.stl" },
@@ -413,12 +413,20 @@ void Interpreter::_pie(const std::smatch &m)
             ++it;
         }
     }
-    Renderer::histInstruc.push_back(std::make_tuple("SERVER : incantation at {x:" + std::to_string(y) + "} ended", sf::Color {255, 255, 255}));
+    Renderer::histInstruc.push_back(std::make_tuple("SERVER: incantation at {x:" + std::to_string(x) + ", y:"
+    + std::to_string(y) + "} ended", sf::Color {255, 255, 255}));
 }
 
 void Interpreter::_pfk(const std::smatch &m)
 {
-    (void) m;
+    int playerId = std::stoi(m[1]);
+
+    for (auto &e : Renderer::sceneEntities) {
+        if (e.clientId == playerId && e.type == Renderer::PartType::BODY) {
+            Renderer::histInstruc.push_back(std::make_tuple("T" + std::to_string(playerId) + " layed an egg", e.color));
+            return;
+        }
+    }
 }
 
 void Interpreter::_pdr(const std::smatch &m)
@@ -473,17 +481,51 @@ void Interpreter::_pdi(const std::smatch &m)
 
 void Interpreter::_enw(const std::smatch &m)
 {
-    (void) m;
+    int eggId = std::stoi(m[1]);
+    int playerId = std::stoi(m[2]);
+    int x = std::stoi(m[3]);
+    int y = std::stoi(m[4]);
+
+    for (auto &e : Renderer::sceneEntities) {
+        if (e.clientId == playerId && e.type == Renderer::PartType::BODY) {
+            Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::EGG, eggId,
+            {static_cast<float>(x * TILE_SIZE) + 15.f, OFFSET_FROM_GROUND, static_cast<float>(y * TILE_SIZE) + 25.f},
+            e.color, "./bonus/Assets/Egg.stl", Renderer::Compass::NORTH, {0.f, 0.f, 0.f}, -1, e.teamName);
+            return;
+        }
+    }
 }
 
 void Interpreter::_ebo(const std::smatch &m)
 {
-    (void) m;
+    int eggId = std::stoi(m[1]);
+
+    for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
+        Renderer::Entity &e = *it;
+        if (e.clientId == eggId && e.type == Renderer::PartType::EGG) {
+            Renderer::histInstruc.push_back(std::make_tuple("Egg #" + std::to_string(eggId) + " hatched !", e.color));
+            it = Renderer::sceneEntities.erase(it);
+            return;
+        } else {
+            ++it;
+        }
+    }
 }
 
 void Interpreter::_edi(const std::smatch &m)
 {
-    (void) m;
+    int eggId = std::stoi(m[1]);
+
+    for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
+        Renderer::Entity &e = *it;
+        if (e.clientId == eggId && e.type == Renderer::PartType::EGG) {
+            Renderer::histInstruc.push_back(std::make_tuple("Egg #" + std::to_string(eggId) + " died...", e.color));
+            it = Renderer::sceneEntities.erase(it);
+            return;
+        } else {
+            ++it;
+        }
+    }
 }
 
 void Interpreter::_sgt(const std::smatch &m)
