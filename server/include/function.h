@@ -467,5 +467,6 @@ unsigned int players_at(server_t *srv, int y, int x);
 void free_int_map(int y, int **map);
 void update_clock(zappy_clock_t *clock);
 zappy_clock_t *init_clock(server_t *server, size_t freq);
+void player_cmd_execution(server_t *server);
 
 #endif /* !FUCNTION_H_ */

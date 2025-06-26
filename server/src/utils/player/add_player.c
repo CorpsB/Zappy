@@ -16,6 +16,24 @@ static void free_pos(unsigned int *pos, server_t *server)
     server->player_count++;
 }
 
+static void complete_node(player_t *node)
+{
+    node->lvl = 1;
+    node->time = 0;
+    node->cmd[0] = NULL;
+    node->cmd[1] = NULL;
+    node->cmd[2] = NULL;
+    node->cmd[3] = NULL;
+    node->cmd[4] = NULL;
+    node->cmd[5] = NULL;
+    node->cmd[6] = NULL;
+    node->cmd[7] = NULL;
+    node->cmd[8] = NULL;
+    node->cmd[9] = NULL;
+    node->cmd[10] = NULL;
+    node->inventory.food = 10;
+}
+
 static player_t *init_player_node(server_t *server, int index,
     teams_t *teams, unsigned int *pos)
 {
@@ -26,14 +44,14 @@ static player_t *init_player_node(server_t *server, int index,
     node->id = server->player_count;
     node->position[0] = pos[0];
     node->position[1] = pos[1];
-    node->lvl = 1;
     node->is_freeze = false;
     node->team = teams;
     node->is_dead = false;
-    node->cycle_before_death = 1260;
+    node->cycle_before_death = 0;
     node->direction = (rand() % 4) + 1;
     node->socket_fd = server->poll.pollfds[index].fd;
     node->inventory = create_resources();
+    complete_node(node);
     node->next = teams->player;
     return node;
 }

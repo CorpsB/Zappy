@@ -85,6 +85,21 @@ static bool del_client(server_t *server, int index)
     return true;
 }
 
+static void add_cmd(server_t *server, char *cmd, int index)
+{
+    player_t *pl;
+
+    if (server->poll.client_list[index].whoAmI != PLAYER)
+        return cmd_parser(server, index, cmd);
+    pl = server->poll.client_list[index].player;
+    for (int i = 0; i < 10; i++) {
+        if (pl->cmd[i] == NULL) {
+            pl->cmd[i] = cmd;
+            break;
+        }
+    }
+}
+
 static bool event_detector(server_t *server, int i)
 {
     int bytes;
@@ -101,7 +116,7 @@ static bool event_detector(server_t *server, int i)
         if (bytes <= 0)
             return del_client(server, i);
         cmd[bytes] = '\0';
-        cmd_parser(server, i, cmd);
+        add_cmd(server, cmd, i);
         return true;
     }
     return false;
@@ -161,6 +176,7 @@ void run_server(server_t *server)
             continue;
         }
         eat(server);
+        player_cmd_execution(server);
         while (clock->accumulator >= 1.0)
             clock->accumulator -= 1.0;
     }

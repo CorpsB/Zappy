@@ -5,8 +5,7 @@
 ## githubAct.yaml
 ##
 
-name: Zappy check
-
+name: ZAPPY_CHECKER
 on:
   push:
     branches-ignore:
@@ -15,10 +14,11 @@ on:
     branches-ignore:
       - 'ga-ignore-*'
 env:
-  EXECUTABLES: zappy_server
+  EXECUTABLES: zappy_server,zappy_gui,zappy_ai
 
 jobs:
   push_to_mirror:
+    if: ${{vars.MIRROR_URL != ''}}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -59,28 +59,32 @@ jobs:
     runs-on: ubuntu-latest
     container: epitechcontent/epitest-docker
     timeout-minutes: 10
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      - name: Install build dependencies
+      - name: Check for Makefile
         run: |
-          apt-get update
-          apt-get install -y build-essential
-
-      - name: Check makefile
-        run: |
-          if [ ! -f Makefile ]; then
-            echo "::error ::/!\\ MAKEFILE MISSING /!\\"
+          if [ ! -f "Makefile" ]; then
+            echo "::error ::/!\\ WARNING NO MAKEFILE FOUND /!\\"
             exit 1
+          else
+            echo "::notice::Makefile found."
           fi
-          echo "::notice file=Makefile::Makefile found."
-
-      - name: Build (make re)
-        run: make re
-
-      - name: Check executables
+      - name: Launch make
+        run: |
+            if make; then
+              echo "::notice file=Makefile::Succesfully compilation (make)."
+            else
+              echo "::error file=Makefile::/!\\ COMPILATION ERROR (make)/!\\"
+            fi   
+      - name: Launch make clean
+        run: |
+          if make clean; then
+            echo "::notice file=Makefile::Succesfully compilation (make clean)."
+          else
+            echo "::error file=Makefile::/!\\ COMPILATION ERROR (make clean)/!\\"
+          fi
+      - name: Check EXECUTABLES
         run: |
           echo "$EXECUTABLES" | tr ',' '\n' | while read -r exe; do
             if [ ! -x "$exe" ]; then
@@ -90,30 +94,21 @@ jobs:
             echo "::notice file=$exe::Executable $exe found and is executable."
           done
 
-      - name: Save file
-        uses: actions/upload-artifact@v4
-        with:
-          name: bin
-          path: ${{ env.EXECUTABLES }}
-
   check-leaks:
     needs: check-build
     runs-on: ubuntu-latest
     container: epitechcontent/epitest-docker
     timeout-minutes: 60
-
     steps:
       - name: Recover files
         uses: actions/download-artifact@v4
         with:
           name: bin
           path: .
-
       - name: Install valgrind
         run: |
           apt-get update
           apt-get install -y valgrind
-
       - name: Check leaks
         run: |
           echo "$EXECUTABLES" | tr ',' '\n' | while read -r exe; do

@@ -262,6 +262,9 @@ struct player {
     bool is_dead;
     bool is_freeze;
 
+    char *cmd[11];
+    unsigned int time;
+
     /// Pointer to the next player in the linked list (same team).
     struct player *next;
 };

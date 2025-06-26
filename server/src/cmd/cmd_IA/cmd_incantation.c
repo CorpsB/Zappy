@@ -126,7 +126,6 @@ static void end_incantation(server_t *server, int index, char **args)
     }
 }
 
-//Don't forget : Event plz at the end of the lvl up;
 void cmd_incantation(server_t *server, int index, const char *args)
 {
     return;
