@@ -9,7 +9,7 @@
 
 namespace Renderer {
     enum class EntityType { CUBE, SPHERE, STL };
-    enum class PartType { BODY, EYES, GROUND, Q0, Q1, Q2, Q3, Q4, Q5, Q6, RING, EGG };
+    enum class PartType { BODY, EYES, GROUND, Q0, Q1, Q2, Q3, Q4, Q5, Q6, RING, EGG, EXPULSION };
     enum class Compass { NORTH, EAST, SOUTH, WEST };
 
     struct MovementState {

@@ -283,6 +283,23 @@ namespace Renderer {
                 if (e.rotation.y >= 360.f)
                     e.rotation.y -= 360.f;
             }
+            if (e.type == Renderer::PartType::EXPULSION) {
+                if (e.orientation == Compass::NORTH || e.orientation == Compass::SOUTH)
+                    e.rotation.x += 60.0f * dt;
+                else if (e.orientation == Compass::NORTH || e.orientation == Compass::SOUTH)
+                    e.rotation.z += 60.0f * dt;
+            }
+        }
+        // erase expulsion after 5 rotations
+        for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
+            Renderer::Entity &e = *it;
+            if (e.type == Renderer::PartType::EXPULSION && e.rotation.x > static_cast<float>(360 * 5)) {
+                it = Renderer::sceneEntities.erase(it);
+            } else if (e.type == Renderer::PartType::EXPULSION && e.rotation.z > static_cast<float>(360 * 5)) {
+                it = Renderer::sceneEntities.erase(it);
+            } else {
+                ++it;
+            }
         }
         // HUD message à timer
         for (auto it = hudMessages.begin(); it != hudMessages.end();) {

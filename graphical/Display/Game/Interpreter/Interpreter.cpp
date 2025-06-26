@@ -148,7 +148,8 @@ void Interpreter::_bct(const std::smatch &m)
                 r.offset.z + y * TILE_SIZE
             };
 
-            Renderer::spawn(Renderer::EntityType::STL, r.type, -1, { pos.x, pos.y, pos.z }, r.color, r.assetPath, Renderer::Compass::NORTH, { 0.f, Renderer::getRandomAngle(), 0.f });
+            Renderer::spawn(Renderer::EntityType::STL, r.type, -1, { pos.x, pos.y, pos.z }, r.color, r.assetPath,
+                Renderer::Compass::NORTH, { 0.f, Renderer::getRandomAngle(), 0.f });
         }
     }
 }
@@ -353,7 +354,17 @@ void Interpreter::_pin(const std::smatch &m)
 
 void Interpreter::_pex(const std::smatch &m)
 {
-    (void) m;
+    int playerId = std::stoi(m[1]);
+
+    for (auto &e : Renderer::sceneEntities) {
+        if (e.clientId == playerId && e.type == Renderer::PartType::BODY) {
+            Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::BODY, playerId,
+            {e.position.x, e.position.y, e.position.z}, e.color, "./bonus/Assets/Expulsion.stl",
+            e.orientation);
+            Renderer::histInstruc.push_back(std::make_tuple("T" + std::to_string(playerId) + " is launching EXPULSION", e.color));
+            break;
+        }
+    }
 }
 
 void Interpreter::_pbc(const std::smatch &m)
