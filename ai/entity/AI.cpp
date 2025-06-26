@@ -11,6 +11,7 @@
 
 ai::entity::AI::AI(int id)
 {
+    _free_slots = 0;
     _id = id;
     _level = 1;
     _food_level = 1;
@@ -120,11 +121,18 @@ void ai::entity::AI::run(const ai::parser::Config &config)
             break;
         }
 
+        // check available slots to reproduce
+        if (_level < 8 && _food_level >= FOOD_THRESHOLD) {
+            try {
+                _free_slots = std::stoi(doAction("Connect_nbr"));
+            } catch (...) {
+                logger.log("Died checking slots to reproduce.");
+                break;
+            }
+        }
+
         // goal fullfill
         _goal = getGoal(look_str);
-        // logger.log("Tick: Lvl:" + std::to_string(_level) + ", Food:" +
-        // std::to_string(_food_level) + ", Goal:" + std::to_string(_goal) +
-        // ", Inv:" + _inventory.print());
 
         if (!performActionForGoal(look_str)) {
             logger.log("Action failed or led to 'dead' state. Terminating.");

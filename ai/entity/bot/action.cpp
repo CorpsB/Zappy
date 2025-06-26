@@ -85,6 +85,11 @@ bool ai::entity::AI::performActionForGoal(std::string &look)
             return true;
         }
 
+        case REPRODUCE: {
+            logger.log("Creating an egg.");
+            return doAction("Fork") != "dead";
+        }
+
         default:
             logger.log("No specific action for current goal '" + std::to_string(_goal) + "' (Lvl " +
             std::to_string(_level) + "). Wandering.");

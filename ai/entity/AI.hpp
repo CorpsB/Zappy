@@ -28,7 +28,8 @@ namespace ai::entity
         MEETUP,
         MEETUP_POINT,
         ELEVATION_MASTER,
-        ELEVATION_SLAVE
+        ELEVATION_SLAVE,
+        REPRODUCE
     };
 
     struct ElevationRecipe {
@@ -101,6 +102,7 @@ namespace ai::entity
             SoundSystem _sound_system;
             SpiralState _spiral_state;
 
+            int _free_slots;
             std::string _thread_name;
             network::Socket _socket;
     };
