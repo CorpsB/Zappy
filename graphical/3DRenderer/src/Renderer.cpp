@@ -284,7 +284,7 @@ namespace Renderer {
                     e.rotation.y -= 360.f;
             }
             if (e.type == Renderer::PartType::EXPULSION) {
-                if (e.orientation == Compass::NORTH || e.orientation == Compass::SOUTH)
+                if (e.orientation == Compass::EAST || e.orientation == Compass::WEST)
                     e.rotation.x += 60.0f * dt;
                 else if (e.orientation == Compass::NORTH || e.orientation == Compass::SOUTH)
                     e.rotation.z += 60.0f * dt;
