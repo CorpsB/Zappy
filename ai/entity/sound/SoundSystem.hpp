@@ -12,6 +12,7 @@
 
 #include <chrono>
 #include <string>
+#include <vector>
 
 namespace ai::entity
 {
@@ -50,6 +51,6 @@ namespace ai::entity
 
         private:
             Direction _player;
-            SoundCell _cells[9];
+            std::vector<SoundCell> _cells[9];
     };
 }
