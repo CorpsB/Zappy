@@ -5,7 +5,6 @@
 ** Helpers to display the resources present on every map tile.
 */
 
-#include <stdio.h>
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

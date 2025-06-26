@@ -107,40 +107,62 @@ static bool event_detector(server_t *server, int i)
     return false;
 }
 
-static void poll_func(server_t *server)
+static void poll_func(server_t *server, zappy_clock_t *clock)
 {
-    if (poll(server->poll.pollfds, server->poll.client_index, -1) == -1)
+    int event;
+    int timeout = (unsigned int)((1.0 - clock->accumulator) * 1000.0 / clock->freq);
+
+    event = poll(server->poll.pollfds, server->poll.client_index, (int)timeout);
+    if (event == -1)
         logger(server, "POLL", PERROR, true);
+    if (event == 0)
+        return;
     for (int i = 0; i < server->poll.client_index; i++) {
         if (event_detector(server, i))
             return;
     }
 }
 
-static void check_player_is_alive(server_t *server, teams_t *teams)
+static void eat_per_teams(server_t *server, teams_t *teams)
 {
     for (player_t *tmp = teams->player; tmp != NULL; tmp = tmp->next) {
-        if (!tmp->is_dead && tmp->cycle_before_death <= 0) {
+        if (tmp->is_dead)
+            continue;
+        if (tmp->cycle_before_death - 1 <= 0 && tmp->inventory.food == 0) {
             tmp->is_dead = true;
             event_pdi(server, tmp);
+            continue;
         }
+        if (tmp->cycle_before_death - 1 <= 0) {
+            tmp->inventory.food--;
+            event_pin(server, tmp);
+        }
+        tmp->cycle_before_death--;
     }
 }
 
-static void check_each_teams(server_t *server)
+static void eat(server_t *server)
 {
-    for (teams_t *teams = server->teams; teams != NULL; teams = teams->next)
-        check_player_is_alive(server, teams);
+    for (teams_t *tmp = server->teams; tmp != NULL; tmp = tmp->next)
+        eat_per_teams(server, tmp);
 }
 
 void run_server(server_t *server)
 {
+    zappy_clock_t *clock = init_clock(server, server->frequency);
+    
     init_server(server);
     add_client(server, server->poll.socket, LISTEN);
     for (; !is_game_over(server);) {
-        poll_func(server);
-        check_each_teams(server);
-        // debug_server(server);
-        //=> Consomation de nourriture => Appel à pin
+        update_clock(clock);
+        if (clock->accumulator < 1.0) {
+            poll_func(server, clock);
+            continue;
+        }
+        eat(server);
+        while (clock->accumulator >= 1.0)
+            clock->accumulator -= 1.0;
     }
+    if (clock)
+        free(clock);
 }

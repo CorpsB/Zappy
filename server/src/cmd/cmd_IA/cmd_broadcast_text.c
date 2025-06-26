@@ -30,7 +30,7 @@ static int **create_broadcast_map(server_t *srv)
     for (unsigned y = 0; y < srv->height; ++y) {
         map[y] = malloc(sizeof(int) * srv->width);
         if (!map[y]) {
-            free_map(y, map);
+            free_int_map(y, map);
             logger(srv, "INTMAP : BROADCAST", PERROR, true);
         }
         for (unsigned x = 0; x < srv->width; ++x)

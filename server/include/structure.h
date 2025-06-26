@@ -115,6 +115,12 @@ struct poll {
     client_t *client_list;
 };
 
+typedef struct clock_s {
+    struct timespec last_tick;
+    size_t freq; // fréquence du serveur (f)
+    double accumulator; // TU accumulées mais non encore consommées
+} zappy_clock_t;
+
 /**
  * @struct resources_t
  * @brief Represents a collection of resources on a map tile or in a

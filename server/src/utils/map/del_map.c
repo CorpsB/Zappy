@@ -5,7 +5,11 @@
 ** del_map
 */
 
-void free_map(int y, int **map)
+#include "include/include.h"
+#include "include/function.h"
+#include "include/structure.h"
+
+void free_int_map(int y, int **map)
 {
     while (y > 0) {
         free(map[y]);

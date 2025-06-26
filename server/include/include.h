@@ -8,6 +8,8 @@
 #ifndef INCLUDE_H_
     #define INCLUDE_H_
 
+    #define _GNU_SOURCE
+    #define _POSIX_C_SOURCE 199309L
     //All the poll and server include needed by the project
     #include <sys/socket.h>
     #include <arpa/inet.h>
@@ -40,5 +42,9 @@
 
     #include <limits.h>
     #include <ctype.h>
+    #include <time.h>      // pour struct timespec, clock_gettime, CLOCK_MONOTONIC
+    #include <sys/types.h> // parfois nécessaire selon la plateforme
+    #include <sys/time.h>
+
 
 #endif /* !INCLUDE_H_ */

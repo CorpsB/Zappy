@@ -85,6 +85,8 @@ SRC	=	src/main.c								\
 		src/cmd/cmd_IA/cmd_look.c				\
 		src/cmd/cmd_IA/cmd_look_next.c			\
 		src/cmd/cmd_IA/cmd_broadcast_text.c		\
+		src/clock.c								\
+		src/utils/map/del_map.c
 
 OBJ	=	$(SRC:.c=.o)
 

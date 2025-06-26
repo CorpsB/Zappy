@@ -464,5 +464,8 @@ char *build_line(server_t *srv, player_t *pl, int lvl);
 char *append_token(char *dest, const char *token, server_t *srv);
 unsigned int eggs_at(server_t *srv, int y, int x);
 unsigned int players_at(server_t *srv, int y, int x);
-void free_map(int y, int **map);
+void free_int_map(int y, int **map);
+void update_clock(zappy_clock_t *clock);
+zappy_clock_t *init_clock(server_t *server, size_t freq);
+
 #endif /* !FUCNTION_H_ */
