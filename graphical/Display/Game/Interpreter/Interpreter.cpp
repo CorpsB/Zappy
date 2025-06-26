@@ -192,7 +192,7 @@ void Interpreter::_pnw(const std::smatch &m)
     }
     Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::BODY, playerId,
         {0.f + (x * TILE_SIZE), OFFSET_FROM_GROUND, 0.f + (y * TILE_SIZE)}, teamColor[teamName], "./bonus/Assets/body_golem.stl",
-        orientation, {0.f, 0.f, 0.f}, level, teamName);
+        orientation, {0.f, static_cast<float>(90 * static_cast<int>(orientation)), 0.f}, level, teamName);
     Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::EYES, playerId,
         {0.f + (x * TILE_SIZE), OFFSET_FROM_GROUND + OFFSET_EYES_Y, 0.f + (y * TILE_SIZE) + Renderer::offsetEyesZ[level - 1]}, sf::Color::Black,
         Renderer::pathEyes[level - 1], orientation, {0.f, 0.f, 0.f}, level);
@@ -220,6 +220,12 @@ void Interpreter::_ppo(const std::smatch &m)
             break;
         }
     }
+    // recalibration
+    if (static_cast<int>(currentPos.x) % 70 != 0)
+        currentPos.x = std::round(currentPos.x / 70.f) * 70;
+    if (static_cast<int>(currentPos.z) % 70 != 0)
+        currentPos.z = std::round(currentPos.z / 70.f) * 70;
+
     std::array<std::string, 4> orienToStr = { "NORTH", "WEST", "SOUTH", "EAST" };
     Renderer::histInstruc.push_back(std::make_tuple("T" + std::to_string(playerId) + ": moved to {x: " + std::to_string(x)
         + ", y: " + std::to_string(y) + ", o: " + orienToStr[static_cast<int>(orientation)] + "}", color));
@@ -243,9 +249,21 @@ void Interpreter::_ppo(const std::smatch &m)
             .goingRight = goingRight
         };
     }
-
+    // if too far from destination (except if on the side of the map, wanting to warp)
+    if (std::abs(static_cast<int>(currentPos.x / 70.f) - x) + std::abs(static_cast<int>(currentPos.z / 70.f) - y) > 1
+        && std::abs(static_cast<int>(currentPos.x / 70.f) % (Renderer::map_size_x - 1) - x) != Renderer::map_size_x - 1
+        && std::abs(static_cast<int>(currentPos.z / 70.f) % (Renderer::map_size_y - 1) - y) != Renderer::map_size_y - 1) {
+            for (auto &e : Renderer::sceneEntities) {
+                if (e.clientId == playerId && e.type == Renderer::PartType::BODY) {
+                    e.position.x = static_cast<float>(x * 70);
+                    e.position.z = static_cast<float>(y * 70);
+                    Renderer::histInstruc.push_back(std::make_tuple("/!\\ ~~ T" + std::to_string(playerId) + ": Recalibration ~~ /!\\", color));
+                    return;
+                }
+            }
+    }
     // Check if at the same position as before
-    if ((int)currentPos.x == x * TILE_SIZE && (int)currentPos.z == y * TILE_SIZE)
+    if (static_cast<int>(currentPos.x) == x * TILE_SIZE && static_cast<int>(currentPos.z) == y * TILE_SIZE)
         return;
     // Calculation of movement direction from targeted orientation
     float angleRad = targetAngle * (3.14159265f / 180.f);
