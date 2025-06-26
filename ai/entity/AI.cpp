@@ -56,7 +56,7 @@ std::string ai::entity::AI::doAction(const std::string &action)
                 logger.log("Message received from " + std::to_string(cell.id) + " '" + cell.message + "'");
 
                 // incantate to level up
-                if (cell.message == "INCANTATION_" + std::to_string(_level + 1))
+                if (cell.message == "INCANTATION_" + std::to_string(_level + 1) && dir == HERE)
                     if (!incantate(doAction("")))
                         return "dead";
             }

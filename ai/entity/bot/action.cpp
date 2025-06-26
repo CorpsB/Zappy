@@ -33,6 +33,11 @@ bool ai::entity::AI::performActionForGoal(std::string &look)
 
         case STONE: {
             const std::string rarest_missing = getRarestMissingStone();
+            if (determineLookDistance(findItemInLook(look, "food")) <
+            determineLookDistance(findItemInLook(look, rarest_missing))) {
+                logger.log("I make a detour to look for food");
+                return handleGoal(look, "food");
+            }
             return handleGoal(look, rarest_missing);
         }
 
