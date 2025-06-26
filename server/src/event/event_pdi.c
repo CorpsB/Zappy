@@ -21,8 +21,8 @@ void event_pdi(server_t *server, player_t *player)
         free(buffer);
 }
 
-void event_pdi_by_index(void)
+void event_pdi_by_index(server_t *server, int index)
 {
-    //TO DO
-    return;
+    if (server->poll.client_list[index].whoAmI == PLAYER)
+        event_pdi(server, server->poll.client_list->player);
 }

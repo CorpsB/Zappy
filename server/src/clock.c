@@ -12,11 +12,11 @@
 static double get_elapsed_time_units(zappy_clock_t *clock)
 {
     struct timespec now;
+    double elapsed_sec;
+
     clock_gettime(CLOCK_MONOTONIC, &now);
-
-    double elapsed_sec = (now.tv_sec - clock->last_tick.tv_sec)
+    elapsed_sec = (now.tv_sec - clock->last_tick.tv_sec)
         + (now.tv_nsec - clock->last_tick.tv_nsec) / 1e9;
-
     return elapsed_sec * (double)clock->freq;
 }
 

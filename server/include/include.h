@@ -42,7 +42,7 @@
 
     #include <limits.h>
     #include <ctype.h>
-    #include <time.h>      // pour struct timespec, clock_gettime, CLOCK_MONOTONIC
+    #include <time.h>
     #include <sys/types.h> // parfois nécessaire selon la plateforme
     #include <sys/time.h>
 

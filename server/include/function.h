@@ -159,7 +159,7 @@ void event_pdi(server_t *server, player_t *player);
 */
 void event_bct(server_t *server);
 
-void event_pdi_by_index(void);
+void event_pdi_by_index(server_t *server, int index);
 
 /**
  * @brief Sends a "sgt" event broadcasting the server's frequency value.

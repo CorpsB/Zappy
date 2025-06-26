@@ -81,7 +81,7 @@ static bool del_client(server_t *server, int index)
         sizeof(struct pollfd) * server->poll.connected_client);
     if (!server->poll.pollfds || !server->poll.client_list)
         logger(server, "REALLOC", PERROR, true);
-    event_pdi_by_index();
+    event_pdi_by_index(server, index);
     return true;
 }
 
@@ -110,9 +110,10 @@ static bool event_detector(server_t *server, int i)
 static void poll_func(server_t *server, zappy_clock_t *clock)
 {
     int event;
-    int timeout = (unsigned int)((1.0 - clock->accumulator) * 1000.0 / clock->freq);
+    int t = (unsigned int)
+    ((1.0 - clock->accumulator) * 1000.0 / clock->freq);
 
-    event = poll(server->poll.pollfds, server->poll.client_index, (int)timeout);
+    event = poll(server->poll.pollfds, server->poll.client_index, (int)t);
     if (event == -1)
         logger(server, "POLL", PERROR, true);
     if (event == 0)
@@ -150,7 +151,7 @@ static void eat(server_t *server)
 void run_server(server_t *server)
 {
     zappy_clock_t *clock = init_clock(server, server->frequency);
-    
+
     init_server(server);
     add_client(server, server->poll.socket, LISTEN);
     for (; !is_game_over(server);) {
