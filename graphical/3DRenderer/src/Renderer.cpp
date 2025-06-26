@@ -641,27 +641,9 @@ namespace Renderer {
             hudText.setString("in order to display informations about the next Trantorian");
             hudText.setPosition(menuPos.x + 50.f, menuPos.y + 470.f);
             window.draw(hudText);
+            // reset the size of the text
+            hudText.setCharacterSize(16);
         }
-
-        // window.display();
     }
-
-    // bool getIsRunning() {
-    //     sf::Event event;
-
-    //     while (window.pollEvent(event)) {
-    //         if (event.type == sf::Event::Closed)
-    //             return false;
-    //     }
-    //     return window && window.isOpen();
-    // }
-
-    // void shutdownRenderer() {
-    //     if (window) {
-    //         window.close();
-    //         delete window;
-    //         window = nullptr;
-    //     }
-    // }
 
 } // namespace Renderer
