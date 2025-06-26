@@ -82,8 +82,8 @@ void Interpreter::interpret(const std::string &data)
 
 void Interpreter::_msz(const std::smatch &m)
 {
-    int x = std::stoi(m[1]);
-    int y = std::stoi(m[2]);
+    const int x = std::stoi(m[1]);
+    const int y = std::stoi(m[2]);
 
     for (int i = 0; i < x; i++)
         for (int j = 0; j < y; j++) {
@@ -101,8 +101,8 @@ void Interpreter::_msz(const std::smatch &m)
 
 void Interpreter::_bct(const std::smatch &m)
 {
-    int x = std::stoi(m[1]);
-    int y = std::stoi(m[2]);
+    const int x = std::stoi(m[1]);
+    const int y = std::stoi(m[2]);
 
     std::array<int, 7> quantities = {
         std::stoi(m[3]), std::stoi(m[4]), std::stoi(m[5]),
@@ -161,46 +161,54 @@ void Interpreter::_tna(const std::smatch &m)
 
 void Interpreter::_pnw(const std::smatch &m)
 {
-    int playerId = std::stoi(m[1]);
-    int x = std::stoi(m[2]);
-    int y = std::stoi(m[3]);
-    Renderer::Compass orientation = static_cast<Renderer::Compass>(std::stoi(m[4]) - 1);
-    int level = std::stoi(m[5]);
-    std::string teamName = m[6].str();
+    const int playerId = std::stoi(m[1]);
+    const int x = std::stoi(m[2]);
+    const int y = std::stoi(m[3]);
+    const auto orientation = static_cast<Renderer::Compass>(std::stoi(m[4]) - 1);
+    const int level = std::stoi(m[5]);
+    const std::string &teamName = m[6];
+    auto colorIt = _teamColor.find(teamName);
 
-    if (_teamColor.find(teamName) == _teamColor.end()) {
-        sf::Color color = {0, 0, 0};
-        // 2 conditions to find a color :
-        // - sum > 55 --> the eyes are black, it will prevent to have a dark skin
-        // - big enough difference between the new color and the existing ones
-        while (color.r + color.g + color.b < 55 || !_bigEnoughDiffColor(color)) {
+    if (colorIt == _teamColor.end()) {
+        sf::Color color;
+        do {
             color.r = rand() % 256;
             color.g = rand() % 256;
             color.b = rand() % 256;
-        }
-        _teamColor[teamName] = color;
+        } while (color.r + color.g + color.b < 55 || !_bigEnoughDiffColor(color));
+        colorIt = _teamColor.emplace(teamName, color).first;
     }
+
+    const float posX = x * TILE_SIZE;
+    const float posY = y * TILE_SIZE;
+
     Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::BODY, playerId,
-        {0.f + (x * TILE_SIZE), OFFSET_FROM_GROUND, 0.f + (y * TILE_SIZE)}, _teamColor[teamName], "./bonus/Assets/body_golem.stl",
+        {posX, OFFSET_FROM_GROUND, posY}, colorIt->second, "./bonus/Assets/body_golem.stl",
         orientation, {0.f, static_cast<float>(90 * static_cast<int>(orientation)), 0.f}, level, teamName);
     Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::EYES, playerId,
-        {0.f + (x * TILE_SIZE), OFFSET_FROM_GROUND + OFFSET_EYES_Y, 0.f + (y * TILE_SIZE) + Renderer::offsetEyesZ[level - 1]}, sf::Color::Black,
-        Renderer::pathEyes[level - 1], orientation, {0.f, 0.f, 0.f}, level);
-    std::array<std::string, 4> orienToStr = { "NORTH", "EAST", "SOUTH", "WEST" };
-    Renderer::histInstruc.push_back(std::make_tuple("T" + std::to_string(playerId) + ": connected at {x: " + std::to_string(x) +
-        ", y: " + std::to_string(y) + ", o: " + orienToStr[static_cast<int>(orientation)] + "}", _teamColor[teamName]));
+        {posX, OFFSET_FROM_GROUND + OFFSET_EYES_Y, posY + Renderer::offsetEyesZ[level - 1]},
+        sf::Color::Black, Renderer::pathEyes[level - 1], orientation, {0.f, 0.f, 0.f}, level);
+
+    static constexpr std::array<std::string_view, 4> orienToStr = { "NORTH", "EAST", "SOUTH", "WEST" };
+
+    std::ostringstream oss;
+
+    oss << "T" << playerId << ": connected at {x: " << x
+        << ", y: " << y << ", o: " << orienToStr[static_cast<int>(orientation)] << "}";
+    Renderer::histInstruc.emplace_back(oss.str(), colorIt->second);
 }
 
 void Interpreter::_ppo(const std::smatch &m)
 {
-    int playerId = std::stoi(m[1]);
-    int x = std::stoi(m[2]);
-    int y = std::stoi(m[3]);
-    Renderer::Compass orientation = static_cast<Renderer::Compass>(std::stoi(m[4]) - 1);
+    const int playerId = std::stoi(m[1]);
+    const int x = std::stoi(m[2]);
+    const int y = std::stoi(m[3]);
+    const auto orientation = static_cast<Renderer::Compass>(std::stoi(m[4]) - 1);
+    constexpr float tileSize = static_cast<float>(TILE_SIZE);
 
     float currentAngle = 0.f;
-    Renderer::Vec3 currentPos;
-    sf::Color color = {255, 255, 255};
+    Renderer::Vec3 currentPos{};
+    sf::Color color = sf::Color::White;
 
     for (auto &e : Renderer::sceneEntities) {
         if (e.clientId == playerId && e.type == Renderer::PartType::BODY) {
@@ -210,25 +218,29 @@ void Interpreter::_ppo(const std::smatch &m)
             break;
         }
     }
-    // recalibration
-    if (static_cast<int>(currentPos.x) % 70 != 0)
-        currentPos.x = std::round(currentPos.x / 70.f) * 70;
-    if (static_cast<int>(currentPos.z) % 70 != 0)
-        currentPos.z = std::round(currentPos.z / 70.f) * 70;
+    if (static_cast<int>(currentPos.x) % TILE_SIZE != 0)
+        currentPos.x = std::round(currentPos.x / tileSize) * tileSize;
+    if (static_cast<int>(currentPos.z) % TILE_SIZE != 0)
+        currentPos.z = std::round(currentPos.z / tileSize) * tileSize;
 
-    std::array<std::string, 4> orienToStr = { "NORTH", "WEST", "SOUTH", "EAST" };
-    Renderer::histInstruc.push_back(std::make_tuple("T" + std::to_string(playerId) + ": moved to {x: " + std::to_string(x)
-        + ", y: " + std::to_string(y) + ", o: " + orienToStr[static_cast<int>(orientation)] + "}", color));
+    static constexpr std::array<std::string_view, 4> orienToStr = { "NORTH", "WEST", "SOUTH", "EAST" };
+
+    std::ostringstream oss;
+
+    oss << "T" << playerId << ": moved to {x: " << x << ", y: " << y
+        << ", o: " << orienToStr[static_cast<int>(orientation)] << "}";
+    Renderer::histInstruc.emplace_back(oss.str(), color);
 
     float targetAngle = Renderer::compassToAngle(orientation);
 
-    // Calculation angle difference
     float delta = targetAngle - currentAngle;
-    if (delta > 180.f) delta -= 360.f;
-    if (delta < -180.f) delta += 360.f;
+    if (delta > 180.f)
+        delta -= 360.f;
+    if (delta < -180.f)
+        delta += 360.f;
 
-    bool goingRight = delta < 0.f; // right if negative angle (trigo)
-    int stepsNeeded = static_cast<int>(std::round(std::abs(delta) / 4.5f));
+    const bool goingRight = delta < 0.f;
+    const int stepsNeeded = static_cast<int>(std::round(std::abs(delta) / 4.5f));
 
     if (stepsNeeded > 0) {
         Renderer::activeRotations[playerId] = Renderer::RotationState{
@@ -239,82 +251,72 @@ void Interpreter::_ppo(const std::smatch &m)
             .goingRight = goingRight
         };
     }
-    // if too far from destination (except if on the side of the map, wanting to warp)
-    if (std::abs(static_cast<int>(currentPos.x / 70.f) - x) + std::abs(static_cast<int>(currentPos.z / 70.f) - y) > 1
-        && std::abs(static_cast<int>(currentPos.x / 70.f) % (Renderer::map_size_x - 1) - x) != Renderer::map_size_x - 1
-        && std::abs(static_cast<int>(currentPos.z / 70.f) % (Renderer::map_size_y - 1) - y) != Renderer::map_size_y - 1) {
-            for (auto &e : Renderer::sceneEntities) {
-                if (e.clientId == playerId && e.type == Renderer::PartType::BODY) {
-                    e.position.x = static_cast<float>(x * 70);
-                    e.position.z = static_cast<float>(y * 70);
-                    Renderer::histInstruc.push_back(std::make_tuple("/!\\ ~~ T" + std::to_string(playerId) + ": Recalibration ~~ /!\\", color));
-                    return;
-                }
+
+    const int cx = static_cast<int>(currentPos.x / tileSize);
+    const int cy = static_cast<int>(currentPos.z / tileSize);
+    const int dx = std::abs(cx - x);
+    const int dy = std::abs(cy - y);
+
+    const int wrapX = Renderer::map_size_x - 1;
+    const int wrapY = Renderer::map_size_y - 1;
+
+    if ((dx + dy > 1) && std::abs(cx % wrapX - x) != wrapX && std::abs(cy % wrapY - y) != wrapY) {
+        for (auto &e : Renderer::sceneEntities) {
+            if (e.clientId == playerId && e.type == Renderer::PartType::BODY) {
+                e.position.x = x * tileSize;
+                e.position.z = y * tileSize;
+                Renderer::histInstruc.emplace_back("/!\\ ~~ T" + std::to_string(playerId) + ": Recalibration ~~ /!\\", color);
+                return;
             }
+        }
     }
-    // Check if at the same position as before
     if (static_cast<int>(currentPos.x) == x * TILE_SIZE && static_cast<int>(currentPos.z) == y * TILE_SIZE)
         return;
-    // Calculation of movement direction from targeted orientation
     float angleRad = targetAngle * (3.14159265f / 180.f);
-
-    Renderer::Vec3 dir = {
-        std::sin(angleRad),  // x
-        0.f,                 // y
-        -std::cos(angleRad)  // z
+    Renderer::Vec3 dir = { std::sin(angleRad), 0.f, -std::cos(angleRad) };
+    Renderer::Vec3 velocity = { dir.x * 3.5f, dir.y * 3.5f, dir.z * 3.5f };
+    auto movementState = Renderer::MovementState{
+        .direction = velocity,
+        .timeElapsed = 0.f,
+        .stepsRemaining = 40,
+        .active = true
     };
 
-    // The entity can only start to move if no rotation is required
-    if (stepsNeeded == 0) {
-        Renderer::activeMovements[playerId] = Renderer::MovementState{
-            .direction = {dir.x * 3.5f, dir.y * 3.5f, dir.z * 3.5f},
-            .timeElapsed = 0.f,
-            .stepsRemaining = 40,
-            .active = true
-        };
-    } else {
-        // Else, the movement action is stocked to be started after the rotation
-        Renderer::pendingMovementsAfterRotation[playerId] = Renderer::MovementState{
-            .direction = {dir.x * 3.5f, dir.y * 3.5f, dir.z * 3.5f},
-            .timeElapsed = 0.f,
-            .stepsRemaining = 40,
-            .active = true
-        };
-    }
+    if (stepsNeeded == 0)
+        Renderer::activeMovements[playerId] = movementState;
+    else
+        Renderer::pendingMovementsAfterRotation[playerId] = movementState;
 }
 
 void Interpreter::_plv(const std::smatch &m)
 {
-    int playerId = std::stoi(m[1]);
-    int level = std::stoi(m[2]);
+    const int playerId = std::stoi(m[1]);
+    const int level = std::stoi(m[2]);
+    const int levelIndex = level - 1;
 
-    float x;
-    float z;
-    sf::Color color = {255, 255, 255};
-    bool exists = false;
-
-    for (auto &e : Renderer::sceneEntities) {
-        if (e.clientId == playerId && e.type == Renderer::PartType::BODY) {
-            x = e.position.x;
-            z = e.position.z;
-            color = e.color;
-            exists = true;
-            break;
-        }
-    }
-    if (!exists) {
-        std::cerr << "Somehow, the player " << playerId << " doesn't exists..." << std::endl;
+    auto it = std::find_if(Renderer::sceneEntities.begin(), Renderer::sceneEntities.end(),
+        [playerId](const Renderer::Entity &e) {
+            return e.clientId == playerId && e.type == Renderer::PartType::BODY;
+    });
+    if (it == Renderer::sceneEntities.end()) {
+        std::cerr << "Somehow, the player " << playerId << " doesn't exist..." << std::endl;
         return;
     }
+    const float x = it->position.x;
+    const float z = it->position.z;
+    const sf::Color &color = it->color;
+
     for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
-        Renderer::Entity &e = *it;
-        // Will also remove the eyes
-        if (e.clientId == playerId && e.type == Renderer::PartType::EYES && e.level != level) {
+        if (it->clientId == playerId && it->type == Renderer::PartType::EYES && it->level != level) {
             it = Renderer::sceneEntities.erase(it);
             Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::EYES, playerId,
-            {x, OFFSET_FROM_GROUND + OFFSET_EYES_Y, z + Renderer::offsetEyesZ[level - 1]}, sf::Color::Black,
-            Renderer::pathEyes[level - 1], Renderer::Compass::NORTH, {0.f, 0.f, 0.f}, level);
-            Renderer::histInstruc.push_back(std::make_tuple("T" + std::to_string(playerId) + ": became level " + std::to_string(level), color));
+                {x, OFFSET_FROM_GROUND + OFFSET_EYES_Y, z + Renderer::offsetEyesZ[levelIndex]},
+                sf::Color::Black, Renderer::pathEyes[levelIndex],
+                Renderer::Compass::NORTH, {0.f, 0.f, 0.f}, level);
+            std::ostringstream oss;
+
+            oss << "T" << playerId << ": became level " << level;
+            Renderer::histInstruc.emplace_back(oss.str(), color);
         } else {
             ++it;
         }
@@ -323,11 +325,11 @@ void Interpreter::_plv(const std::smatch &m)
 
 void Interpreter::_pin(const std::smatch &m)
 {
-    int playerId = std::stoi(m[1]);
+    const int playerId = std::stoi(m[1]);
     // int x = std::stoi(m[2]);
     // int y = std::stoi(m[3]);
 
-    std::array<int, 7> quantities = {
+    const std::array<int, 7> quantities = {
         std::stoi(m[4]), std::stoi(m[5]), std::stoi(m[6]),
         std::stoi(m[7]), std::stoi(m[8]), std::stoi(m[9]),
         std::stoi(m[10])
@@ -350,70 +352,87 @@ void Interpreter::_pbc(const std::smatch &m)
 {
     int playerId = std::stoi(m[1]);
     std::string data = m[2].str();
+    sf::Color color = sf::Color::White;
 
-    sf::Color color = {255, 255, 255};
     for (auto &e : Renderer::sceneEntities) {
         if (e.clientId == playerId && e.type == Renderer::PartType::BODY) {
             color = e.color;
             break;
         }
     }
+    std::ostringstream oss;
+
+    oss << "T" << playerId << ": broadcast \"" << data << "\"";
+    Renderer::histInstruc.emplace_back(oss.str(), color);
 
     Renderer::histInstruc.push_back(std::make_tuple("T" + std::to_string(playerId) + ": broadcast \"" + data + "\"", color));
 }
 
 void Interpreter::_pic(const std::smatch &m)
 {
-    int x = std::stoi(m[1]);
-    int y = std::stoi(m[2]);
-    // int level = std::stoi(m[3]);
+    const int x = std::stof(m[1]);
+    const int y = std::stof(m[2]);
+
     std::vector<int> playersId;
-    std::string full = m[0].str();
-    std::regex idRegex(R"#(#(-?\d+))#");
-    auto begin = std::sregex_iterator(full.begin(), full.end(), idRegex);
-    auto end = std::sregex_iterator();
-
-    for (auto it = begin; it != end; it++)
+    const std::string &full = m[0].str();
+    const std::regex idRegex(R"#(#(-?\d+))#");
+    
+    for (std::sregex_iterator it(full.begin(), full.end(), idRegex), end; it != end; ++it)
         playersId.push_back(std::stoi((*it)[1].str()));
-    Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::RING, -1,
-        {0.0f + (x * TILE_SIZE), -10.0f, 0.0f + (y * TILE_SIZE)}, sf::Color {127, 0, 255}, "./bonus/Assets/IncantationRing.stl");
 
-    sf::Color color = {255, 255, 255};
-    for (auto &e : Renderer::sceneEntities) {
-        if (e.clientId == playersId.front() && e.type == Renderer::PartType::BODY) {
+    Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::RING, -1,
+        {0.0f + x * TILE_SIZE, -10.0f, 0.0f + y * TILE_SIZE}, sf::Color{127, 0, 255}, "./bonus/Assets/IncantationRing.stl");
+
+    if (playersId.empty())
+        return;
+
+    sf::Color color = sf::Color::White;
+    const int firstPlayerId = playersId.front();
+
+    for (const auto &e : Renderer::sceneEntities) {
+        if (e.clientId == firstPlayerId && e.type == Renderer::PartType::BODY) {
             color = e.color;
             break;
         }
     }
-    Renderer::histInstruc.push_back(std::make_tuple("T" + std::to_string(playersId.front()) + ": start incantation at {x: " + std::to_string(x)
-        + ", y: " + std::to_string(y) + "}", color));
+    std::ostringstream oss;
+
+    oss << "T" << firstPlayerId << ": start incantation at {x: " << x << ", y: " << y << "}";
+    Renderer::histInstruc.emplace_back(oss.str(), color);
 }
 
 void Interpreter::_pie(const std::smatch &m)
 {
-    int x = std::stoi(m[1]);
-    int y = std::stoi(m[2]);
-    std::string result = m[3].str();
+    const int x = std::stoi(m[1]);
+    const int y = std::stoi(m[2]);
+    const std::string &result = m[3];
+
+    const float posX = x * TILE_SIZE;
+    const float posZ = y * TILE_SIZE;
 
     for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
-        Renderer::Entity &e = *it;
-        if (e.position.x == 0.f + (x * TILE_SIZE) && e.position.z == 0.f + (y * TILE_SIZE) && e.type == Renderer::PartType::RING) {
+        if (it->position.x == posX && it->position.z == posZ && it->type == Renderer::PartType::RING) {
             it = Renderer::sceneEntities.erase(it);
         } else {
             ++it;
         }
     }
-    Renderer::histInstruc.push_back(std::make_tuple("SERVER: incantation at {x:" + std::to_string(x) + ", y:"
-    + std::to_string(y) + "} ended", sf::Color {255, 255, 255}));
+    std::ostringstream oss;
+
+    oss << "SERVER: incantation at {x:" << x << ", y:" << y << "} ended";
+    Renderer::histInstruc.emplace_back(oss.str(), sf::Color::White);
 }
 
 void Interpreter::_pfk(const std::smatch &m)
 {
-    int playerId = std::stoi(m[1]);
+    const int playerId = std::stoi(m[1]);
 
-    for (auto &e : Renderer::sceneEntities) {
+    for (const auto &e : Renderer::sceneEntities) {
         if (e.clientId == playerId && e.type == Renderer::PartType::BODY) {
-            Renderer::histInstruc.push_back(std::make_tuple("T" + std::to_string(playerId) + " layed an egg", e.color));
+            std::ostringstream oss;
+
+            oss << "T" << playerId << " layed an egg";
+            Renderer::histInstruc.emplace_back(oss.str(), e.color);
             return;
         }
     }
@@ -421,66 +440,89 @@ void Interpreter::_pfk(const std::smatch &m)
 
 void Interpreter::_pdr(const std::smatch &m)
 {
-    int playerId = std::stoi(m[1]);
-    int resourceNumber = std::stoi(m[2]);
-    std::array<std::string, 7> resourcesName = { "FOOD", "LINEMATE", "DERAUMERE", "SIBUR", "MENDIANE", "PHIRAS", "THYSTAME" };
+    const int playerId = std::stoi(m[1]);
+    const int resourceNumber = std::stoi(m[2]);
 
-    sf::Color color = {255, 255, 255};
-    for (auto &e : Renderer::sceneEntities) {
+    static constexpr std::array<std::string_view, 7> resourcesName = { "FOOD", "LINEMATE", "DERAUMERE", "SIBUR", "MENDIANE", "PHIRAS", "THYSTAME" };
+
+    if (resourceNumber < 1 || resourceNumber > static_cast<int>(resourcesName.size())) {
+        std::cerr << "Invalid resource number: " << resourceNumber << std::endl;
+        return;
+    }
+    sf::Color color = sf::Color::White;
+
+    for (const auto &e : Renderer::sceneEntities) {
         if (e.clientId == playerId && e.type == Renderer::PartType::BODY) {
             color = e.color;
             break;
         }
     }
-    Renderer::histInstruc.push_back(std::make_tuple("T" + std::to_string(playerId) +  ": drops " + (resourcesName[resourceNumber - 1]), color));
+    std::ostringstream oss;
+
+    oss << "T" << playerId << ": drops " << resourcesName[resourceNumber - 1];
+    Renderer::histInstruc.emplace_back(oss.str(), color);
 }
 
 void Interpreter::_pgt(const std::smatch &m)
 {
-    int playerId = std::stoi(m[1]);
-    int resourceNumber = std::stoi(m[2]);
-    std::array<std::string, 7> resourcesName = { "FOOD", "LINEMATE", "DERAUMERE", "SIBUR", "MENDIANE", "PHIRAS", "THYSTAME" };
+    const int playerId = std::stoi(m[1]);
+    const int resourceNumber = std::stoi(m[2]);
 
-    sf::Color color = {255, 255, 255};
-    for (auto &e : Renderer::sceneEntities) {
+    static constexpr std::array<std::string_view, 7> resourcesName = { "FOOD", "LINEMATE", "DERAUMERE", "SIBUR", "MENDIANE", "PHIRAS", "THYSTAME" };
+
+    if (resourceNumber < 1 || resourceNumber > static_cast<int>(resourcesName.size())) {
+        std::cerr << "Invalid resource number: " << resourceNumber << std::endl;
+        return;
+    }
+    sf::Color color = sf::Color::White;
+
+    for (const auto &e : Renderer::sceneEntities) {
         if (e.clientId == playerId && e.type == Renderer::PartType::BODY) {
             color = e.color;
             break;
         }
     }
-    Renderer::histInstruc.push_back(std::make_tuple("T" + std::to_string(playerId) +  ": takes " + (resourcesName[resourceNumber]), color));
+    std::ostringstream oss;
+
+    oss << "T" << playerId << ": takes " << resourcesName[resourceNumber - 1];
+    Renderer::histInstruc.emplace_back(oss.str(), color);
 }
+
 
 void Interpreter::_pdi(const std::smatch &m)
 {
-    int playerId = std::stoi(m[1]);
+    const int playerId = std::stoi(m[1]);
+    sf::Color color = sf::Color::White;
 
-    sf::Color color = {255, 255, 255};
     for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
-        Renderer::Entity &e = *it;
-        if (e.clientId == playerId) {
-            if (e.type == Renderer::PartType::BODY)
-                color = e.color;
+        if (it->clientId == playerId) {
+            if (it->type == Renderer::PartType::BODY)
+                color = it->color;
             it = Renderer::sceneEntities.erase(it);
         } else {
             ++it;
         }
     }
-    Renderer::histInstruc.push_back(std::make_tuple("T" + std::to_string(playerId) + ": died", color));
+    std::ostringstream oss;
+
+    oss << "T" << playerId << ": died";
+    Renderer::histInstruc.emplace_back(oss.str(), color);
 }
 
 void Interpreter::_enw(const std::smatch &m)
 {
-    int eggId = std::stoi(m[1]);
-    int playerId = std::stoi(m[2]);
-    int x = std::stoi(m[3]);
-    int y = std::stoi(m[4]);
+    const int eggId = std::stoi(m[1]);
+    const int playerId = std::stoi(m[2]);
+    const int x = std::stoi(m[3]);
+    const int y = std::stoi(m[4]);
 
-    for (auto &e : Renderer::sceneEntities) {
+    const float posX = x * TILE_SIZE + 15.f;
+    const float posZ = y * TILE_SIZE + 25.f;
+
+    for (const auto &e : Renderer::sceneEntities) {
         if (e.clientId == playerId && e.type == Renderer::PartType::BODY) {
-            Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::EGG, eggId,
-            {static_cast<float>(x * TILE_SIZE) + 15.f, OFFSET_FROM_GROUND, static_cast<float>(y * TILE_SIZE) + 25.f},
-            e.color, "./bonus/Assets/Egg.stl", Renderer::Compass::NORTH, {0.f, 0.f, 0.f}, -1, e.teamName);
+            Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::EGG, eggId, {posX, OFFSET_FROM_GROUND, posZ}, e.color,
+                "./bonus/Assets/Egg.stl", Renderer::Compass::NORTH, {0.f, 0.f, 0.f}, -1, e.teamName);
             return;
         }
     }
@@ -488,12 +530,14 @@ void Interpreter::_enw(const std::smatch &m)
 
 void Interpreter::_ebo(const std::smatch &m)
 {
-    int eggId = std::stoi(m[1]);
+    const int eggId = std::stoi(m[1]);
 
     for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
-        Renderer::Entity &e = *it;
-        if (e.clientId == eggId && e.type == Renderer::PartType::EGG) {
-            Renderer::histInstruc.push_back(std::make_tuple("Egg #" + std::to_string(eggId) + " hatched !", e.color));
+        if (it->clientId == eggId && it->type == Renderer::PartType::EGG) {
+            std::ostringstream oss;
+
+            oss << "Egg #" << eggId << " hatched !";
+            Renderer::histInstruc.emplace_back(oss.str(), it->color);
             it = Renderer::sceneEntities.erase(it);
             return;
         } else {
@@ -504,12 +548,14 @@ void Interpreter::_ebo(const std::smatch &m)
 
 void Interpreter::_edi(const std::smatch &m)
 {
-    int eggId = std::stoi(m[1]);
+    const int eggId = std::stoi(m[1]);
 
     for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
-        Renderer::Entity &e = *it;
-        if (e.clientId == eggId && e.type == Renderer::PartType::EGG) {
-            Renderer::histInstruc.push_back(std::make_tuple("Egg #" + std::to_string(eggId) + " died...", e.color));
+        if (it->clientId == eggId && it->type == Renderer::PartType::EGG) {
+            std::ostringstream oss;
+
+            oss << "Egg #" << eggId << " died...";
+            Renderer::histInstruc.emplace_back(oss.str(), it->color);
             it = Renderer::sceneEntities.erase(it);
             return;
         } else {
@@ -517,6 +563,7 @@ void Interpreter::_edi(const std::smatch &m)
         }
     }
 }
+
 
 void Interpreter::_sgt(const std::smatch &m)
 {
@@ -551,9 +598,9 @@ bool Interpreter::_bigEnoughDiffColor(sf::Color newColor)
     for (auto &e : Renderer::sceneEntities) {
         sf::Color color = _teamColor[e.teamName];
         // minimum euclidian distance > 100 --> about 15-25 teams
-        int dr = int(color.r) - int(newColor.r);
-        int dg = int(color.g) - int(newColor.g);
-        int db = int(color.b) - int(newColor.b);
+        int dr = static_cast<int>(color.r) - static_cast<int>(newColor.r);
+        int dg = static_cast<int>(color.g) - static_cast<int>(newColor.g);
+        int db = static_cast<int>(color.b) - static_cast<int>(newColor.b);
         if (std::sqrt(dr * dr + dg * dg + db * db) < 100.0f)
             return false;
     }
