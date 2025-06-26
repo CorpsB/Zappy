@@ -39,7 +39,7 @@ Interpreter::Interpreter()
         { Renderer::PartType::Q3, {-15.f, -6.5f, -25.f}, {204, 0, 102}, "./bonus/Assets/Crystals.stl" },
         { Renderer::PartType::Q4, {-25.f, -6.5f, -15.f}, {255, 255, 255}, "./bonus/Assets/Crystals.stl" },
         { Renderer::PartType::Q5, {-15.f, -6.5f, 25.f}, {127, 0, 255}, "./bonus/Assets/Crystals.stl" },
-        { Renderer::PartType::Q6, {-25.f, -5.0f, 15.f}, sf::Color::Red, "./bonus/Assets/Crystals.stl", -5.0f }
+        { Renderer::PartType::Q6, {-25.f, -6.5f, 15.f}, sf::Color::Red, "./bonus/Assets/Crystals.stl"}
     }};
 }
 
@@ -315,7 +315,22 @@ void Interpreter::_plv(const std::smatch &m)
 
 void Interpreter::_pin(const std::smatch &m)
 {
-    (void) m;
+    int playerId = std::stoi(m[1]);
+    // int x = std::stoi(m[2]);
+    // int y = std::stoi(m[3]);
+
+    std::array<int, 7> quantities = {
+        std::stoi(m[4]), std::stoi(m[5]), std::stoi(m[6]),
+        std::stoi(m[7]), std::stoi(m[8]), std::stoi(m[9]),
+        std::stoi(m[10])
+    };
+
+    for (auto &e : Renderer::sceneEntities) {
+        if (e.clientId == playerId && e.type == Renderer::PartType::BODY) {
+            e.inventory = quantities;
+            break;
+        }
+    }
 }
 
 void Interpreter::_pex(const std::smatch &m)

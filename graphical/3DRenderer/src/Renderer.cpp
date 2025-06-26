@@ -33,11 +33,17 @@ namespace Renderer {
     static sf::RectangleShape bgMenu;
     // We need it to display it even though it's not really supposed to be here
     std::unordered_map<int, std::array<int, 7>> _resourcesOnTiles;
-    static std::array<std::tuple<std::string, int, sf::Color>, 7> totalResources;
+    static std::array<int, 7> totalResources;
+    static std::array<sf::Color, 7> colorResources;
+    static std::array<std::string, 7> nameResources;
     bool resourcesChange;
-    static sf::RectangleShape topLeftButton;
+    static sf::RectangleShape buttonNextTrantorian;
     static sf::Color buttonIdleColor = sf::Color(100, 100, 100);
     static sf::Color buttonHoverColor = sf::Color(150, 150, 150);
+    static Entity currentTrantorian;
+    static std::array<std::string, 4> orientation = {"NORTH", "EAST", "SOUTH", "WEST"};
+    static bool buttonToggle = false;
+    static bool buttonIsPressed = false;
 
     bool initRenderer(sf::RenderWindow &window) {
         // window = new sf::RenderWindow(sf::VideoMode(width, height), title);
@@ -61,20 +67,33 @@ namespace Renderer {
         bgMenu.setSize(sf::Vector2f(350.f, window.getSize().y));
         bgMenu.setPosition(window.getSize().x - 350.f, 0.f);
         bgMenu.setFillColor(sf::Color(0, 0, 0, 128));
-        topLeftButton.setSize(sf::Vector2f(100.f, 40.f));
-        topLeftButton.setPosition(120.f, 10.f);
-        topLeftButton.setFillColor(buttonIdleColor);
+        buttonNextTrantorian.setSize(sf::Vector2f(100.f, 40.f));
+        buttonNextTrantorian.setPosition(120.f, 650.f);
+        buttonNextTrantorian.setFillColor(buttonIdleColor);
 
-        totalResources = {
-            std::make_tuple("FOOD: ", 0, sf::Color::Yellow),
-            std::make_tuple("LINEMATE: ", 0, sf::Color {96, 96, 96}),
-            std::make_tuple("DERAUMERE: ", 0, sf::Color::Green),
-            std::make_tuple("SIBUR: ", 0, sf::Color {204, 0, 102}),
-            std::make_tuple("MENDIANE: ", 0, sf::Color {255, 255, 255}),
-            std::make_tuple("PHIRAS: ", 0, sf::Color {127, 0, 255}),
-            std::make_tuple("THYSTAME: ", 0, sf::Color::Red)
+        totalResources = {0, 0, 0, 0, 0, 0, 0};
+
+        colorResources = {
+            sf::Color::Yellow,
+            sf::Color {96, 96, 96},
+            sf::Color::Green,
+            sf::Color {204, 0, 102},
+            sf::Color {255, 255, 255},
+            sf::Color {127, 0, 255},
+            sf::Color::Red
+        };
+        nameResources = {
+            "FOOD: ",
+            "LINEMATE: ",
+            "DERAUMERE: ",
+            "SIBUR: ",
+            "MENDIANE: ",
+            "PHIRAS: ",
+            "THYSTAME: "
         };
         resourcesChange = true;
+        
+        currentTrantorian.clientId = -1;
         return true;
     }
 
@@ -257,27 +276,28 @@ namespace Renderer {
     void render(float dt, sf::RenderWindow &window) {
         int w = window.getSize().x;
         int h = window.getSize().y;
-        static bool isButtonClicked = false;
-        static sf::Clock clickClock;
-        sf::Time clickDuration = sf::seconds(1.f);
+        // static bool isButtonClicked = false;
+        // static sf::Clock clickClock;
+        // sf::Time clickDuration = sf::seconds(1.f);
         sf::Vector2i mousePos = sf::Mouse::getPosition(window);
         sf::Vector2f mousePosF(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
 
         //Top left button
-        if (topLeftButton.getGlobalBounds().contains(mousePosF)) {
-            topLeftButton.setFillColor(buttonHoverColor);
-            if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && !isButtonClicked) {
-                std::cout << "Bouton cliqué" << std::endl;
-                isButtonClicked = true;
-                clickClock.restart();
+        if (buttonNextTrantorian.getGlobalBounds().contains(mousePosF)) {
+            buttonNextTrantorian.setFillColor(buttonHoverColor);
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+                if (!buttonToggle && !buttonIsPressed) {
+                    buttonToggle = true;
+                } else
+                    buttonToggle = false;
+                buttonIsPressed = true;
+            } else {
+                buttonIsPressed = false;
+                buttonToggle = false;
             }
         } else {
-            topLeftButton.setFillColor(buttonIdleColor);
+            buttonNextTrantorian.setFillColor(buttonIdleColor);
         }
-        if (isButtonClicked && clickClock.getElapsedTime() > clickDuration) {
-            isButtonClicked = false;
-        }
-
         // Gradient ciel
         for (int y = 0; y < h; ++y) {
             float t = float(y) / float(h);
@@ -421,25 +441,18 @@ namespace Renderer {
             bgMenu.setPosition(0.f, 0.f);
             window.draw(bgMenu);
             window.draw(hudText);
-            window.draw(topLeftButton);
+            window.draw(buttonNextTrantorian);
             // Calculate only if something changed
             if (resourcesChange) {
-                totalResources = {
-                    std::make_tuple("FOOD: ", 0, sf::Color::Yellow),
-                    std::make_tuple("LINEMATE: ", 0, sf::Color {96, 96, 96}),
-                    std::make_tuple("DERAUMERE: ", 0, sf::Color::Green),
-                    std::make_tuple("SIBUR: ", 0, sf::Color {204, 0, 102}),
-                    std::make_tuple("MENDIANE: ", 0, sf::Color {255, 255, 255}),
-                    std::make_tuple("PHIRAS: ", 0, sf::Color {127, 0, 255}),
-                    std::make_tuple("THYSTAME: ", 0, sf::Color::Red)
-                };
+                for (int i = 0; i < 7; i++)
+                    totalResources[i] = 0;
                 // Calculate the total of resources
                 for (int i = 0; i < map_size_x; i++) {
                     for (int j = 0; j < map_size_y; j++) {
                         if (_resourcesOnTiles.find(i * map_size_y + j) != _resourcesOnTiles.end()) {
                             const auto& tileResources = _resourcesOnTiles[i * map_size_y + j];
                             for (int resIndex = 0; resIndex < 7; ++resIndex)
-                                std::get<1>(totalResources[resIndex]) += tileResources[resIndex];
+                                totalResources[resIndex] += tileResources[resIndex];
                         }
                     }
                 }
@@ -447,8 +460,8 @@ namespace Renderer {
             resourcesChange = false;
             float y = 10.f;
             for (int i = 0; i < 7; i++) {
-                hudText.setString(std::get<0>(totalResources[i]) + std::to_string(std::get<1>(totalResources[i])));
-                hudText.setFillColor(std::get<2>(totalResources[i]));
+                hudText.setString(nameResources[i] + std::to_string(totalResources[i]));
+                hudText.setFillColor(colorResources[i]);
                 hudText.setPosition(window.getSize().x - 300, y);
                 window.draw(hudText);
                 y += 25.f;
@@ -464,6 +477,88 @@ namespace Renderer {
                 window.draw(hudText);
                 y += 25.f;
             }
+            if (currentTrantorian.clientId == -1) {
+                for (auto &e : sceneEntities) {
+                    if (e.type == PartType::BODY) {
+                        currentTrantorian = e;
+                        break;
+                    }
+                }
+            } else if (buttonToggle) {
+                bool wasItTheTrantorian = false;
+                for (auto &e : sceneEntities) {
+                    if (e.clientId == currentTrantorian.clientId)
+                        wasItTheTrantorian = true;
+                    if (e.type == PartType::BODY && wasItTheTrantorian && e.clientId != currentTrantorian.clientId) {
+                        currentTrantorian = e;
+                        wasItTheTrantorian = false;
+                        break;
+                    }
+                }
+                // if we arrive at the end, take the first entity (with BODY)
+                if (wasItTheTrantorian) {
+                    for (auto &e : sceneEntities) {
+                        if (e.type == PartType::BODY) {
+                            currentTrantorian = e;
+                            break;
+                        }
+                    }
+                }
+            } else if (!buttonToggle) {
+                // Actualizes informations
+                for (auto &e : sceneEntities) {
+                    if (e.clientId == currentTrantorian.clientId) {
+                        currentTrantorian = e;
+                        break;
+                    }
+                }
+            }
+            // condition just in case there is no Trantorian yet
+            if (currentTrantorian.clientId != -1) {
+                float y = 100.f;
+                hudText.setFillColor(currentTrantorian.color);
+                // id trantorian
+                hudText.setString("Id Trantorian: " + std::to_string(currentTrantorian.clientId));
+                hudText.setPosition(50.f, y);
+                window.draw(hudText);
+                // team name
+                hudText.setString("Team: " + currentTrantorian.teamName);
+                hudText.setPosition(50.f, y + 25.f);
+                window.draw(hudText);
+                // level
+                hudText.setString("Level: " + std::to_string(currentTrantorian.level));
+                hudText.setPosition(50.f, y + 50.f);
+                window.draw(hudText);
+                // position
+                hudText.setString("Position:");
+                hudText.setPosition(50.f, y + 75.f);
+                window.draw(hudText);
+                hudText.setString("x: " + std::to_string(static_cast<int>(currentTrantorian.position.x) / 70) +
+                                  "(real value: " + std::to_string(static_cast<int>(currentTrantorian.position.x)) + ")");
+                hudText.setPosition(75.f, y + 100.f);
+                window.draw(hudText);
+                hudText.setString("y: " + std::to_string(static_cast<int>(currentTrantorian.position.z) / 70) +
+                                  "(real value: " + std::to_string(static_cast<int>(currentTrantorian.position.z)) + ")");
+                hudText.setPosition(75.f, y + 125.f);
+                window.draw(hudText);
+                // orientation
+                hudText.setString("Orientation: " + orientation[static_cast<int>(currentTrantorian.orientation)]);
+                hudText.setPosition(50.f, y + 150.f);
+                window.draw(hudText);
+                // inventory
+                hudText.setString("Inventory:");
+                hudText.setPosition(50.f, y + 175.f);
+                window.draw(hudText);
+                y += 200.f;
+                for (int i = 0; i < 7; i++) {
+                    hudText.setString(nameResources[i] + std::to_string(currentTrantorian.inventory[i]));
+                    hudText.setFillColor(colorResources[i]);
+                    hudText.setPosition(75.f, y);
+                    window.draw(hudText);
+                    y += 25.f;
+                }
+            }
+
         }
 
         // window.display();

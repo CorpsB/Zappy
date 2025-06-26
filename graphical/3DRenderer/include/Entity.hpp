@@ -39,6 +39,7 @@ namespace Renderer {
         int level;
         std::string teamName;
         sf::Color color;
+        std::array<int, 7> inventory;
     };
 
     extern std::vector<Entity> sceneEntities;

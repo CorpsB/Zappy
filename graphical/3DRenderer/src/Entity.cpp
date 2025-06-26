@@ -51,6 +51,7 @@ namespace Renderer {
         newEnt.level = level;
         newEnt.teamName = teamName;
         newEnt.color = c;
+        newEnt.inventory = {0, 0, 0, 0, 0, 0, 0};
         // newEnt.rotation.y = compassToAngle(orientation);
         try {
             switch (type) {
