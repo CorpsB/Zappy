@@ -44,6 +44,9 @@ namespace Renderer {
     static std::array<std::string, 4> orientation = {"NORTH", "EAST", "SOUTH", "WEST"};
     static bool buttonToggle = false;
     static bool buttonIsPressed = false;
+    static bool escapeMenuToggle = false;
+    static bool escapeWasPressed = false;
+    static sf::RectangleShape escapeMenuBg;
 
     bool initRenderer(sf::RenderWindow &window) {
         // window = new sf::RenderWindow(sf::VideoMode(width, height), title);
@@ -53,6 +56,15 @@ namespace Renderer {
         backBuffer.create(window.getSize().x, window.getSize().y);
         depthBuffer.assign(window.getSize().x * window.getSize().y, std::numeric_limits<float>::max());
         backBufferTexture.create(window.getSize().x, window.getSize().y);
+        bgMenu.setFillColor(sf::Color(0, 0, 0, 128));
+        escapeMenuBg.setSize(sf::Vector2f(600.f, 500.f));
+        escapeMenuBg.setFillColor(sf::Color(20, 20, 20, 220));
+        escapeMenuBg.setOutlineColor(sf::Color::White);
+        escapeMenuBg.setOutlineThickness(2.f);
+        escapeMenuBg.setPosition(
+            (window.getSize().x - escapeMenuBg.getSize().x) / 2.f,
+            (window.getSize().y - escapeMenuBg.getSize().y) / 2.f
+        );
 
         if (!hudFont.loadFromFile("./bonus/Assets/zappy_font.ttf")) {
             std::cerr << "Failed to load font\n";
@@ -158,6 +170,18 @@ namespace Renderer {
             }
         } else {
             tabWasPressed = false;
+        }
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+            if (!escapeWasPressed) {
+                escapeMenuToggle = !escapeMenuToggle;
+                escapeWasPressed = true;
+            }
+        } else {
+            escapeWasPressed = false;
+        }
+        if (escapeMenuToggle) {
+            return;
         }
         // Values in valuesForSynchro :
         // int -> client id
@@ -558,7 +582,65 @@ namespace Renderer {
                     y += 25.f;
                 }
             }
+        }
 
+        if (escapeMenuToggle) {
+            window.draw(escapeMenuBg);
+    
+            sf::Vector2f menuPos = escapeMenuBg.getPosition();
+            
+            hudText.setString("PAUSE");
+            hudText.setFillColor(sf::Color::White);
+            hudText.setCharacterSize(30);
+            hudText.setPosition(menuPos.x + 250.f, menuPos.y + 20.f);
+            window.draw(hudText);
+            hudText.setCharacterSize(20);
+
+            hudText.setString("CAMERA :");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 100.f);
+            window.draw(hudText);
+            hudText.setString("A : horizontal rotation - left");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 150.f);
+            window.draw(hudText);
+            hudText.setString("D : horizontal rotation - right");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 170.f);
+            window.draw(hudText);
+            hudText.setString("R : vertical rotation - down");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 190.f);
+            window.draw(hudText);
+            hudText.setString("F : vertical rotation - up");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 210.f);
+            window.draw(hudText);
+            hudText.setString("S : vertical translation - down");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 230.f);
+            window.draw(hudText);
+            hudText.setString("SPACE : vertical translation - up");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 250.f);
+            window.draw(hudText);
+            hudText.setString("Arrow up : horizontal translation - forward");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 270.f);
+            window.draw(hudText);
+            hudText.setString("Arrow down : horizontal translation - rearward");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 290.f);
+            window.draw(hudText);
+            hudText.setString("Arrow left : horizontal translation - left");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 310.f);
+            window.draw(hudText);
+            hudText.setString("Arrow right : horizontal translation - right");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 330.f);
+            window.draw(hudText);
+            hudText.setString("GAME");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 370.f);
+            window.draw(hudText);
+            hudText.setString("Tab : informations");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 400.f);
+            window.draw(hudText);
+            hudText.setString("Note : You can press the grey button in the information menu");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 450.f);
+            window.draw(hudText);
+            hudText.setString("in order to display informations about the next Trantorian");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 470.f);
+            window.draw(hudText);
         }
 
         // window.display();
