@@ -48,8 +48,8 @@ class Interpreter {
          * @param allTeamNames Contains the list of all team names
          * @param bigEnoughdiffColor If the color randomly generated is different enough from existing colors, return true
          */
-        std::unordered_map<std::string, sf::Color> teamColor;
-        bool bigEnoughDiffColor(sf::Color newColor);
+        std::unordered_map<std::string, sf::Color> _teamColor;
+        bool _bigEnoughDiffColor(sf::Color newColor);
 
         /**
          * @brief Set the map size
@@ -65,6 +65,11 @@ class Interpreter {
          */
         void _bct(const std::smatch &m);
         /**
+         * @brief Display the name of the team
+         * @param m Must contain : teamName (std::string)
+         */
+        void _tna(const std::smatch &m);
+        /**
          * @brief Spawn a new player
          * @param playerId ID of the new player
          * @param x X Position of the new player
@@ -73,7 +78,6 @@ class Interpreter {
          * @param level Level of the new player
          * @param teamName Team of the new player
          */
-        void _tna(const std::smatch &m); // A garder ?
         void _pnw(const std::smatch &m);
         /**
          * @brief Set the position of a player
@@ -88,9 +92,9 @@ class Interpreter {
          * @param playerId ID of the player
          */
         void _plv(const std::smatch &m);
-        void _pin(const std::smatch &m); // A Garder ?
-        void _pex(const std::smatch &m); // Utile ?
-        void _pbc(const std::smatch &m); // Utile ?
+        void _pin(const std::smatch &m);
+        void _pex(const std::smatch &m);
+        void _pbc(const std::smatch &m);
         /**
          * @brief Starts an incantation (by the first player)
          * @param x X Position

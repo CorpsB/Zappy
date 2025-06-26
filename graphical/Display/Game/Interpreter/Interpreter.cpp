@@ -11,10 +11,11 @@ Interpreter::Interpreter()
 {
     _instructions = {{ "msz", std::make_pair(std::regex(R"(msz\s+(\d+)\s+(\d+))"), [&](const std::smatch &m) { _msz(m); }) },
         { "bct", std::make_pair(std::regex(R"(bct\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+))"), [&](const std::smatch &m) { _bct(m); }) },
+        { "tna", std::make_pair(std::regex(R"(tna\s+(\S+))"), [&](const std::smatch &m) { _tna(m); }) },
         { "pnw", std::make_pair(std::regex(R"(pnw\s+#(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\S+))"), [&](const std::smatch &m) { _pnw(m); }) },
         { "ppo", std::make_pair(std::regex(R"(ppo\s+#(\d+)\s+(\d+)\s+(\d+)\s+(\d+))"), [&](const std::smatch &m) { _ppo(m); }) },
         { "plv", std::make_pair(std::regex(R"(plv\s+#(\d+)\s+(\d+))"), [&](const std::smatch &m) { _plv(m); }) },
-        { "pin", std::make_pair(std::regex(R"(pin\s+#(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+))"), [&](const std::smatch &m) { _pin(m); }) },
+        { "pin", std::make_pair(std::regex(R"(pin\s+#(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+))"), [&](const std::smatch &m) { _pin(m); }) },
         { "pex", std::make_pair(std::regex(R"(pex\s+#(\d+))"), [&](const std::smatch &m) { _pex(m); }) },
         { "pbc", std::make_pair(std::regex(R"(pbc\s+#(\d+)\s+(.+))"), [&](const std::smatch &m) { _pbc(m); }) },
         { "pic", std::make_pair(std::regex(R"(pic\s+(\d+)\s+(\d+)\s+(\d+)(?:\s+#(-?\d+))+)"), [&](const std::smatch &m) { _pic(m); }) },
@@ -148,26 +149,14 @@ void Interpreter::_bct(const std::smatch &m)
                 r.offset.z + y * TILE_SIZE
             };
 
-            Renderer::spawn(Renderer::EntityType::STL, r.type, -1, { pos.x, pos.y, pos.z }, r.color, r.assetPath,
-                Renderer::Compass::NORTH, { 0.f, Renderer::getRandomAngle(), 0.f });
+            Renderer::spawn(Renderer::EntityType::STL, r.type, -1, { pos.x, pos.y, pos.z }, r.color, r.assetPath, Renderer::Compass::NORTH, { 0.f, Renderer::getRandomAngle(), 0.f });
         }
     }
 }
 
-bool Interpreter::bigEnoughDiffColor(sf::Color newColor)
+void Interpreter::_tna(const std::smatch &m)
 {
-    if (teamColor.empty())
-        return true;
-    for (auto &e : Renderer::sceneEntities) {
-        sf::Color color = teamColor[e.teamName];
-        // minimum euclidian distance > 100 --> about 15-25 teams
-        int dr = int(color.r) - int(newColor.r);
-        int dg = int(color.g) - int(newColor.g);
-        int db = int(color.b) - int(newColor.b);
-        if (std::sqrt(dr * dr + dg * dg + db * db) < 100.0f)
-            return false;
-    }
-    return true;
+    (void) m;
 }
 
 void Interpreter::_pnw(const std::smatch &m)
@@ -179,27 +168,27 @@ void Interpreter::_pnw(const std::smatch &m)
     int level = std::stoi(m[5]);
     std::string teamName = m[6].str();
 
-    if (teamColor.find(teamName) == teamColor.end()) {
+    if (_teamColor.find(teamName) == _teamColor.end()) {
         sf::Color color = {0, 0, 0};
         // 2 conditions to find a color :
         // - sum > 55 --> the eyes are black, it will prevent to have a dark skin
         // - big enough difference between the new color and the existing ones
-        while (color.r + color.g + color.b < 55 || !bigEnoughDiffColor(color)) {
+        while (color.r + color.g + color.b < 55 || !_bigEnoughDiffColor(color)) {
             color.r = rand() % 256;
             color.g = rand() % 256;
             color.b = rand() % 256;
         }
-        teamColor[teamName] = color;
+        _teamColor[teamName] = color;
     }
     Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::BODY, playerId,
-        {0.f + (x * TILE_SIZE), OFFSET_FROM_GROUND, 0.f + (y * TILE_SIZE)}, teamColor[teamName], "./bonus/Assets/body_golem.stl",
+        {0.f + (x * TILE_SIZE), OFFSET_FROM_GROUND, 0.f + (y * TILE_SIZE)}, _teamColor[teamName], "./bonus/Assets/body_golem.stl",
         orientation, {0.f, static_cast<float>(90 * static_cast<int>(orientation)), 0.f}, level, teamName);
     Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::EYES, playerId,
         {0.f + (x * TILE_SIZE), OFFSET_FROM_GROUND + OFFSET_EYES_Y, 0.f + (y * TILE_SIZE) + Renderer::offsetEyesZ[level - 1]}, sf::Color::Black,
         Renderer::pathEyes[level - 1], orientation, {0.f, 0.f, 0.f}, level);
     std::array<std::string, 4> orienToStr = { "NORTH", "EAST", "SOUTH", "WEST" };
     Renderer::histInstruc.push_back(std::make_tuple("T" + std::to_string(playerId) + ": connected at {x: " + std::to_string(x) +
-        ", y: " + std::to_string(y) + ", o: " + orienToStr[static_cast<int>(orientation)] + "}", teamColor[teamName]));
+        ", y: " + std::to_string(y) + ", o: " + orienToStr[static_cast<int>(orientation)] + "}", _teamColor[teamName]));
 }
 
 void Interpreter::_ppo(const std::smatch &m)
@@ -354,17 +343,7 @@ void Interpreter::_pin(const std::smatch &m)
 
 void Interpreter::_pex(const std::smatch &m)
 {
-    int playerId = std::stoi(m[1]);
-
-    for (auto &e : Renderer::sceneEntities) {
-        if (e.clientId == playerId && e.type == Renderer::PartType::BODY) {
-            Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::BODY, playerId,
-            {e.position.x, e.position.y, e.position.z}, e.color, "./bonus/Assets/Expulsion.stl",
-            e.orientation);
-            Renderer::histInstruc.push_back(std::make_tuple("T" + std::to_string(playerId) + " is launching EXPULSION", e.color));
-            break;
-        }
-    }
+    (void) m;
 }
 
 void Interpreter::_pbc(const std::smatch &m)
@@ -563,4 +542,20 @@ void Interpreter::_suc(const std::smatch &m)
 {
     (void) m;
     std::cerr << "Unknown command" << std::endl;
+}
+
+bool Interpreter::_bigEnoughDiffColor(sf::Color newColor)
+{
+    if (_teamColor.empty())
+        return true;
+    for (auto &e : Renderer::sceneEntities) {
+        sf::Color color = _teamColor[e.teamName];
+        // minimum euclidian distance > 100 --> about 15-25 teams
+        int dr = int(color.r) - int(newColor.r);
+        int dg = int(color.g) - int(newColor.g);
+        int db = int(color.b) - int(newColor.b);
+        if (std::sqrt(dr * dr + dg * dg + db * db) < 100.0f)
+            return false;
+    }
+    return true;
 }
