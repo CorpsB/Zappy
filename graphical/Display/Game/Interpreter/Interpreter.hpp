@@ -10,6 +10,7 @@
 #include <iostream>
 #include <unordered_map>
 #include <regex>
+#include <random>
 
 #include "../../../3DRenderer/include/Renderer.hpp"
 

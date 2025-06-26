@@ -170,12 +170,15 @@ void Interpreter::_pnw(const std::smatch &m)
     auto colorIt = _teamColor.find(teamName);
 
     if (colorIt == _teamColor.end()) {
+        static std::mt19937 gen(std::random_device{}());
+        static std::uniform_int_distribution<int> dis(0, 255);
         sf::Color color;
-        do {
-            color.r = rand() % 256;
-            color.g = rand() % 256;
-            color.b = rand() % 256;
-        } while (color.r + color.g + color.b < 55 || !_bigEnoughDiffColor(color));
+
+        while (color.r + color.g + color.b < 55 || !_bigEnoughDiffColor(color)) {
+            color.r = dis(gen);
+            color.g = dis(gen);
+            color.b = dis(gen);
+        }
         colorIt = _teamColor.emplace(teamName, color).first;
     }
 
