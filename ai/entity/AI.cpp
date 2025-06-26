@@ -5,6 +5,7 @@
 ** AI
 */
 
+#include "../worker/WorkerManager.hpp"
 #include "AI.hpp"
 #include "../network/Socket.hpp"
 #include <thread>
@@ -138,6 +139,8 @@ void ai::entity::AI::run(const ai::parser::Config &config)
             logger.log("Action failed or led to 'dead' state. Terminating.");
             break;
         }
+        if (_goal == REPRODUCE)
+            worker::WorkerManager::getInstance().spawnWorker(config);
     }
     stop();
 }
