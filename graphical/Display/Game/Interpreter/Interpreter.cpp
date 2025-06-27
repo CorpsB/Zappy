@@ -172,7 +172,7 @@ void Interpreter::_pnw(const std::smatch &m)
     if (colorIt == _teamColor.end()) {
         static std::mt19937 gen(std::random_device{}());
         static std::uniform_int_distribution<int> dis(0, 255);
-        sf::Color color;
+        sf::Color color = {0, 0, 0};
 
         while (color.r + color.g + color.b < 55 || !_bigEnoughDiffColor(color)) {
             color.r = dis(gen);
@@ -348,7 +348,17 @@ void Interpreter::_pin(const std::smatch &m)
 
 void Interpreter::_pex(const std::smatch &m)
 {
-    (void) m;
+    int playerId = std::stoi(m[1]);
+
+    for (auto &e : Renderer::sceneEntities) {
+        if (e.clientId == playerId && e.type == Renderer::PartType::BODY) {
+            Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::BODY, playerId,
+            {e.position.x, e.position.y, e.position.z}, e.color, "./bonus/Assets/Expulsion.stl",
+            e.orientation);
+            Renderer::histInstruc.push_back(std::make_tuple("T" + std::to_string(playerId) + " is launching EXPULSION", e.color));
+            break;
+        }
+    }
 }
 
 void Interpreter::_pbc(const std::smatch &m)
