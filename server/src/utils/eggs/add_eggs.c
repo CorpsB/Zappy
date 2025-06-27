@@ -20,7 +20,6 @@ void generate_starter_eggs(server_t *server, teams_t *teams)
     node->position[1] = rand() % server->width;
     node->creator_id = -1;
     node->next = teams->egg;
-    event_enw(server, NULL, node);
     teams->egg = node;
     server->eggs_count++;
 }
