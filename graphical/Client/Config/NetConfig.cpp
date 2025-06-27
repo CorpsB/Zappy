@@ -5,6 +5,26 @@
 ** NetConfig
 */
 
+/**
+ * @file NetConfig.cpp
+ * @brief Implémentation de la classe NetConfig (configuration réseau client Zappy).
+ *
+ * Ce fichier contient l'implémentation des méthodes de la classe `NetConfig`
+ * chargée de récupérer, valider et stocker les paramètres réseau nécessaires à la connexion
+ * au serveur Zappy (adresse IP et port). Ces paramètres sont extraits de la ligne de commande
+ * via la méthode `parseArgs()`, qui accepte les arguments `-h` pour l'IP et `-p` pour le port.
+ *
+ * La validation repose sur des expressions régulières strictes pour garantir une IP IPv4
+ * correcte et un port numérique dans la plage autorisée (`MAX_PORT`).
+ * En cas d'erreur de parsing, des messages explicites sont affichés sur la sortie d'erreur.
+ *
+ * Usage: ./zappy_gui -h <host> -p <port>
+ * @see NetConfig.hpp, Client
+ * @warning En cas d’erreur, le programme doit gérer le retour de `parseArgs()` proprement.
+ * @date 2025
+ * @version 1.0
+ */
+
 #include "NetConfig.hpp"
 
 const std::string &NetConfig::getIp() const
