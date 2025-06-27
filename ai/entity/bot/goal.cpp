@@ -92,16 +92,16 @@ bool ai::entity::AI::handleGoal(std::string &look, const std::string &goal)
     const int item_idx = findItemInLook(look, goal);
 
     if (item_idx == 0) {
-        logger.log(goal + " on current tile. Taking.");
+        logger.log(utils::string::capitalize(goal) + " on current tile. Taking.");
         return doKoAction("Take " + goal);
     } else if (item_idx > 0) {
         const std::vector<Direction> moves = getMovesToTileLevelVision(item_idx);
-        logger.log(goal + " on tile " + std::to_string(item_idx) + ". Moving to take.");
+        logger.log(utils::string::capitalize(goal) + " on tile " + std::to_string(item_idx) + ". Moving to take.");
         if (!executeMoves(look, moves))
             return false;
         return doKoAction("Take " + goal);
     } else if (item_idx == -2) {
-        logger.log(goal + " not seen. Executing spiral move.");
+        logger.log(utils::string::capitalize(goal) + " not seen. Executing spiral move.");
         return executeSpiralMove(_spiral_state);
     } else {
         logger.log("Halting " + goal + " goal due to look parse error.");

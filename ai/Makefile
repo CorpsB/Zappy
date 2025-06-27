@@ -26,6 +26,7 @@ SRC	=	main.cpp	\
 		utils/exception/Error.cpp	\
 		utils/random/number.cpp	\
 		utils/string/split.cpp	\
+		utils/string/capitalize.cpp	\
 		utils/validation/integer.cpp	\
 		utils/validation/ipv4.cpp	\
 		worker/WorkerManager.cpp
