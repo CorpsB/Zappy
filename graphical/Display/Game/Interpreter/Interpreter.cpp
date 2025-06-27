@@ -472,7 +472,7 @@ void Interpreter::_pdr(const std::smatch &m)
     }
     std::ostringstream oss;
 
-    oss << "T" << playerId << ": drops " << resourcesName[resourceNumber - 1];
+    oss << "T" << playerId << ": drops " << resourcesName[resourceNumber];
     Renderer::histInstruc.emplace_back(oss.str(), color);
 }
 
@@ -497,7 +497,7 @@ void Interpreter::_pgt(const std::smatch &m)
     }
     std::ostringstream oss;
 
-    oss << "T" << playerId << ": takes " << resourcesName[resourceNumber - 1];
+    oss << "T" << playerId << ": takes " << resourcesName[resourceNumber];
     Renderer::histInstruc.emplace_back(oss.str(), color);
 }
 
