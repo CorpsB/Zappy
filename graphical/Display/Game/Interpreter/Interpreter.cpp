@@ -218,6 +218,8 @@ void Interpreter::_ppo(const std::smatch &m)
             currentAngle = e.rotation.y;
             currentPos = e.position;
             color = e.color;
+            // Actualises the compass of the entity
+            e.orientation = orientation;
             break;
         }
     }

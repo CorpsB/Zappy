@@ -41,7 +41,7 @@ namespace Renderer {
     static sf::Color buttonIdleColor = sf::Color(100, 100, 100);
     static sf::Color buttonHoverColor = sf::Color(150, 150, 150);
     static Entity currentTrantorian;
-    static std::array<std::string, 4> orientation = {"NORTH", "EAST", "SOUTH", "WEST"};
+    static std::array<std::string, 4> orientation = {"NORTH", "WEST", "SOUTH", "EAST"};
     static bool buttonToggle = false;
     static bool buttonIsPressed = false;
     static bool escapeMenuToggle = false;
@@ -545,13 +545,12 @@ namespace Renderer {
                         }
                     }
                 }
-            } else if (!buttonToggle) {
-                // Actualizes informations
-                for (auto &e : sceneEntities) {
-                    if (e.clientId == currentTrantorian.clientId) {
-                        currentTrantorian = e;
-                        break;
-                    }
+            }
+            // Actualizes informations
+            for (auto &e : sceneEntities) {
+                if (e.clientId == currentTrantorian.clientId) {
+                    currentTrantorian = e;
+                    break;
                 }
             }
             // condition just in case there is no Trantorian yet
