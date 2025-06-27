@@ -25,7 +25,6 @@ static void load_next_time(server_t *, player_t *pl, char *cmd)
 
 static void load_cmd(server_t *server, player_t *pl, int i)
 {
-
     if (pl->cmd[0] == NULL)
         return;
     cmd_parser(server, i, pl->cmd[0]);
