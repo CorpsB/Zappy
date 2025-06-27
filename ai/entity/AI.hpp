@@ -7,8 +7,8 @@
 
 #pragma once
 
-#define HIGH_FOOD_THRESHOLD 8.0
-#define LOW_FOOD_THRESHOLD 4.0
+#define HIGH_FOOD_THRESHOLD 16.0
+#define LOW_FOOD_THRESHOLD 6.0
 
 #define REPRODUCE_THRESHOLD 10
 #define ACTION_DELAY_MS 50
@@ -67,7 +67,8 @@ namespace ai::entity
             int countPlayersOnTile(int idx, const std::string &look);
             int findItemInLook(const std::string &look, const std::string &item);
             int determineLookDistance(int idx);
-            bool collectItem(const std::string &look, const std::string &name, int recipe_qty);
+            bool collectItem(const std::string &look, const std::string &name,
+                int recipe_qty, bool is_players);
             bool collectAllItems(const std::string &look);
 
             // goal

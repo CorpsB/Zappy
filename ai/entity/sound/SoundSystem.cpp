@@ -86,6 +86,17 @@ ai::entity::Direction ai::entity::SoundSystem::getNearestSoundDirection(const st
     return bestDir;
 }
 
+int ai::entity::SoundSystem::getNbMessage(const std::string &target)
+{
+    int cpt = 0;
+
+    for (int i = 0; i < 9; ++i)
+        for (const auto &cell : _cells[i])
+            if (cell.message == target && getRawDirection(static_cast<Direction>(i)) == HERE)
+                ++cpt;
+    return cpt;
+}
+
 // message [direction], [id]|[timestamp]|[message]
 ai::entity::Direction ai::entity::SoundSystem::setSound(const std::string &sound_str)
 {

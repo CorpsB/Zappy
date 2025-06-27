@@ -8,7 +8,8 @@
 #include "../../AI.hpp"
 #include "../../../utils/utils.hpp"
 
-bool ai::entity::AI::collectItem(const std::string &look, const std::string &name, int recipe_qty)
+bool ai::entity::AI::collectItem(const std::string &look, const std::string &name,
+    int recipe_qty, bool is_players)
 {
     int pos = findItemInLook(look, name);
 
@@ -17,18 +18,20 @@ bool ai::entity::AI::collectItem(const std::string &look, const std::string &nam
     if (pos != 0)
         return true;
     if ((name == "food" && _food_level >= 12.0) || _level == 8 ||
-    (name != "food" && _inventory.getItem(name) >= recipe_qty * 2 + 1))
+    (name != "food" && _inventory.getItem(name) >= recipe_qty * 2 + 1) || is_players)
         return true;
     return doKoAction("Take " + name);
 }
 
 bool ai::entity::AI::collectAllItems(const std::string &look)
 {
-    return collectItem(look, "food", _food_level) &&
-    collectItem(look, "linemate", RECIPES[_level - 1].linemate) &&
-    collectItem(look, "deraumere", RECIPES[_level - 1].deraumere) &&
-    collectItem(look, "sibur", RECIPES[_level - 1].sibur) &&
-    collectItem(look, "mendiane", RECIPES[_level - 1].mendiane) &&
-    collectItem(look, "phiras", RECIPES[_level - 1].phiras) &&
-    collectItem(look, "thystame", RECIPES[_level - 1].thystame);
+    const bool is_player = countPlayersOnTile(0, look) > 0;
+
+    return collectItem(look, "food", _food_level, is_player) &&
+    collectItem(look, "linemate", RECIPES[_level - 1].linemate, is_player) &&
+    collectItem(look, "deraumere", RECIPES[_level - 1].deraumere, is_player) &&
+    collectItem(look, "sibur", RECIPES[_level - 1].sibur, is_player) &&
+    collectItem(look, "mendiane", RECIPES[_level - 1].mendiane, is_player) &&
+    collectItem(look, "phiras", RECIPES[_level - 1].phiras, is_player) &&
+    collectItem(look, "thystame", RECIPES[_level - 1].thystame, is_player);
 }

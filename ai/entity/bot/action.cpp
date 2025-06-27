@@ -65,8 +65,11 @@ bool ai::entity::AI::performActionForGoal(std::string &look)
         case ELEVATION_SLAVE: {
             _dock_mode = true;
 
+            if (!useBroadcast("READY_" + std::to_string(_level + 1)))
+                return false;
+
             logger.log("Waiting elevation signal for level " + std::to_string(_level + 1));
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            std::this_thread::sleep_for(std::chrono::milliseconds(ACTION_DELAY_MS));
             return true;
         }
 

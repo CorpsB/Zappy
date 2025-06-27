@@ -47,6 +47,7 @@ namespace ai::entity
             Direction getRawDirection(Direction adjusted);
             SoundCell &getDirectionSound(Direction direction);
             Direction getNearestSoundDirection(const std::string &target);
+            int getNbMessage(const std::string &target);
             Direction setSound(const std::string &sound_str);
 
         private:
