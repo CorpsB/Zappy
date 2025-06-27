@@ -144,15 +144,18 @@ static void eat_per_teams(server_t *server, teams_t *teams)
     for (player_t *tmp = teams->player; tmp != NULL; tmp = tmp->next) {
         if (tmp->is_dead)
             continue;
-        if (tmp->cycle_before_death - 1 <= 0 && tmp->inventory.food == 0) {
+        if ((int)tmp->cycle_before_death - 1 <= 0 && tmp->inventory.food == 0) {
             tmp->is_dead = true;
             event_pdi(server, tmp);
             continue;
         }
-        if (tmp->cycle_before_death - 1 <= 0) {
+        if ((int)tmp->cycle_before_death - 1 <= 0) {
             tmp->inventory.food--;
+            tmp->cycle_before_death = 120;
             event_pin(server, tmp);
+            continue;
         }
+
         tmp->cycle_before_death--;
     }
 }

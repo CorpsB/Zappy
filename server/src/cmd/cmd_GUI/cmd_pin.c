@@ -18,7 +18,7 @@ static void send_pin(int fd, const player_t *p)
 {
     dprintf(fd, "pin %u %u %u %u %u %u %u %u %u %u\n",
         p->id, p->position[0], p->position[1],
-        p->cycle_before_death / 120, p->inventory.linemate,
+        p->inventory.food, p->inventory.linemate,
         p->inventory.deraumere, p->inventory.sibur,
         p->inventory.mendiane, p->inventory.phiras,
         p->inventory.thystame);
