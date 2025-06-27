@@ -56,7 +56,7 @@ std::string ai::entity::AI::doAction(const std::string &action)
             const Direction dir = _sound_system.setSound(result);
             if (dir != NONE) {
                 const SoundCell &cell = _sound_system.getDirectionSound(dir);
-                logger.log("Message received from " + std::to_string(cell.id) + " '" + cell.message + "'");
+                // logger.log("Message received from " + std::to_string(cell.id) + " '" + cell.message + "'");
 
                 // incantate to level up
                 if (cell.message == "INCANTATION_" + std::to_string(_level + 1) && dir == HERE)
@@ -79,7 +79,13 @@ bool ai::entity::AI::doKoAction(const std::string &action)
 
     if (result == "ko") {
         utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
-        logger.log("[Warn] Action failed: '" + action + "'.");
+        logger.log("[Warn] Action failed: '" + action + "'. Direction changed.");
+
+        // change direction randomly to avoid following another bot.
+        const int new_dir = utils::random::number(1, 3);
+        for (int i = 0; i < new_dir; ++i)
+            if (doAction("Left") == "dead")
+                return false;
         return true;
     }
     if (result == "dead")

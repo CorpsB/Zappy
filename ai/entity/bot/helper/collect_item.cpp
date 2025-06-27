@@ -17,7 +17,7 @@ bool ai::entity::AI::collectItem(const std::string &look, const std::string &nam
         return false;
     if (pos != 0)
         return true;
-    if ((name == "food" && _food_level >= 12.0) || _level == 8 ||
+    if ((name == "food" && _food_level >= MAX_FOOD_THRESHOLD) || _level == 8 ||
     (name != "food" && _inventory.getItem(name) >= recipe_qty * 2 + 1) || is_players)
         return true;
     return doKoAction("Take " + name);

@@ -7,6 +7,7 @@
 
 #pragma once
 
+#define MAX_FOOD_THRESHOLD 20.0
 #define HIGH_FOOD_THRESHOLD 16.0
 #define LOW_FOOD_THRESHOLD 6.0
 
