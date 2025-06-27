@@ -619,7 +619,7 @@ namespace Renderer {
             hudText.setString("A : horizontal rotation - left");
             hudText.setPosition(menuPos.x + 50.f, menuPos.y + 150.f);
             window.draw(hudText);
-            hudText.setString("D : horizontal rotation - right");
+            hudText.setString("E : horizontal rotation - right");
             hudText.setPosition(menuPos.x + 50.f, menuPos.y + 170.f);
             window.draw(hudText);
             hudText.setString("R : vertical rotation - down");
@@ -628,7 +628,7 @@ namespace Renderer {
             hudText.setString("F : vertical rotation - up");
             hudText.setPosition(menuPos.x + 50.f, menuPos.y + 210.f);
             window.draw(hudText);
-            hudText.setString("S : vertical translation - down");
+            hudText.setString("LSHIFT : vertical translation - down");
             hudText.setPosition(menuPos.x + 50.f, menuPos.y + 230.f);
             window.draw(hudText);
             hudText.setString("SPACE : vertical translation - up");

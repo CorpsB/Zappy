@@ -42,11 +42,11 @@ namespace Renderer {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))  { cameraPosition.x -= right.x   * move; cameraPosition.z -= right.z   * move; }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) { cameraPosition.x += right.x   * move; cameraPosition.z += right.z   * move; }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) { cameraPosition.y -= move; }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))     { cameraPosition.y += move; }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))     { cameraPosition.y += move; }
 
         // Rotations
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) { cameraYaw   -= rot; }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) { cameraYaw   += rot; }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) { cameraYaw   += rot; }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) { cameraPitch += rot; }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::F)) { cameraPitch -= rot; }
 
