@@ -21,8 +21,6 @@ unsigned int *hatching_egg(server_t *server, teams_t *teams)
         hatching_egg = hatching_egg->next;
     pos[0] = hatching_egg->position[0];
     pos[1] = hatching_egg->position[1];
-    printf("Coucou les zoulous\n");
     del_egg(server, teams, hatching_egg);
-    printf("Coucou les zoulous\n");
     return pos;
 }

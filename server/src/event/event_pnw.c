@@ -15,12 +15,11 @@ void event_pnw(server_t *server, player_t *player)
 
     if (!server || !player || !player->team)
         return;
-    if (asprintf(&buffer, "pnw #%u %u %u %d %u %s\n",
+    if (asprintf(&buffer, "pnw #%u %u %u %d %u %s",
         player->id, player->position[0], player->position[1],
         player->direction, player->lvl, player->team->name) == -1)
         logger(server, "PNW", ERROR, true);
     send_to_all_gui(server, buffer);
     if (buffer)
         free(buffer);
-    event_pin(server, player);
 }

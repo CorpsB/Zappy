@@ -37,7 +37,7 @@ void event_pfk(server_t *server, player_t *player)
     egg = create_egg_from_player(player);
     if (!egg)
         return;
-    if (asprintf(&buffer, "pfk #%u\n", player->id) == -1)
+    if (asprintf(&buffer, "pfk #%u", player->id) == -1)
         logger(server, "PFK", ERROR, true);
     send_to_all_gui(server, buffer);
     if (buffer)
