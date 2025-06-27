@@ -54,15 +54,12 @@ class Interpreter {
 
         /**
          * @brief Set the map size
-         * @param x Map width
-         * @param y Map height
+         * @param m Must contain : x (int), y (int)
          */
         void _msz(const std::smatch &m);
         /**
          * @brief Display the content of a tile
-         * @param x X Position of the tile
-         * @param y Y Position of the tile
-         * @param q0, q1, q2, q3, q4, q5, q6 Resources
+         * @param m Must contain : x (int), y (int), q0 (int), q1 (int), q2 (int), q3 (int), q4 (int), q5 (int), q6 (int)
          */
         void _bct(const std::smatch &m);
         /**
@@ -72,85 +69,106 @@ class Interpreter {
         void _tna(const std::smatch &m);
         /**
          * @brief Spawn a new player
-         * @param playerId ID of the new player
-         * @param x X Position of the new player
-         * @param y Y Position of the new player
-         * @param orientation Orientation of the new player
-         * @param level Level of the new player
-         * @param teamName Team of the new player
+         * @param m Must contain : playerId (int), x (int), y (int), orientation (Renderer::Compass), level (int), teamName (int)
          */
         void _pnw(const std::smatch &m);
         /**
          * @brief Set the position of a player
-         * @param playerID ID of the player
-         * @param x New X Position of the player
-         * @param y New Y Position of the player
-         * @param orientation New orientation of the player
+         * @param m Must contain : playerId (int), x (int), y (int), orientation (Renderer::Compass)
          */
         void _ppo(const std::smatch &m);
         /**
          * @brief Kicks a player from the server
-         * @param playerId ID of the player
+         * @param m Must contain : playerId (int)
          */
         void _plv(const std::smatch &m);
+        /**
+         * @brief Display player's inventory
+         * @param m Must contain : playerId (int), x (int), y (int), q0 (int), q1 (int), q2 (int), q3 (int), q4 (int), q5 (int), q6 (int)
+         */
         void _pin(const std::smatch &m);
+        /**
+         * @brief Explusion
+         * @param m Must contain : playerId (int)
+         */
         void _pex(const std::smatch &m);
+        /**
+         * @brief Broadcast
+         * @param m Must contain : playerId (int), message (std::string)
+         */
         void _pbc(const std::smatch &m);
         /**
          * @brief Starts an incantation (by the first player)
-         * @param x X Position
-         * @param y Y Position
-         * @param level Level of the incantation
-         * @param playersId Players involved in the incantation
+         * @param m Must contain : x (int), y (int), level (int), playersId... (multiple int)
          */
         void _pic(const std::smatch &m);
         /**
          * @brief Stops an incantation
-         * @param x X Position
-         * @param y Y Position
-         * @param result Result of the incantation
+         * @param m Must contain : x (in), y (int), result (std::string)
          */
         void _pie(const std::smatch &m);
-        void _pfk(const std::smatch &m); // Utile ?
+        /**
+         * @brief Egg laying by the player
+         * @param m Must contain : playerId (int)
+         */
+        void _pfk(const std::smatch &m);
         /**
          * @brief Drops resources
-         * @param playerId ID of the player
-         * @param resourceNumber Number of resources droped
+         * @param m Must contain : playerId (int), resourceNumber (int)
          */
         void _pdr(const std::smatch &m);
         /**
-         * @brief Collect resources
-         * @param playerId ID of the player
-         * @param resourceNumber Number of resources collected
+         * @brief Takes resources
+         * @param m Must contain : playerId (int), resourceNumber (int)
          */
         void _pgt(const std::smatch &m);
         /**
          * @brief Despawn a player (death)
-         * @param playerId ID of the player
+         * @param m Must contain : playerId (int)
          */
         void _pdi(const std::smatch &m);
         /**
          * @brief Lay an egg by a player
-         * @param eggId ID of the egg
-         * @param playerId ID of the player
-         * @param x X Position
-         * @param y Y Position
+         * @param m Must contain : eggId (int), playerId (int), x (int), y (int)
          */
         void _enw(const std::smatch &m);
-        void _ebo(const std::smatch &m); // A Gardder ?
+        /**
+         * @brief Player connection for an egg
+         * @param m Must contain : eggId (int)
+         */
+        void _ebo(const std::smatch &m);
         /**
          * @brief Despawn an egg (death)
-         * @param eggId ID of the egg
+         * @param m Must contain : eggId (int)
          */
         void _edi(const std::smatch &m);
-        void _sgt(const std::smatch &m); // Utile ?
-        void _sst(const std::smatch &m); // Utile ?
+        /**
+         * @brief Time unit request
+         * @param m Must contain : timeUnit (int)
+         */
+        void _sgt(const std::smatch &m);
+        /**
+         * @brief Time unit modification
+         * @param m Must contain : timeUnit (int)
+         */
+        void _sst(const std::smatch &m);
         /**
          * @brief Ends the game
-         * @param teamName Winning team ?
+         * @param m Must contain : teamName (std::string)
          */
         void _seg(const std::smatch &m);
-        void _smg(const std::smatch &m); // Utile ?
+        /**
+         * @brief Message from the server
+         * @param m Must contain : teamName (std::string)
+         */
+        void _smg(const std::smatch &m);
+        /**
+         * @brief Unknown command
+         * @param m Must not contain anything
+         */
         void _suc(const std::smatch &m);
+        /**
+         * @brief Command parameter
+         */
         void _sbp() {}
 };
