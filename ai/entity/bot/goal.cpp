@@ -46,14 +46,19 @@ std::string ai::entity::AI::getRarestMissingStone()
 
 ai::entity::Goal ai::entity::AI::getGoal(const std::string &look)
 {
-    if (_food_level < FOOD_THRESHOLD)
-        return FOOD;
+    if (!_dock_mode || _food_level < LOW_FOOD_THRESHOLD)
+    {
+        _dock_mode = false;
 
-    if (_level == 8)
-        return STONE;
+        if (_food_level < HIGH_FOOD_THRESHOLD)
+            return FOOD;
 
-    if (_free_slots > 0)
-        return REPRODUCE;
+        if (_level == 8)
+            return STONE;
+
+        if (_free_slots > 0)
+            return REPRODUCE;
+    }
 
     const bool enough_rocks = hasEnoughRocks();
     const Direction meetup = _sound_system.getNearestSoundDirection("MEETUP_" + std::to_string(_level + 1));
@@ -73,7 +78,7 @@ ai::entity::Goal ai::entity::AI::getGoal(const std::string &look)
             return ELEVATION_MASTER;
         return MEETUP_POINT;
     }
-    return STONE;
+    return (_food_level < HIGH_FOOD_THRESHOLD) ? FOOD : STONE;
 }
 
 bool ai::entity::AI::handleGoal(std::string &look, const std::string &goal)

@@ -7,7 +7,9 @@
 
 #pragma once
 
-#define FOOD_THRESHOLD 8.0
+#define HIGH_FOOD_THRESHOLD 8.0
+#define LOW_FOOD_THRESHOLD 4.0
+
 #define REPRODUCE_THRESHOLD 10
 #define ACTION_DELAY_MS 50
 
@@ -102,6 +104,7 @@ namespace ai::entity
             Inventory _inventory;
             SoundSystem _sound_system;
             SpiralState _spiral_state;
+            bool _dock_mode;
 
             int _free_slots;
             std::string _thread_name;

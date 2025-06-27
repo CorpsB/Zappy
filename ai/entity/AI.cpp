@@ -18,6 +18,7 @@ ai::entity::AI::AI(int id)
     _food_level = 1;
     _goal = FOOD;
     _thread_name = std::string("[Bot ") + std::to_string(id) + std::string("]");
+    _dock_mode = false;
 }
 
 void ai::entity::AI::start(const ai::parser::Config &config)
@@ -123,7 +124,7 @@ void ai::entity::AI::run(const ai::parser::Config &config)
         }
 
         // check available slots to reproduce
-        if (_level < 8 && _food_level >= FOOD_THRESHOLD &&
+        if (_level < 8 && _food_level >= HIGH_FOOD_THRESHOLD &&
         findItemInLook(look_str, "egg") != 0) {
             const int wcount = worker::WorkerManager::getInstance().getWorkerCount();
 

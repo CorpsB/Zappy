@@ -42,6 +42,8 @@ bool ai::entity::AI::performActionForGoal(std::string &look)
         }
 
         case ELEVATION_MASTER: {
+            _dock_mode = true;
+
             logger.log("Attempting L" + std::to_string(_level + 1) + " Incantation.");
             if (!setStonesForIncantation()) {
                 logger.log("L" + std::to_string(_level + 1) + " stone setting phase failed.");
@@ -61,6 +63,8 @@ bool ai::entity::AI::performActionForGoal(std::string &look)
         }
 
         case ELEVATION_SLAVE: {
+            _dock_mode = true;
+
             logger.log("Waiting elevation signal for level " + std::to_string(_level + 1));
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
             return true;
@@ -78,6 +82,8 @@ bool ai::entity::AI::performActionForGoal(std::string &look)
         }
 
         case MEETUP_POINT: {
+            _dock_mode = true;
+
             logger.log("Sending everyone a point meetup request for level " + std::to_string(_level + 1));
             if (!useBroadcast("MEETUP_" + std::to_string(_level + 1)))
                 return false;
