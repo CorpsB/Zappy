@@ -14,7 +14,6 @@ Game &Game::GetInstance()
     return _game;
 }
 
-// One piece of ground has sides of about 55 px
 void Game::init()
 {
     _window.init(1280, 720);

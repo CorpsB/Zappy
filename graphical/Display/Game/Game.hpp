@@ -23,21 +23,21 @@ class Game {
         static Game &GetInstance();
 
         /**
-         * @brief Initialise la fenêtre d'affichage
+         * @brief Initialize the game window
          */
         void init();
         /**
-         * @brief Lance la boucle principale d'update de l'affichage
+         * @brief Starts the game loop
          */
         void run();
         /**
-         * Stop la fenêtre d'affichage
+         * @brief Stop the game
          */
         void stop();
 
         /**
-         * @brief Analyse la donnée et modifie les éléments graphique en fonction de 'data'
-         * @param data La ligne de commande reçu par le client
+         * @brief Analyzes 'data' and modifies the graphic elements
+         * @param data Command send by the server
          */
         void processData(const std::string &data);
     private:
