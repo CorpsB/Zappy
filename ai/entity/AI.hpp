@@ -65,7 +65,8 @@ namespace ai::entity
             void stop();
 
             // helper
-            int countPlayersOnTile(int idx, const std::string &look);
+            int countItemInLook(const std::string &look, const std::string &item);
+            int countItemOnTile(int idx, const std::string &look, const std::string &item);
             int findItemInLook(const std::string &look, const std::string &item);
             int determineLookDistance(int idx);
             bool collectItem(const std::string &look, const std::string &name,

@@ -28,8 +28,16 @@ bool ai::entity::AI::performActionForGoal(std::string &look)
     utils::debug::Logger &logger = ai::utils::debug::Logger::GetInstance();
 
     switch (_goal) {
-        case FOOD:
+        case FOOD: {
+            for (int i = 0; i < 3; ++i) {
+                if (countItemInLook(look, "player") > 2) {
+                    if (doAction("Left") == "dead")
+                        return false;
+                } else
+                    break;
+            }
             return handleGoal(look, "food");
+        }
 
         case STONE: {
             const std::string rarest_missing = getRarestMissingStone();

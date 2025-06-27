@@ -25,7 +25,7 @@ bool ai::entity::AI::collectItem(const std::string &look, const std::string &nam
 
 bool ai::entity::AI::collectAllItems(const std::string &look)
 {
-    const bool is_player = countPlayersOnTile(0, look) > 0;
+    const bool is_player = countItemOnTile(0, look, "player") > 0;
 
     return collectItem(look, "food", _food_level, is_player) &&
     collectItem(look, "linemate", RECIPES[_level - 1].linemate, is_player) &&
