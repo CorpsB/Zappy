@@ -458,7 +458,7 @@ void Interpreter::_pdr(const std::smatch &m)
 
     static constexpr std::array<std::string_view, 7> resourcesName = { "FOOD", "LINEMATE", "DERAUMERE", "SIBUR", "MENDIANE", "PHIRAS", "THYSTAME" };
 
-    if (resourceNumber < 1 || resourceNumber > static_cast<int>(resourcesName.size())) {
+    if (resourceNumber > static_cast<int>(resourcesName.size())) {
         std::cerr << "Invalid resource number: " << resourceNumber << std::endl;
         return;
     }
