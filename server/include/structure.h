@@ -294,6 +294,7 @@ struct eggs {
 struct client {
     player_t *player;
     whoAmI_t whoAmI;
+    char *cmd;
 };
 
 #endif /* !STRUCTURE_H_ */

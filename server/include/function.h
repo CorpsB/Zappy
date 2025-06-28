@@ -845,5 +845,6 @@ void event_pic(server_t *server, player_t *player);
 void event_pie(server_t *server, player_t *player, bool succes);
 void init_server(server_t *server);
 void send_str(server_t *server, int fd, char *message);
+void add_cmd(server_t *server, char *cmd, int index);
 
 #endif /* !FUCNTION_H_ */

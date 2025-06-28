@@ -92,6 +92,8 @@ SRC	=	src/main.c								\
 		src/cmd/cmd_IA/incantation_table.c		\
 		src/event/event_pic.c					\
 		src/event/event_pie.c					\
+		src/utils/send_and_recieve/add_cmd.c	\
+		src/utils/send_and_recieve/send_str.c	\
 
 OBJ	=	$(SRC:.c=.o)
 
