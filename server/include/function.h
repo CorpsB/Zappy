@@ -45,18 +45,99 @@
  * @param fd The file descriptor to write to.
 */
 void see_inventory(resources_t inv, int fd);
+
+/**
+ * @brief Print information of all players in a linked list.
+ * Prints each player’s details with an index number. If no players exist,
+ * prints a corresponding message.
+ * @param players Pointer to the head of the player linked list.
+ * @param fd File descriptor where output will be printed.
+*/
 void see_all_players(player_t *players, int fd);
 //server
+
+/**
+ * @brief Allocate and initialize a new server structure.
+ * Initializes all fields to default zero or NULL states,
+ * including map, teams, and counters.
+ * @return server_t* Pointer to the allocated and initialized server.
+ */
 server_t *add_server(void);
+
+/**
+ * @brief Print server information to the specified file descriptor.
+ * Prints key server parameters and calls additional printing functions
+ * for poll and teams.
+ * @param server Pointer to the server structure.
+ * @param fd File descriptor to print output to.
+*/
 void see_server(server_t *server, int fd);
+
+/**
+ * @brief Free all allocated resources associated with the server.
+ * Frees the map, teams, poll structures, and finally the server itself.
+ * @param server Pointer to the server to free.
+*/
 void free_server(server_t *server);
+
+/**
+ * @brief Print detailed information about the poll structure.
+ * Prints socket info, client counts, pointers and detailed
+ * pollfd and client lists.
+ * @param poll poll_t struct (by value).
+ * @param fd File descriptor for output.
+ * @param size Number of connected clients.
+*/
 void see_poll(poll_t poll, int fd, int size);
+
+/**
+ * @brief Print debug info for the server.
+ * If debug mode is enabled and a debug file descriptor is set,
+ * prints to that fd, then also prints to stderr (fd=2).
+ * @param server Pointer to the server structure.
+*/
 void debug_server(server_t *server);
+
+/**
+ * @brief Free all resources related to poll structure in the server.
+ * Closes all client sockets and frees allocated arrays for client
+ * list and pollfds.
+ * @param server Pointer to the server structure.
+*/
 void free_poll(server_t *server);
 //teams
+
+/**
+ * @brief Add a new team to the server's linked list of teams.
+ * Allocates and initializes a new teams_t node, sets its name,
+ * IDs, and links it at the head of the list.
+ * @param server Pointer to the server struct.
+ * @param name Name of the team to add.
+*/
 void add_teams(server_t *server, char *name);
+
+/**
+ * @brief Print detailed information about a single team.
+ * Shows team name, ID, slots used, win/eliminated status,
+ * then prints the team's eggs and players.
+ * @param team Pointer to the team node.
+ * @param fd File descriptor to print to.
+*/
 void see_one_team(teams_t *team, int fd);
+
+/**
+ * @brief Print a list of all teams and their details.
+ * Iterates through the linked list of teams and prints each one.
+ * @param teams Pointer to the head of the team linked list.
+ * @param fd File descriptor to print to.
+*/
 void see_teams(teams_t *teams, int fd);
+
+/**
+ * @brief Free an entire linked list of teams.
+ * Iteratively frees all nodes and their contents.
+ * @param teams Pointer to the head of the team linked list.
+*/
 void free_all_teams(teams_t *teams);
 //player
 /**
@@ -66,11 +147,41 @@ void free_all_teams(teams_t *teams);
  * @return player_t* if found, NULL otherwise.
 */
 player_t *find_player_by_id(const server_t *server, unsigned int id);
+
+/**
+ * @brief Add a new player to the server and team.
+ * Calls hatching_egg to get spawn position, initializes the player node,
+ * sets pointers in client list and team, triggers the player spawn event,
+ * and frees the temporary position array.
+ * @param server Pointer to the server structure.
+ * @param index Index in the poll file descriptor array for the player.
+ * @param teams Pointer to the team structure the player belongs to.
+*/
 void add_player(server_t *server, int socket, teams_t *teams);
+
+/**
+ * @brief Free the memory of all players in a linked list.
+ * Iterates through the player linked list and frees each node.
+ * @param player Pointer to the head of the player linked list.
+*/
 void free_all_player(player_t *player);
 //cmd parser
+
+/**
+ * @brief Split a string into an array of strings based on a separator.
+ * The returned array is NULL-terminated and must be freed with free_table().
+ * @param str The string to split.
+ * @param separator The string containing separator characters.
+ * @return The array of tokens, or NULL on failure.
+*/
 char **str_to_array(char *str, char *separator);
 
+/**
+ * @brief Main server loop.
+ * Initializes the server, accepts new clients, processes events, manages
+ * player commands, handles food consumption, and checks game state.
+ * @param server Pointer to the server structure.
+*/
 void run_server(server_t *server);
 void cmd_parser(server_t *server, int index, char *cmd);
 
@@ -203,7 +314,7 @@ void logger(server_t *server, char *message, logs_t log, bool is_end);
 
 /**
  * @brief Debug function to print quantities and repartition maps of all
- * resources. 
+ * resources.
  * Iterates through all resource types and prints both the tile quantities
  * and repartition map values for each resource in a readable format.
  * Useful for visualizing resource distribution and debugging the map state.
@@ -292,6 +403,11 @@ void event_msz(server_t *server);
 */
 void event_bct(server_t *server);
 
+/**
+ * @brief Triggers a player death event for a player at the given index.
+ * @param server Pointer to the server structure.
+ * @param index Index of the player in the client list.
+*/
 void event_pdi_by_index(server_t *server, int index);
 
 /**
@@ -410,6 +526,13 @@ void del_egg(server_t *server, teams_t *teams, eggs_t *egg);
  * @warning The caller is responsible for freeing the returned array.
 */
 unsigned int *hatching_egg(server_t *server, teams_t *teams);
+
+/**
+ * @brief Update the slots_max value for all teams.
+ * Sets the maximum slots per team to the current starter eggs number
+ * stored in the server struct.
+ * @param server Pointer to the server struct.
+*/
 void complete_team_data(server_t *server);
 
 /**
@@ -470,6 +593,10 @@ void event_ppo(server_t *server, player_t *player);
 */
 void event_edi(server_t *server, unsigned int egg_id);
 
+/**
+ * @brief Free a NULL-terminated array of strings.
+ * @param table The array to free.
+*/
 void free_table(char **table);
 
 /**
@@ -604,15 +731,63 @@ void event_suc(server_t *server, int index, char **args);
  * @param i Index of the command in the gui_command_table.
 */
 void event_sbp(server_t *server, int index, char **args, int i);
+
+/**
+ * @brief Get the size of a NULL-terminated array of strings.
+ * @param table The array to measure.
+ * @return The number of elements in the array.
+*/
 int table_size(char **table);
+
+/**
+ * @brief Command handler for the "Look" player command.
+ * Sends a description of the surroundings to the player.
+ * @param srv The server structure.
+ * @param idx The index of the player in the poll list.
+ * @param args Command arguments (unused).
+*/
 void cmd_look(server_t *server, int index, char **);
 
+/**
+ * @brief Handles the "Broadcast" command from a player.
+ * Sends the message to all other alive players on the map
+ * with directional information.
+ * @param srv Pointer to the server structure.
+ * @param idx Index of the sending player in the client list.
+ * @param args Array of command arguments (the message is built
+ * from args[1] onward).
+*/
 void cmd_broadcast_text(server_t *server, int index, char **args);
+
 typedef char *(*line_builder_t)(server_t *, int, int, int);
 
 char *build_line(server_t *srv, player_t *pl, int lvl);
+
+/**
+ * @brief Append a token to a string, reallocating memory if necessary.
+ * @param dest The original string (can be NULL).
+ * @param token The token to append.
+ * @param srv The server structure (used for logging on error).
+ * @return A new string with the token appended, or NULL on error.
+*/
 char *append_token(char *dest, const char *token, server_t *srv);
+
+/**
+ * @brief Count the number of eggs on a specific tile.
+ * @param srv The server structure.
+ * @param y The Y coordinate of the tile.
+ * @param x The X coordinate of the tile.
+ * @return The total number of eggs on the tile.
+*/
 unsigned int eggs_at(server_t *srv, int y, int x);
+
+/**
+ * @brief Count the number of players on a specific tile.
+ * @param srv The server structure.
+ * @param y The Y coordinate of the tile.
+ * @param x The X coordinate of the tile.
+ * @return The total number of players on the tile.
+*/
 unsigned int players_at(server_t *srv, int y, int x);
 
 /**
@@ -621,11 +796,52 @@ unsigned int players_at(server_t *srv, int y, int x);
  * @param map Pointer to the 2D integer array to free.
 */
 void free_int_map(int y, int **map);
-void update_clock(zappy_clock_t *clock, server_t *server);
+
+/**
+ * @brief Initialize and start a new clock.
+ * Allocates a new clock structure, sets its frequency, and starts
+ * tracking time.
+ * @param server Pointer to the server structure for logging in case
+ * of failure.
+ * @param freq Frequency of the clock in server units.
+ * @return zappy_clock_t* Pointer to the initialized clock structure.
+*/
 zappy_clock_t *init_clock(server_t *server, size_t freq);
+
+/**
+ * @brief Update the clock accumulator and last_tick.
+ * Adds elapsed time units to accumulator and updates last_tick.
+ * @param clock Pointer to zappy_clock_t struct.
+*/
+void update_clock(zappy_clock_t *clock, server_t *server);
+
+/**
+ * @brief Execute pending player commands based on their timers.
+ * This function iterates over all connected clients, checks if
+ * they are players,
+ * and executes commands if timers allow it.
+ * @param server Pointer to the server structure.
+*/
 void player_cmd_execution(server_t *server);
+
+/**
+ * @brief Command handler for the "Incantation" player command.
+ * @param server The server structure.
+ * @param index The index of the player in the poll list.
+ * @param args Command arguments (unused).
+*/
 void cmd_incantation(server_t *server, int index, char **args);
+
+/**
+ * @brief Start an incantation attempt for a player.
+ * Freezes all involved players and notifies them if conditions are met.
+ * @param server The server structure.
+ * @param pl The player initiating the incantation.
+ * @return true if the incantation has started, false otherwise.
+*/
 bool start_incantation(server_t *server, player_t *pl);
+
 void event_pic(server_t *server, player_t *player);
 void event_pie(server_t *server, player_t *player, bool succes);
+
 #endif /* !FUCNTION_H_ */

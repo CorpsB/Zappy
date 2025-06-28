@@ -9,6 +9,13 @@
 #include "include/function.h"
 #include "include/structure.h"
 
+/**
+ * @brief Get the elapsed time units since the last tick.
+ * Calculates the time difference from the last recorded tick and converts it
+ * to the server's time units based on the clock frequency.
+ * @param clock Pointer to the clock structure.
+ * @return double Elapsed time units.
+*/
 static double get_elapsed_time_units(zappy_clock_t *clock)
 {
     struct timespec now;

@@ -9,6 +9,12 @@
 #include "include/function.h"
 #include "include/structure.h"
 
+/**
+ * @brief Print the textual representation of a direction to a
+ * file descriptor.
+ * @param dir Direction enum value (NORTH, EAST, SOUTH, WEST).
+ * @param fd File descriptor where the direction string will be printed.
+*/
 void see_direction(direction_t dir, int fd)
 {
     dprintf(fd, "  Direction        : ");
@@ -22,6 +28,15 @@ void see_direction(direction_t dir, int fd)
         dprintf(fd, "WEST\n");
 }
 
+/**
+ * @brief Print detailed information about a single player
+ * to a file descriptor.
+ * Includes ID, position, level, death timer, socket FD, direction,
+ * team name,
+ * and inventory content.
+ * @param player Pointer to the player to print.
+ * @param fd File descriptor where output will be printed.
+*/
 void see_a_player(player_t *player, int fd)
 {
     if (!player) {

@@ -9,6 +9,12 @@
 #include "include/function.h"
 #include "include/structure.h"
 
+/**
+ * @brief Initialize the main server socket and bind it.
+ * This function creates the listening socket, configures its parameters,
+ * binds it to the specified port, and starts listening for connections.
+ * @param server Pointer to the server structure.
+*/
 static void init_server(server_t *server)
 {
     socklen_t size = sizeof(struct sockaddr_in);
@@ -29,6 +35,12 @@ static void init_server(server_t *server)
         logger(server, "LISTEN", PERROR, true);
 }
 
+/**
+ * @brief Add a new client to the server's poll and client list.
+ * @param server Pointer to the server structure.
+ * @param socket Socket descriptor of the new client.
+ * @param state Initial state of the client (UNKNOWN, PLAYER, GUI, etc.).
+*/
 static void add_client(server_t *server, int socket, whoAmI_t state)
 {
     server->poll.pollfds = realloc(
@@ -53,6 +65,12 @@ static void add_client(server_t *server, int socket, whoAmI_t state)
     see_poll(server->poll, 2, server->poll.connected_client);
 }
 
+/**
+ * @brief Check if a winning condition has been met.
+ * Iterates through all teams to determine if a team has won the game.
+ * @param server Pointer to the server structure.
+ * @return true if the game is over, false otherwise.
+*/
 static bool is_game_over(server_t *server)
 {
     for (teams_t *teams = server->teams; teams != NULL; teams = teams->next) {
@@ -64,6 +82,14 @@ static bool is_game_over(server_t *server)
     return false;
 }
 
+/**
+ * @brief Remove a client from the server.
+ * Closes the client's socket, triggers disconnection events, and shifts
+ * the poll and client arrays to maintain consistency.
+ * @param server Pointer to the server structure.
+ * @param index Index of the client to remove.
+ * @return true on success.
+*/
 static bool del_client(server_t *server, int index)
 {
     close(server->poll.pollfds[index].fd);
@@ -84,6 +110,14 @@ static bool del_client(server_t *server, int index)
     return true;
 }
 
+/**
+ * @brief Add a command to the player's command queue.
+ * If the command queue is full, the player receives a "suc" response.
+ * Non-player clients have their command handled immediately.
+ * @param server Pointer to the server structure.
+ * @param cmd Command string.
+ * @param index Index of the client in the poll list.
+*/
 static void add_cmd(server_t *server, char *cmd, int index)
 {
     if (server->poll.client_list[index].whoAmI != PLAYER) {
@@ -103,6 +137,14 @@ static void add_cmd(server_t *server, char *cmd, int index)
     }
 }
 
+/**
+ * @brief Detect and handle incoming events on a client socket.
+ * Accepts new connections or reads client commands, depending on the type
+ * of client (LISTEN, PLAYER, GUI, etc.).
+ * @param server Pointer to the server structure.
+ * @param i Index of the client in the poll list.
+ * @return true if an event was handled, false otherwise.
+*/
 static bool event_detector(server_t *server, int i)
 {
     int bytes;
@@ -125,6 +167,13 @@ static bool event_detector(server_t *server, int i)
     return false;
 }
 
+/**
+ * @brief Handle poll system call and process client events.
+ * Waits for events on all client sockets and processes them if detected.
+ * Uses the server's clock to determine the poll timeout.
+ * @param server Pointer to the server structure.
+ * @param clock Pointer to the server clock structure.
+*/
 static void poll_func(server_t *server, zappy_clock_t *clock)
 {
     int event;
@@ -142,6 +191,13 @@ static void poll_func(server_t *server, zappy_clock_t *clock)
     }
 }
 
+/**
+ * @brief Handle food consumption and death for all players of a team.
+ * Decreases the life cycle counter and food of each player.
+ * If the player dies, triggers the appropriate event.
+ * @param server Pointer to the server structure.
+ * @param teams Pointer to the team structure.
+*/
 static void eat_per_teams(server_t *server, teams_t *teams)
 {
     for (player_t *tmp = teams->player; tmp != NULL; tmp = tmp->next) {
@@ -163,6 +219,11 @@ static void eat_per_teams(server_t *server, teams_t *teams)
     }
 }
 
+/**
+ * @brief Handle food consumption and death for all players in the game.
+ * Calls eat_per_teams for each team.
+ * @param server Pointer to the server structure.
+*/
 static void eat(server_t *server)
 {
     for (teams_t *tmp = server->teams; tmp != NULL; tmp = tmp->next)

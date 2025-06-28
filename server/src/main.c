@@ -9,6 +9,10 @@
 #include "include/function.h"
 #include "include/structure.h"
 
+/**
+ * @brief Print help message to stdout.
+ * @return Always returns 0.
+*/
 int print_help(void)
 {
     write(1, "USAGE:\n", 7);
@@ -31,6 +35,13 @@ int print_help(void)
     return 0;
 }
 
+/**
+ * @brief Detect and parse a specific command-line argument.
+ * @param i Current index in the argument array.
+ * @param av Array of arguments.
+ * @param server Pointer to the server structure.
+ * @return New index after parsing, or -1 on error.
+*/
 int parser_detector(int i, char **av, server_t *server)
 {
     if (av[i] && strncmp(av[i], "-p", 2) == 0 && av[i + 1])
@@ -50,6 +61,13 @@ int parser_detector(int i, char **av, server_t *server)
     return i;
 }
 
+/**
+ * @brief Parse all command-line arguments and detect errors.
+ * @param ac Argument count.
+ * @param av Argument array.
+ * @param server Pointer to the server structure.
+ * @return true if parsing is successful, false otherwise.
+*/
 bool parse_and_find_error(int ac, char **av, server_t *server)
 {
     for (int i = 0; i < ac; i++) {
@@ -69,6 +87,13 @@ bool parse_and_find_error(int ac, char **av, server_t *server)
     return true;
 }
 
+/**
+ * @brief Check if debug mode is requested via arguments and enable it.
+ * If the "-d" flag is present, debug mode is enabled and debug logs
+ * will be written to "debug.log".
+ * @param server Pointer to the server structure.
+ * @param av Array of arguments.
+*/
 static void need_debug(server_t *server, char **av)
 {
     for (int i = 0; av[i] != NULL; i++) {
@@ -81,6 +106,13 @@ static void need_debug(server_t *server, char **av)
     }
 }
 
+/**
+ * @brief Main entry point of the server.
+ * @param ac Argument count.
+ * @param av Argument array.
+ * @return 0 on successful execution, or help message if arguments
+ * are invalid.
+*/
 int main(int ac, char **av)
 {
     server_t *server = add_server();
