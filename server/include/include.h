@@ -5,6 +5,20 @@
 ** include
 */
 
+/**
+ * @file include.h
+ * @brief Central header regrouping all required includes for the Zappy
+ * server project compilation units.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * This file contains all necessary standard and system includes
+ * used throughout
+ * the project. It simplifies the inclusion process for source files and
+ * ensures consistency in dependencies.
+*/
+
 #ifndef INCLUDE_H_
     #define INCLUDE_H_
 

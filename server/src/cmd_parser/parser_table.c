@@ -5,6 +5,19 @@
 ** parser_table
 */
 
+/**
+ * @file parser_table.c
+ * @brief Defines the command tables for players and graphical clients in
+ * Zappy.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * This file provides the concrete mapping between command strings and
+ * their respective handler functions, along with argument count and timing
+ * information as specified by the Zappy protocol.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

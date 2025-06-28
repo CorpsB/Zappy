@@ -5,6 +5,24 @@
 ** fucntion
 */
 
+/**
+ * @file function.h
+ * @brief Declares all utility functions, server logic and graphical
+ * events for Zappy server project.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * This header centralizes the prototypes for:
+ * - Utility functions (parsing, resource handling, logging)
+ * - Server initialization and management
+ * - Game logic (players, teams, eggs)
+ * - All graphical events following the Zappy protocol (e.g., event_ppo,
+ * event_pnw, event_bct, etc.)
+ * These functions ensure the correct functioning of the game server
+ * and communication with graphical clients.
+*/
+
 #ifndef FUCNTION_H_
     #define FUCNTION_H_
 
@@ -21,6 +39,11 @@
  * return 0 if the client is a GUI.
 */
 
+/**
+ * @brief Print the content of a resource inventory to a file descriptor.
+ * @param inv The resource inventory to display.
+ * @param fd The file descriptor to write to.
+*/
 void see_inventory(resources_t inv, int fd);
 void see_all_players(player_t *players, int fd);
 //server
@@ -52,6 +75,10 @@ void run_server(server_t *server);
 void cmd_parser(server_t *server, int index, char *cmd);
 
 //EGGS
+/**
+ * @brief Free an entire linked list of eggs.
+ * @param eggs Pointer to the head of the egg list.
+*/
 void free_all_egs(eggs_t *eggs);
 void see_all_eggs(eggs_t *eggs, int fd);
 /**
@@ -99,17 +126,79 @@ eggs_t *search_egg_by_id(server_t *server, unsigned int id);
 
 
 //resources
+/**
+ * @brief Initialize a resources_t structure with all values set to 0.
+ * @return The initialized resources structure.
+*/
 resources_t create_resources(void);
 
 //parser
+/**
+ * @brief Parse the port number for the server.
+ * @param str The string containing the port number.
+ * @param server Pointer to the server structure to update.
+ * @param i Current index in the argument array.
+ * @return The updated index if successful, -1 on error.
+*/
 int parse_port(char *str, server_t *server, int i);
+
+/**
+ * @brief Parse the width of the game map.
+ * @param str The string containing the map width.
+ * @param server Pointer to the server structure to update.
+ * @param i Current index in the argument array.
+ * @return The updated index if successful, -1 on error.
+*/
 int parse_width(char *str, server_t *server, int i);
+
+/**
+ * @brief Parse the height of the game map.
+ * @param str The string containing the map height.
+ * @param server Pointer to the server structure to update.
+ * @param i Current index in the argument array.
+ * @return The updated index if successful, -1 on error.
+*/
 int parse_height(char *str, server_t *server, int i);
+
+/**
+ * @brief Parse the maximum number of starter eggs per team.
+ * @param str The string containing the client (starter eggs) limit.
+ * @param server Pointer to the server structure to update.
+ * @param i Current index in the argument array.
+ * @return The updated index if successful, -1 on error.
+*/
 int parse_client(char *str, server_t *server, int i);
+
+/**
+ * @brief Parse the frequency of the server ticks.
+ * @param str The string containing the tick frequency.
+ * @param server Pointer to the server structure to update.
+ * @param i Current index in the argument array.
+ * @return The updated index if successful, -1 on error.
+*/
 int parse_frequency(char *str, server_t *server, int i);
+
+/**
+ * @brief Parse and register team names for the Zappy server.
+ * This function iterates over the argument array starting at index `i + 1`,
+ * and adds each team name to the server until it encounters an option
+ * starting with '-'.
+ * @param av The array of command-line arguments.
+ * @param server Pointer to the server structure to update.
+ * @param i Current index of the "-n" argument in the array.
+ * @return The index of the last processed argument corresponding to a
+ * team name.
+*/
 int parse_teams(char **av, server_t *server, int i);
 
 //logs
+/**
+ * @brief Print a log message to stderr and optionally to the debug log.
+ * @param server Pointer to the server structure.
+ * @param message The message to log.
+ * @param log The log level (ERROR, PERROR, DEBUG, INFO).
+ * @param is_end If true, the server is freed and the program exits.
+*/
 void logger(server_t *server, char *message, logs_t log, bool is_end);
 
 void debug_print_resource_map(server_t *server);
@@ -118,9 +207,27 @@ void map_update(server_t *server);
 void change_arround(server_t *server, int *pos, r_ressource_t type,
     int weight);
 
+/**
+ * @brief Send a message to all connected graphical clients.
+ * @param server Pointer to the server structure.
+ * @param message The message to send (must be a valid string).
+*/
 void send_to_all_gui(server_t *server, char *message);
+/**
+ * @brief Count the number of eggs in a linked list.
+ * @param eggs Pointer to the head of the egg list.
+ * @return The number of eggs in the list.
+*/
 int eggs_size(eggs_t *eggs);
+
+/**
+ * @brief Generate a starter egg at a random position for a team.
+ * @param server Pointer to the server structure (used for map
+ * bounds and egg ID).
+ * @param teams Pointer to the team receiving the new egg.
+*/
 void generate_starter_eggs(server_t *server, teams_t *teams);
+
 /**
  * @brief Notify the GUI and the player that a player has died.
  * GUI clients receive: pdi <id>
@@ -247,7 +354,24 @@ void send_enw(int fd, eggs_t *egg);
 */
 eggs_t *create_egg_from_player(player_t *player);
 
+/**
+ * @brief Remove a specific egg from a team's egg list.
+ * @param server Pointer to the server structure (unused, present
+ * for consistency).
+ * @param teams Pointer to the team containing the egg.
+ * @param egg Pointer to the egg to remove.
+*/
 void del_egg(server_t *server, teams_t *teams, eggs_t *egg);
+
+/**
+ * @brief Select a random egg from the team, remove it, and return its
+ * position.
+ * @param server Pointer to the server structure (used for logging).
+ * @param teams Pointer to the team from which to hatch an egg.
+ * @return A dynamically allocated array containing the [x, y] position
+ * of the egg.
+ * @warning The caller is responsible for freeing the returned array.
+*/
 unsigned int *hatching_egg(server_t *server, teams_t *teams);
 void complete_team_data(server_t *server);
 
@@ -453,6 +577,12 @@ char *build_line(server_t *srv, player_t *pl, int lvl);
 char *append_token(char *dest, const char *token, server_t *srv);
 unsigned int eggs_at(server_t *srv, int y, int x);
 unsigned int players_at(server_t *srv, int y, int x);
+
+/**
+ * @brief Free a dynamically allocated 2D integer map.
+ * @param y The number of rows in the map.
+ * @param map Pointer to the 2D integer array to free.
+*/
 void free_int_map(int y, int **map);
 void update_clock(zappy_clock_t *clock);
 zappy_clock_t *init_clock(server_t *server, size_t freq);

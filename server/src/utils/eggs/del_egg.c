@@ -9,6 +9,12 @@
 #include "include/function.h"
 #include "include/structure.h"
 
+/**
+ * @brief Remove the first egg from a linked list.
+ * @param tmp Current head of the list.
+ * @param prv Unused, preserved for compatibility.
+ * @param list Pointer to the head of the list (will be updated).
+*/
 void delete_first(eggs_t *tmp, eggs_t *prv, eggs_t **list)
 {
     prv = tmp;

@@ -9,6 +9,11 @@
 #include "include/function.h"
 #include "include/structure.h"
 
+/**
+ * @brief Free the server and exit the program if is_end is true.
+ * @param server Pointer to the server structure.
+ * @param is_end Boolean indicating whether to terminate the program.
+*/
 static void need_stop(server_t *server, bool is_end)
 {
     if (is_end) {
@@ -18,6 +23,12 @@ static void need_stop(server_t *server, bool is_end)
     }
 }
 
+/**
+ * @brief Write a log message to the debug log file based on the log level.
+ * @param server Pointer to the server structure.
+ * @param message The message to log.
+ * @param log The log level (ERROR, PERROR, DEBUG, INFO).
+*/
 static void debug_logger(server_t *server, char *message, logs_t log)
 {
     if (server->debug_fd == -1) {

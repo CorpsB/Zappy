@@ -5,6 +5,18 @@
 ** cmd_parser
 */
 
+/**
+ * @file cmd_parser.c
+ * @brief Handles parsing and execution of client commands for Zappy server.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * This file implements the logic to parse and dispatch incoming commands
+ * from players and graphical clients. It handles unknown clients,
+ * validates arguments, and ensures correct command execution.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

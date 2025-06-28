@@ -5,6 +5,23 @@
 ** cmd
 */
 
+/**
+ * @file cmd.h
+ * @brief Declares all player and graphical commands for the Zappy
+ * server project.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * This header centralizes the prototypes for all commands executed by players
+ * and graphical clients in the Zappy server. It separates commands based on
+ * the client type and follows the protocol specifications for argument
+ * handling
+ * and execution logic.
+ * The commands declared here are implemented in the corresponding
+ * source files and registered in the command tables.
+*/
+
 #ifndef CMD_H_
     #define CMD_H_
 
