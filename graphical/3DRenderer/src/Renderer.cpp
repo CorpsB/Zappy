@@ -60,6 +60,7 @@ namespace Renderer {
 
     Update _update;
     InputHandler _inputhandler;
+    Camera _camera;
 
     bool initRenderer(sf::RenderWindow &window) {
         // window = new sf::RenderWindow(sf::VideoMode(width, height), title);
@@ -163,7 +164,7 @@ namespace Renderer {
     }
 
     void update(float dt) {
-        cameraMovement(dt);
+        _camera.cameraMovement(dt);
         cooldownAction -= dt;
         _inputhandler.switchInput(tabToggle, tabWasPressed, sf::Keyboard::Tab);
         _inputhandler.switchInput(escapeMenuToggle, escapeWasPressed, sf::Keyboard::Escape);
@@ -260,12 +261,12 @@ namespace Renderer {
         std::fill(depthBuffer.begin(), depthBuffer.end(), std::numeric_limits<float>::max());
 
         Mat4x4 matProj = Mat4x4::makeProjection(90.0f, float(w) / float(h), 0.1f, 1000.0f);
-        Mat4x4 matView = quickInverse(
-            pointAt(
-                cameraPosition,
-                { cameraPosition.x + static_cast<float>(std::sin(cameraYaw   * M_PI / 180.0f)),
-                  cameraPosition.y + static_cast<float>(std::sin(cameraPitch * M_PI / 180.0f)),
-                  cameraPosition.z + static_cast<float>(std::cos(cameraYaw   * M_PI / 180.0f)) },
+        Mat4x4 matView = _camera.quickInverse(
+            _camera.pointAt(
+                _camera.getPosition(),
+                { _camera.getPosition().x + static_cast<float>(std::sin(_camera.getYaw()   * M_PI / 180.0f)),
+                  _camera.getPosition().y + static_cast<float>(std::sin(_camera.getPitch() * M_PI / 180.0f)),
+                  _camera.getPosition().z + static_cast<float>(std::cos(_camera.getYaw()   * M_PI / 180.0f)) },
                 { 0, 1, 0 }
             )
         );

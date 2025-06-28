@@ -13,21 +13,25 @@
 
 namespace Renderer {
 
-    Vec3 cameraPosition = {0.0f, 1.0f, -5.0f};
-    float cameraPitch = 0.0f;
-    float cameraYaw = 0.0f;
-    float cameraSpeed = 15.0f;
-    float cameraRotationSpeed = 60.0f;
+    Camera::Camera()
+    {
+        this->cameraPosition = {0.0f, 1.0f, -5.0f};
+        this->cameraPitch = 0.0f;
+        this->cameraYaw = 0.0f;
+        this->cameraSpeed = 15.0f;
+        this->cameraRotationSpeed = 60.0f;
+    }
 
-    Mat4x4 pointAt(const Vec3& pos, const Vec3& target, const Vec3& up) {
+    Mat4x4 Camera::pointAt(const Vec3& pos, const Vec3& target, const Vec3& up) {
         return Mat4x4::pointAt(pos, target, up);
     }
 
-    Mat4x4 quickInverse(const Mat4x4& m) {
+    Mat4x4 Camera::quickInverse(const Mat4x4& m) {
         return Mat4x4::quickInverse(m);
     }
 
-    void cameraMovement(float dt) {
+    void Camera::cameraMovement(float dt)
+    {
         float move = cameraSpeed * dt;
         float rot  = cameraRotationSpeed * dt;
 
@@ -47,6 +51,36 @@ namespace Renderer {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) { cameraYaw   += rot; }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) { cameraPitch += rot; }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::F)) { cameraPitch -= rot; }
+    }
+
+    Vec3 Camera::getPosition() const
+    {
+        return this->cameraPosition;
+    }
+
+    float Camera::getPitch() const
+    {
+        return this->cameraPitch;
+    }
+
+    float Camera::getYaw() const
+    {
+        return this->cameraYaw;
+    }
+
+    float Camera::getSpeed() const
+    {
+        return this->cameraSpeed;
+    }
+
+    float Camera::getRotationSpeed() const
+    {
+        return this->cameraRotationSpeed;
+    }
+
+    void Camera::setPosition(const Vec3 pos)
+    {
+        this->cameraPosition = pos;
     }
 
 } // namespace Renderer
