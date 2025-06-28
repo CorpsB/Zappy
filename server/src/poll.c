@@ -87,15 +87,24 @@ static bool del_client(server_t *server, int index)
 
 static void add_cmd(server_t *server, char *cmd, int index)
 {
-    player_t *pl;
+    /* commandes GUI ou LISTEN – inchangé */
+    if (server->poll.client_list[index].whoAmI != PLAYER) {
+        cmd_parser(server, index, cmd);
+        return;
+    }
 
-    if (server->poll.client_list[index].whoAmI != PLAYER)
-        return cmd_parser(server, index, cmd);
-    pl = server->poll.client_list[index].player;
-    for (int i = 0; i < 10; i++) {
-        if (pl->cmd[i] == NULL) {
-            pl->cmd[i] = cmd;
-            break;
+    player_t *pl = server->poll.client_list[index].player;
+
+    /* file pleine → on ignore ou on répond "suc" */
+    if (pl->cmd[9] != NULL) {
+        dprintf(pl->socket_fd, "suc\n");
+        return;
+    }
+
+    for (int k = 0; k < 10; k++) {
+        if (!pl->cmd[k]) {
+            pl->cmd[k] = strdup(cmd);   /* <<< COPIE SÛRE */
+            return;
         }
     }
 }

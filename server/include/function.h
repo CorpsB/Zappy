@@ -469,4 +469,5 @@ void update_clock(zappy_clock_t *clock);
 zappy_clock_t *init_clock(server_t *server, size_t freq);
 void player_cmd_execution(server_t *server);
 void cmd_incantation(server_t *server, int index, char **args);
+bool start_incantation(server_t *server, player_t *pl);
 #endif /* !FUCNTION_H_ */

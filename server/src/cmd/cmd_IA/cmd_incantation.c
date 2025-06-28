@@ -52,9 +52,8 @@ static bool check_condition(server_t *server, player_t *pl)
     return true;
 }
 
-bool start_incantation(server_t *server, int index, char **)
+bool start_incantation(server_t *server, player_t *pl)
 {
-    player_t *pl = server->poll.client_list[index].player;
     player_t *tmp;
 
     if (!check_condition(server, pl)) {
