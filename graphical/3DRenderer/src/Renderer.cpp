@@ -46,7 +46,16 @@ namespace Renderer {
     static bool buttonIsPressed = false;
     static bool escapeMenuToggle = false;
     static bool escapeWasPressed = false;
+    static bool zToggle = false;
+    static bool zWasPressed = false;
+    static bool sToggle = false;
+    static bool sWasPressed = false;
+    static bool qToggle = false;
+    static bool qWasPressed = false;
+    static bool dToggle = false;
+    static bool dWasPressed = false;
     static sf::RectangleShape escapeMenuBg;
+    static std::pair<int, int> currentTile;
 
     bool initRenderer(sf::RenderWindow &window) {
         // window = new sf::RenderWindow(sf::VideoMode(width, height), title);
@@ -56,7 +65,6 @@ namespace Renderer {
         backBuffer.create(window.getSize().x, window.getSize().y);
         depthBuffer.assign(window.getSize().x * window.getSize().y, std::numeric_limits<float>::max());
         backBufferTexture.create(window.getSize().x, window.getSize().y);
-        bgMenu.setFillColor(sf::Color(0, 0, 0, 128));
         escapeMenuBg.setSize(sf::Vector2f(600.f, 500.f));
         escapeMenuBg.setFillColor(sf::Color(20, 20, 20, 220));
         escapeMenuBg.setOutlineColor(sf::Color::White);
@@ -76,11 +84,11 @@ namespace Renderer {
         hudText.setOutlineColor(sf::Color::Black);
         hudText.setOutlineThickness(1.0f);
 
-        bgMenu.setSize(sf::Vector2f(350.f, window.getSize().y));
-        bgMenu.setPosition(window.getSize().x - 350.f, 0.f);
+        bgMenu.setSize(sf::Vector2f(window.getSize().x, window.getSize().y));
+        bgMenu.setPosition(0.f, 0.f);
         bgMenu.setFillColor(sf::Color(0, 0, 0, 128));
         buttonNextTrantorian.setSize(sf::Vector2f(100.f, 40.f));
-        buttonNextTrantorian.setPosition(120.f, 650.f);
+        buttonNextTrantorian.setPosition(120.f, 550.f);
         buttonNextTrantorian.setFillColor(buttonIdleColor);
 
         totalResources = {0, 0, 0, 0, 0, 0, 0};
@@ -106,6 +114,8 @@ namespace Renderer {
         resourcesChange = true;
         
         currentTrantorian.clientId = -1;
+
+        currentTile = {0, 0};
         return true;
     }
 
@@ -180,8 +190,58 @@ namespace Renderer {
         } else {
             escapeWasPressed = false;
         }
-        if (escapeMenuToggle) {
-            return;
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
+            if (!zWasPressed) {
+                zToggle = !zToggle;
+                zWasPressed = true;
+            }
+        } else {
+            zWasPressed = false;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+            if (!sWasPressed) {
+                sToggle = !sToggle;
+                sWasPressed = true;
+            }
+        } else {
+            sWasPressed = false;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
+            if (!qWasPressed) {
+                qToggle = !qToggle;
+                qWasPressed = true;
+            }
+        } else {
+            qWasPressed = false;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+            if (!dWasPressed) {
+                dToggle = !dToggle;
+                dWasPressed = true;
+            }
+        } else {
+            dWasPressed = false;
+        }
+        if (zToggle) {
+            if (currentTile.first < map_size_x - 1)
+                currentTile.first += 1;
+            zToggle = false;
+        }
+        if (sToggle) {
+            if (currentTile.first > 0)
+                currentTile.first -= 1;
+            sToggle = false;
+        }
+        if (qToggle) {
+            if (currentTile.second < map_size_y - 1)
+                currentTile.second += 1;
+            qToggle = false;
+        }
+        if (dToggle) {
+            if (currentTile.second > 0)
+                currentTile.second -= 1;
+            dToggle = false;
         }
         // Values in valuesForSynchro :
         // int -> client id
@@ -289,6 +349,14 @@ namespace Renderer {
                 else if (e.orientation == Compass::NORTH || e.orientation == Compass::SOUTH)
                     e.rotation.z += 60.0f * dt;
             }
+
+            if (e.type == PartType::GROUND) {
+                if (static_cast<int>(e.position.x) == currentTile.first * TILE_SIZE
+                    && static_cast<int>(e.position.z) == currentTile.second * TILE_SIZE) {
+                    e.color = sf::Color::Red;
+                } else
+                    e.color = sf::Color {65, 65, 65};
+            }
         }
         // erase expulsion after 5 rotations
         for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
@@ -323,7 +391,7 @@ namespace Renderer {
         sf::Vector2i mousePos = sf::Mouse::getPosition(window);
         sf::Vector2f mousePosF(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
 
-        //Top left button
+        //Bottom left button
         if (buttonNextTrantorian.getGlobalBounds().contains(mousePosF)) {
             buttonNextTrantorian.setFillColor(buttonHoverColor);
             if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
@@ -477,8 +545,6 @@ namespace Renderer {
 
         // display menu
         if (tabToggle) {
-            bgMenu.setPosition(window.getSize().x - 350.f, 0.f);
-            window.draw(bgMenu);
             bgMenu.setPosition(0.f, 0.f);
             window.draw(bgMenu);
             window.draw(hudText);
@@ -598,6 +664,27 @@ namespace Renderer {
                     y += 25.f;
                 }
             }
+            if (_resourcesOnTiles.find(currentTile.first * map_size_y + currentTile.second) != _resourcesOnTiles.end()) {
+                hudText.setFillColor(sf::Color {255, 255, 255});
+                float x = window.getSize().x / 2 - 75;
+                hudText.setString("Content of the red tile:");
+                hudText.setPosition(x, 100);
+                window.draw(hudText);
+                hudText.setString("x: " + std::to_string(currentTile.first));
+                hudText.setPosition(x + 25, 125);
+                window.draw(hudText);
+                hudText.setString("y: " + std::to_string(currentTile.second));
+                hudText.setPosition(x + 25, 150);
+                window.draw(hudText);
+                float y = 175.f;
+                for (int i = 0; i < 7; i++) {
+                    hudText.setString(nameResources[i] + std::to_string(_resourcesOnTiles[currentTile.first * map_size_y + currentTile.second][i]));
+                    hudText.setFillColor(colorResources[i]);
+                    hudText.setPosition(x + 25, y);
+                    window.draw(hudText);
+                    y += 25.f;
+                }
+            }
         }
 
         if (escapeMenuToggle) {
@@ -650,6 +737,9 @@ namespace Renderer {
             window.draw(hudText);
             hudText.setString("Tab : informations");
             hudText.setPosition(menuPos.x + 50.f, menuPos.y + 400.f);
+            window.draw(hudText);
+            hudText.setString("ZQSD : select a tile to see what it contains");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 420.f);
             window.draw(hudText);
             hudText.setString("Note : You can press the grey button in the information menu");
             hudText.setPosition(menuPos.x + 50.f, menuPos.y + 450.f);
