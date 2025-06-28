@@ -9,8 +9,16 @@
 #include "include/function.h"
 #include "include/structure.h"
 
+void send_all_information(server_t *server, int fd)
+{
+    dprintf(fd, "ok\n");
+    dprintf(fd, "%u\n", server->poll.client_index);
+    dprintf(fd, "%u %u\n", server->width, server->height);
+}
+
 void cmd_player(server_t *server, int index, teams_t *team)
 {
+    printf("coucou\n");
     client_t *cl;
     int fd;
 
@@ -28,6 +36,6 @@ void cmd_player(server_t *server, int index, teams_t *team)
     add_player(server, index, team);
     cl->whoAmI = PLAYER;
     team->slots_used++;
-    dprintf(fd, "ok\n");
+    send_all_information(server, fd);
     event_ebo(server, index);
 }

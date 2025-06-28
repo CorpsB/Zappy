@@ -33,19 +33,19 @@ static void add_client(server_t *server, int socket, whoAmI_t state)
 {
     server->poll.pollfds = realloc(
         server->poll.pollfds,
-        sizeof(struct pollfd) * (server->poll.client_index + 1));
+        sizeof(struct pollfd) * (server->poll.connected_client + 1));
     server->poll.client_list = realloc(
         server->poll.client_list,
-        sizeof(client_t) * (server->poll.client_index + 1));
+        sizeof(client_t) * (server->poll.connected_client + 1));
     if (!server->poll.pollfds || !server->poll.client_list)
         logger(server, "REALLOC", PERROR, true);
-    server->poll.pollfds[server->poll.client_index].fd = socket;
-    server->poll.pollfds[server->poll.client_index].events = POLLIN;
-    server->poll.pollfds[server->poll.client_index].revents = 0;
-    server->poll.client_list[server->poll.client_index].whoAmI = state;
-    server->poll.client_list[server->poll.client_index].player = NULL;
+    server->poll.pollfds[server->poll.connected_client].fd = socket;
+    server->poll.pollfds[server->poll.connected_client].events = POLLIN;
+    server->poll.pollfds[server->poll.connected_client].revents = 0;
+    server->poll.client_list[server->poll.connected_client].whoAmI = state;
+    server->poll.client_list[server->poll.connected_client].player = NULL;
     if (state == UNKNOWN)
-        dprintf(server->poll.pollfds[server->poll.client_index].fd,
+        dprintf(server->poll.pollfds[server->poll.connected_client].fd,
             "WELCOME\n");
     server->poll.client_index++;
     server->poll.connected_client++;
@@ -75,7 +75,6 @@ static bool del_client(server_t *server, int index)
         }
     }
     server->poll.connected_client--;
-    server->poll.client_index--;
     server->poll.client_list = realloc(server->poll.client_list,
         sizeof(client_t) * server->poll.connected_client);
     server->poll.pollfds = realloc(server->poll.pollfds,
@@ -137,12 +136,12 @@ static void poll_func(server_t *server, zappy_clock_t *clock)
     int t = (unsigned int)
     ((1.0 - clock->accumulator) * 1000.0 / clock->freq);
 
-    event = poll(server->poll.pollfds, server->poll.client_index, (int)t);
+    event = poll(server->poll.pollfds, server->poll.connected_client, (int)t);
     if (event == -1)
         logger(server, "POLL", PERROR, true);
     if (event == 0)
         return;
-    for (int i = 0; i < server->poll.client_index; i++) {
+    for (int i = 0; i < server->poll.connected_client; i++) {
         if (event_detector(server, i))
             return;
     }
