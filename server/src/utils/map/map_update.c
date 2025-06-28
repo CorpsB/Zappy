@@ -150,7 +150,6 @@ static void spawn_ressource(server_t *server, r_ressource_t type,
 
     server->map[pos[0]][pos[1]].repartition_map[type] += weight;
     change_arround(server, pos, type, weight - 1);
-    event_bct_per_tile(server, pos[0], pos[1]);
     if (type == FOOD)
         server->map[pos[0]][pos[1]].food++;
     if (type == LINEMATE)
@@ -165,6 +164,7 @@ static void spawn_ressource(server_t *server, r_ressource_t type,
         server->map[pos[0]][pos[1]].phiras++;
     if (type == THYSTAME)
         server->map[pos[0]][pos[1]].thystame++;
+    event_bct_per_tile(server, pos[0], pos[1]);
 }
 
 /**

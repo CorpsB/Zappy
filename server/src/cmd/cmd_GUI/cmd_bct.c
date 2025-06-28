@@ -95,7 +95,7 @@ static int parse_bct_coords(char **args, const server_t *server,
 */
 static void send_bct_line(int fd, int x, int y, const resources_t *t)
 {
-    dprintf(fd, "bct %d %d %u %u %u %u %u %u %u\n", x, y,
+    dprintf(fd, "bct %d %d %u %u %u %u %u %u %u\n", y, x,
         t->food, t->linemate, t->deraumere, t->sibur,
         t->mendiane, t->phiras, t->thystame);
 }

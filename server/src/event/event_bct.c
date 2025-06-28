@@ -24,7 +24,7 @@
 static void send_bct_tile(int fd, int x, int y, resources_t *tile)
 {
     dprintf(fd,
-        "bct %d %d %u %u %u %u %u %u %u\n", x, y, tile->food, tile->linemate,
+        "bct %d %d %u %u %u %u %u %u %u\n", y, x, tile->food, tile->linemate,
         tile->deraumere, tile->sibur, tile->mendiane, tile->phiras,
         tile->thystame
     );
