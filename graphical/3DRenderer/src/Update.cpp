@@ -135,4 +135,29 @@ namespace Renderer
                 e.rotation.y -= 360.f;
         }
     }
+
+    void Update::changeSelectedTile(bool &zToggle, bool &sToggle, bool &qToggle, bool &dToggle,
+        std::pair<int, int> &currentTile, int map_size_x, int map_size_y)
+    {
+        if (zToggle) {
+            if (currentTile.first < map_size_x - 1)
+                currentTile.first += 1;
+            zToggle = false;
+        }
+        if (sToggle) {
+            if (currentTile.first > 0)
+                currentTile.first -= 1;
+            sToggle = false;
+        }
+        if (qToggle) {
+            if (currentTile.second < map_size_y - 1)
+                currentTile.second += 1;
+            qToggle = false;
+        }
+        if (dToggle) {
+            if (currentTile.second > 0)
+                currentTile.second -= 1;
+            dToggle = false;
+        }
+    }
 } // namespace Renderer

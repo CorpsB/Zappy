@@ -33,6 +33,8 @@ namespace Renderer {
                 std::unordered_map<int, MovementState> &pendingMovementsAfterRotation);
             void sychroEyes(Entity &e, std::vector<std::tuple<int, Vec3, Vec3>> &valuesForSynchro);
             void incantationRing(float dt, Entity &e);
+            void changeSelectedTile(bool &zToggle, bool &sToggle, bool &qToggle, bool &dToggle,
+                std::pair<int, int> &currentTile, int map_size_x, int map_size_y);
         private:
     };
 }

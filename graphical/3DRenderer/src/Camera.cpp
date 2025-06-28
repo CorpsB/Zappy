@@ -18,20 +18,6 @@ namespace Renderer {
     float cameraYaw = 0.0f;
     float cameraSpeed = 15.0f;
     float cameraRotationSpeed = 60.0f;
-    bool buttonToggle = false;
-    bool buttonIsPressed = false;
-    bool escapeMenuToggle = false;
-    bool escapeWasPressed = false;
-    bool zToggle = false;
-    bool zWasPressed = false;
-    bool sToggle = false;
-    bool sWasPressed = false;
-    bool qToggle = false;
-    bool qWasPressed = false;
-    bool dToggle = false;
-    bool dWasPressed = false;
-    bool tabToggle = false;
-    bool tabWasPressed = false;
 
     Mat4x4 pointAt(const Vec3& pos, const Vec3& target, const Vec3& up) {
         return Mat4x4::pointAt(pos, target, up);
@@ -41,7 +27,7 @@ namespace Renderer {
         return Mat4x4::quickInverse(m);
     }
 
-    void processInput(float dt) {
+    void cameraMovement(float dt) {
         float move = cameraSpeed * dt;
         float rot  = cameraRotationSpeed * dt;
 

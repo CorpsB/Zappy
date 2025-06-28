@@ -42,6 +42,22 @@ namespace Renderer {
     static std::array<std::string, 4> orientation = {"NORTH", "WEST", "SOUTH", "EAST"};
     static sf::RectangleShape escapeMenuBg;
     static std::pair<int, int> currentTile;
+
+    bool buttonToggle = false;
+    bool buttonIsPressed = false;
+    bool escapeMenuToggle = false;
+    bool escapeWasPressed = false;
+    bool zToggle = false;
+    bool zWasPressed = false;
+    bool sToggle = false;
+    bool sWasPressed = false;
+    bool qToggle = false;
+    bool qWasPressed = false;
+    bool dToggle = false;
+    bool dWasPressed = false;
+    bool tabToggle = false;
+    bool tabWasPressed = false;
+
     Update _update;
     InputHandler _inputhandler;
 
@@ -147,7 +163,7 @@ namespace Renderer {
     }
 
     void update(float dt) {
-        processInput(dt);
+        cameraMovement(dt);
         cooldownAction -= dt;
         _inputhandler.switchInput(tabToggle, tabWasPressed, sf::Keyboard::Tab);
         _inputhandler.switchInput(escapeMenuToggle, escapeWasPressed, sf::Keyboard::Escape);
@@ -155,26 +171,7 @@ namespace Renderer {
         _inputhandler.switchInput(sToggle, sWasPressed, sf::Keyboard::S);
         _inputhandler.switchInput(qToggle, qWasPressed, sf::Keyboard::Q);
         _inputhandler.switchInput(dToggle, dWasPressed, sf::Keyboard::D);
-        if (zToggle) {
-            if (currentTile.first < map_size_x - 1)
-                currentTile.first += 1;
-            zToggle = false;
-        }
-        if (sToggle) {
-            if (currentTile.first > 0)
-                currentTile.first -= 1;
-            sToggle = false;
-        }
-        if (qToggle) {
-            if (currentTile.second < map_size_y - 1)
-                currentTile.second += 1;
-            qToggle = false;
-        }
-        if (dToggle) {
-            if (currentTile.second > 0)
-                currentTile.second -= 1;
-            dToggle = false;
-        }
+        _update.changeSelectedTile(zToggle, sToggle, qToggle, dToggle, currentTile, map_size_x, map_size_y);
         // Values in valuesForSynchro :
         // int -> client id
         // Vec3 -> body position
