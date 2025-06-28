@@ -508,15 +508,29 @@ void Interpreter::_pdi(const std::smatch &m)
 {
     const int playerId = std::stoi(m[1]);
     sf::Color color = sf::Color::White;
+    float x = 0.f;
+    float z = 0.f;
 
     for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
         if (it->clientId == playerId) {
+            if (static_cast<int>(it->position.x) % TILE_SIZE != 0)
+                it->position.x = std::round(it->position.x / TILE_SIZE) * TILE_SIZE;
+            if (static_cast<int>(it->position.z) % TILE_SIZE != 0)
+                it->position.z = std::round(it->position.z / TILE_SIZE) * TILE_SIZE;
             if (it->type == Renderer::PartType::BODY)
                 color = it->color;
+            x = it->position.x;
+            z = it->position.z;
             it = Renderer::sceneEntities.erase(it);
         } else {
             ++it;
         }
+    }
+    for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
+        if (it->type == Renderer::PartType::RING && x == it->position.x && z == it->position.z) {
+            it = Renderer::sceneEntities.erase(it);
+        } else
+            ++it;
     }
     std::ostringstream oss;
 

@@ -222,9 +222,6 @@ namespace Renderer {
     void render(float dt, sf::RenderWindow &window) {
         int w = window.getSize().x;
         int h = window.getSize().y;
-        // static bool isButtonClicked = false;
-        // static sf::Clock clickClock;
-        // sf::Time clickDuration = sf::seconds(1.f);
         sf::Vector2i mousePos = sf::Mouse::getPosition(window);
         sf::Vector2f mousePosF(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
 
@@ -504,7 +501,7 @@ namespace Renderer {
             if (_resourcesOnTiles.find(currentTile.first * map_size_y + currentTile.second) != _resourcesOnTiles.end()) {
                 hudText.setFillColor(sf::Color {255, 255, 255});
                 float x = window.getSize().x / 2 - 75;
-                hudText.setString("Content of the red tile:");
+                hudText.setString("Content of the selected tile:");
                 hudText.setPosition(x, 100);
                 window.draw(hudText);
                 hudText.setString("x: " + std::to_string(currentTile.first));
