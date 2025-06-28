@@ -201,9 +201,46 @@ int parse_teams(char **av, server_t *server, int i);
 */
 void logger(server_t *server, char *message, logs_t log, bool is_end);
 
+/**
+ * @brief Debug function to print quantities and repartition maps of all
+ * resources. 
+ * Iterates through all resource types and prints both the tile quantities
+ * and repartition map values for each resource in a readable format.
+ * Useful for visualizing resource distribution and debugging the map state.
+ * @param server Pointer to the server structure containing the map and
+ * resources.
+*/
 void debug_print_resource_map(server_t *server);
+
+/**
+ * @brief Allocates and initializes the server's map with empty resource
+ * cells.
+ * Allocates memory for a 2D array representing the map grid. Each cell is
+ * zero-initialized. Calls other functions to reset inventory, define goals,
+ * initialize repartition cells, update the map and spawn eggs.
+ * @param server Pointer to the server for which the map is generated.
+*/
 void map_generator(server_t *server);
+
+/**
+ * @brief Updates the map by spawning resources until all goals are met.
+ * Repeatedly calls ressource_update for each resource type if the
+ * actual count
+ * is below the goal, looping until all goals are satisfied.
+ * @param server Pointer to the server containing the map and inventories.
+*/
 void map_update(server_t *server);
+
+/**
+ * @brief Updates the repartition map influence around a position
+ * based on a weight.
+ * Calls draw_circle in a square radius of size 'weight' around 'pos',
+ * adjusting repartition values with decreasing weight.
+ * @param srv Pointer to the server containing the map.
+ * @param pos Array of two integers [row, column] representing the position.
+ * @param type Resource type to update.
+ * @param weight Influence radius and intensity.
+*/
 void change_arround(server_t *server, int *pos, r_ressource_t type,
     int weight);
 
