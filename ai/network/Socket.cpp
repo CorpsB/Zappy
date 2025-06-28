@@ -148,11 +148,17 @@ void ai::network::Socket::greetsServer()
 bool ai::network::Socket::sendCommand(const std::string &cmd)
 {
     const std::string cmd_final = cmd + "\n";
+    const int to_send = cmd_final.size();
+    int total_sent = 0;
 
-    if (write(_fds.fd, cmd_final.c_str(), cmd_final.size()) < 0) {
-        utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
-        logger.log("[Error] Socket error while sending '" + cmd + "'.");
-        return false;
+    while (total_sent < to_send) {
+        int sent = write(_fds.fd, cmd_final.c_str() + total_sent, to_send - total_sent);
+        if (sent < 0) {
+            utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
+            logger.log("[Error] Socket error while sending '" + cmd + "'.");
+            return false;
+        }
+        total_sent += sent;
     }
     return true;
 }
