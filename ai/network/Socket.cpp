@@ -78,15 +78,11 @@ std::string ai::network::Socket::readSocketBuffer()
 {
     if (!readSocket())
         return "dead";
-
-    utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
-    logger.log("Buffer: ########" + _buffer + "########'.");
-
     for (size_t pos = _buffer.find("\n"); pos != std::string::npos;
     pos = _buffer.find("\n")) {
         std::string line = _buffer.substr(0, pos);
 
-        _buffer.erase(0, pos + 2);
+        _buffer.erase(0, pos + 1);
         line.erase(std::remove(line.begin(), line.end(), '\n'), line.end());
         if (!line.empty())
             return line;
@@ -167,9 +163,5 @@ std::string ai::network::Socket::doAction(const std::string &cmd)
         if (!sendCommand(cmd))
             return "dead";
     }
-
-    utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
-    logger.log("Command: ########" + cmd + "########.");
-
     return readSocketBuffer();
 }

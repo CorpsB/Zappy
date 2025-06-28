@@ -90,6 +90,8 @@ SRC	=	src/main.c								\
 		src/player_cmd_execution.c				\
 		src/cmd/cmd_IA/cmd_incantation.c		\
 		src/cmd/cmd_IA/incantation_table.c		\
+		src/event/event_pic.c					\
+		src/event/event_pie.c					\
 
 OBJ	=	$(SRC:.c=.o)
 
@@ -101,12 +103,13 @@ all:	$(NAME)
 
 $(NAME):	$(OBJ)
 	gcc $(SRC) -o $(NAME) $(CFLAGS)
+	mv $(NAME) ..
 
 clean:
 	rm -f $(OBJ)
 
 fclean:	clean
-	rm -f $(NAME)
+	rm -f ../$(NAME)
 
 re:	fclean all
 

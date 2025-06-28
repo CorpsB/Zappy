@@ -131,10 +131,11 @@ static char *line_right(server_t *srv, int y, int x, int lvl)
 
 char *build_line(server_t *srv, player_t *pl, int lvl)
 {
+    printf("%u\n", pl->direction);
     static line_builder_t builders[4] = {
         line_top, line_right, line_bottom, line_left
     };
 
-    return builders[pl->direction](srv,
+    return builders[pl->direction - 1](srv,
         (int)pl->position[0], (int)pl->position[1], lvl);
 }

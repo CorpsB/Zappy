@@ -90,6 +90,7 @@ bool start_incantation(server_t *server, player_t *pl)
             dprintf(tmp->socket_fd, "Elevation underway\n");
         }
     }
+    event_pic(server, pl);
     return true;
 }
 
@@ -114,6 +115,7 @@ static void elevation_failed(server_t *server, int index)
             dprintf(tmp->socket_fd, "ko\n");
         }
     }
+    event_pie(server, pl, false);
 }
 
 /**
@@ -158,9 +160,11 @@ static void end_incantation(server_t *server, int index, char **)
         if (tmp->lvl == pl->lvl && is_same_pos(tmp, pl) && !tmp->is_dead) {
             tmp->lvl++;
             tmp->is_freeze = false;
+            event_plv(server, tmp);
             dprintf(tmp->socket_fd, "Current level: %u\n", tmp->lvl);
         }
     }
+    event_pie(server, pl, true);
 }
 
 void cmd_incantation(server_t *server, int index, char **args)

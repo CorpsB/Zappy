@@ -34,25 +34,6 @@ static bool parse_sst_argument(char **args, long *freq_out)
     return true;
 }
 
-/**
- * @brief Sends the updated frequency to all connected graphical clients.
- * Iterates over all connected clients and notifies those identified as GUI
- * with the updated server frequency using the "sst" command.
- * @param server The server structure containing clients and
- * the frequency value.
-*/
-static void notify_gui_frequency(server_t *server)
-{
-    int fd;
-
-    for (int i = 0; i < server->poll.client_index; i++) {
-        if (server->poll.client_list[i].whoAmI == GUI) {
-            fd = server->poll.pollfds[i].fd;
-            dprintf(fd, "sst %u\n", server->frequency);
-        }
-    }
-}
-
 void cmd_sst(server_t *server, int index, char **args)
 {
     int fd;
@@ -64,5 +45,5 @@ void cmd_sst(server_t *server, int index, char **args)
         return;
     }
     server->frequency = (unsigned int)freq;
-    notify_gui_frequency(server);
+    event_sgt(server);    
 }

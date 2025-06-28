@@ -120,23 +120,18 @@ static bool del_client(server_t *server, int index)
 */
 static void add_cmd(server_t *server, char *cmd, int index)
 {
-    /* commandes GUI ou LISTEN – inchangé */
     if (server->poll.client_list[index].whoAmI != PLAYER) {
         cmd_parser(server, index, cmd);
         return;
     }
-
     player_t *pl = server->poll.client_list[index].player;
-
-    /* file pleine → on ignore ou on répond "suc" */
     if (pl->cmd[9] != NULL) {
         dprintf(pl->socket_fd, "suc\n");
         return;
     }
-
     for (int k = 0; k < 10; k++) {
         if (!pl->cmd[k]) {
-            pl->cmd[k] = strdup(cmd);   /* <<< COPIE SÛRE */
+            pl->cmd[k] = strdup(cmd);
             return;
         }
     }
@@ -243,15 +238,17 @@ void run_server(server_t *server)
     init_server(server);
     add_client(server, server->poll.socket, LISTEN);
     for (int count = 0; !is_game_over(server); count++) {
-        update_clock(clock);
+        update_clock(clock, server);
         if (clock->accumulator < 1.0) {
             poll_func(server, clock);
             continue;
         }
         eat(server);
         player_cmd_execution(server);
-        if (count % 20 == 0)
+        if (count % 20 == 0) {
             map_update(server);
+            logger(server, "RESSOURCE ++", DEBUG, false);
+        }
         while (clock->accumulator >= 1.0)
             clock->accumulator -= 1.0;
     }

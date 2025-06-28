@@ -798,13 +798,6 @@ unsigned int players_at(server_t *srv, int y, int x);
 void free_int_map(int y, int **map);
 
 /**
- * @brief Update the clock accumulator and last_tick.
- * Adds elapsed time units to accumulator and updates last_tick.
- * @param clock Pointer to zappy_clock_t struct.
-*/
-void update_clock(zappy_clock_t *clock);
-
-/**
  * @brief Initialize and start a new clock.
  * Allocates a new clock structure, sets its frequency, and starts
  * tracking time.
@@ -814,6 +807,13 @@ void update_clock(zappy_clock_t *clock);
  * @return zappy_clock_t* Pointer to the initialized clock structure.
 */
 zappy_clock_t *init_clock(server_t *server, size_t freq);
+
+/**
+ * @brief Update the clock accumulator and last_tick.
+ * Adds elapsed time units to accumulator and updates last_tick.
+ * @param clock Pointer to zappy_clock_t struct.
+*/
+void update_clock(zappy_clock_t *clock, server_t *server);
 
 /**
  * @brief Execute pending player commands based on their timers.
@@ -840,5 +840,8 @@ void cmd_incantation(server_t *server, int index, char **args);
  * @return true if the incantation has started, false otherwise.
 */
 bool start_incantation(server_t *server, player_t *pl);
+
+void event_pic(server_t *server, player_t *player);
+void event_pie(server_t *server, player_t *player, bool succes);
 
 #endif /* !FUCNTION_H_ */

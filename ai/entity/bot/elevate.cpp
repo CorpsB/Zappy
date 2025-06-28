@@ -37,7 +37,7 @@ bool ai::entity::AI::setStonesForIncantation()
         return false;
 
     for (const std::string &stone : stones_to_set) {
-        if (doAction("Set " + stone) == "dead") {
+        if (!doKoAction("Set " + stone)) {
             logger.log("Failed to set " + stone + " during L" + std::to_string(_level + 1) + " prep.");
             return false;
         }
@@ -45,33 +45,28 @@ bool ai::entity::AI::setStonesForIncantation()
     return true;
 }
 
-bool ai::entity::AI::launchIncantation()
+bool ai::entity::AI::incantate(const std::string &response)
 {
-    ai::utils::debug::Logger &logger = ai::utils::debug::Logger::GetInstance();
-    logger.log("Attempting L" + std::to_string(_level + 1) + " Incantation.");
+    utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
 
-    if (!setStonesForIncantation()) {
-        logger.log("L" + std::to_string(_level + 1) + " stone setting phase failed.");
-        return false;
-    }
-
-    const std::string response = doAction("Incantation");
-    std::this_thread::sleep_for(std::chrono::milliseconds(READ_TIMEOUT * 5));
+    logger.log("I take part in the incantation for level " + std::to_string(_level + 1) + ".");
     if (response == "dead")
         return false;
     if (response.find("Elevation underway") != std::string::npos) {
         const std::string final_response = doAction("");
         if (final_response == "dead")
             return false;
-        if (final_response.find("Current level: " + std::to_string(_level + 1)) != std::string::npos) {
+        if (final_response == "ko")
+            logger.log("L" + std::to_string(_level + 1) + " Elevation failed.");
+        else if (final_response.find("Current level: " + std::to_string(_level + 1)) != std::string::npos) {
             ++_level;
-            logger.log("L" + std::to_string(_level) + " ELEVATION SUCCESS! Now Level " + std::to_string(_level) + ".");
-            return true;
+            logger.log("L" + std::to_string(_level) + " Elevation success! Now Level " + std::to_string(_level) + ".");
         } else {
-            logger.log("L" + std::to_string(_level + 1) + " Elevation failed or unexpected response: '" + final_response + "'.");
+            logger.log("L" + std::to_string(_level + 1) + " Elevation led to unexpected response: '" + final_response + "'.");
+            return false;
         }
     } else {
         logger.log("L" + std::to_string(_level + 1) + " Incantation start failed: '" + response + "'.");
     }
-    return false;
+    return true;
 }

@@ -6,6 +6,8 @@
 */
 
 #include "../AI.hpp"
+#include <chrono>
+#include <thread>
 
 bool ai::entity::AI::performWanderAction()
 {
@@ -26,30 +28,83 @@ bool ai::entity::AI::performActionForGoal(std::string &look)
     utils::debug::Logger &logger = ai::utils::debug::Logger::GetInstance();
 
     switch (_goal) {
-        case FOOD:
+        case FOOD: {
+            for (int i = 0; i < 3; ++i) {
+                if (countItemInLook(look, "player") > 2) {
+                    if (doAction("Left") == "dead")
+                        return false;
+                } else
+                    break;
+            }
             return handleGoal(look, "food");
+        }
 
         case STONE: {
             const std::string rarest_missing = getRarestMissingStone();
+            if (determineLookDistance(findItemInLook(look, "food")) <
+            determineLookDistance(findItemInLook(look, rarest_missing))) {
+                logger.log("I make a detour to look for food");
+                return handleGoal(look, "food");
+            }
             return handleGoal(look, rarest_missing);
         }
 
-        case ELEVATION:
-            return launchIncantation();
+        case ELEVATION_MASTER: {
+            _dock_mode = true;
 
-        case MEETUP: {
-            logger.log("Sending everyone a meetup request for level " + std::to_string(_level + 1));
+            logger.log("Attempting L" + std::to_string(_level + 1) + " Incantation.");
+            if (!setStonesForIncantation()) {
+                logger.log("L" + std::to_string(_level + 1) + " stone setting phase failed.");
+                return false;
+            }
 
-            const std::string broadcast_msg = "Broadcast MEETUP_" + std::to_string(_level + 1);
-            if (doAction(broadcast_msg) == "dead")
+            logger.log("Sending everyone incantation signal for level " + std::to_string(_level + 1));
+            if (_level == 1) {
+                if (!_socket.sendCommand("Incantation"))
+                    return false;
+                return incantate(doAction(""));
+            } else {
+                if (!useBroadcast("INCANTATION_" + std::to_string(_level + 1)))
+                    return false;
+                return incantate(doAction("Incantation"));
+            }
+        }
+
+        case ELEVATION_SLAVE: {
+            _dock_mode = true;
+
+            if (!useBroadcast("READY_" + std::to_string(_level + 1)))
                 return false;
 
+            logger.log("Waiting elevation signal for level " + std::to_string(_level + 1));
+            std::this_thread::sleep_for(std::chrono::milliseconds(ACTION_DELAY_MS));
+            return true;
+        }
+
+        case MEETUP: {
             const Direction dir = _sound_system.getNearestSoundDirection("MEETUP_" + std::to_string(_level + 1));
             if (dir != NONE && dir != HERE) {
                 const std::vector<Direction> moves = getMovesTowardsSoundDirection(dir);
                 return executeMoves(look, moves);
             }
+
+            logger.log("No one find for the meetup. Defaulting to food searching.");
             return handleGoal(look, "food");
+        }
+
+        case MEETUP_POINT: {
+            _dock_mode = true;
+
+            logger.log("Sending everyone a point meetup request for level " + std::to_string(_level + 1));
+            if (!useBroadcast("MEETUP_" + std::to_string(_level + 1)))
+                return false;
+            std::this_thread::sleep_for(std::chrono::milliseconds(ACTION_DELAY_MS));
+            return true;
+        }
+
+        case REPRODUCE: {
+            logger.log("Creating an egg.");
+            return doAction("Fork") != "dead";
         }
 
         default:
