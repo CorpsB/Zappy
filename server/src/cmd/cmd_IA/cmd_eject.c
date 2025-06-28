@@ -73,7 +73,11 @@ static void destroy_eggs(server_t *server, unsigned x, unsigned y)
 static void notify_and_push(player_t *pl, direction_t dir,
     server_t *server)
 {
-    dprintf(pl->socket_fd, "Eject %d\n", dir);
+    char *buffer = NULL;
+
+    if (asprintf(&buffer, "Eject %d\n", dir) == -1)
+        logger(server, "ASPRINTF : Eject", PERROR, true);
+    send_str(server, pl->socket_fd, buffer);
     push_player(pl, dir, server->width, server->height);
     destroy_eggs(server, pl->position[0], pl->position[1]);
 }
@@ -102,6 +106,24 @@ static unsigned eject_team(teams_t *team, const player_t *agressor,
     return pushed;
 }
 
+static void send_ko(server_t *server, int fd)
+{
+    char *buffer = NULL;
+
+    if (asprintf(&buffer, "ko\n") == -1)
+        logger(server, "ASPRINTF : EJECT KO", PERROR, true);
+    send_str(server, fd, buffer);
+}
+
+static void send_eject_response(server_t *server, player_t *ag, unsigned total)
+{
+    char *buffer = NULL;
+
+    if (asprintf(&buffer, total ? "ok\n" : "ko\n") == -1)
+        logger(server, "ASPRINTF : EJECT RESPONSE", PERROR, true);
+    send_str(server, ag->socket_fd, buffer);
+}
+
 void cmd_eject(server_t *server, int index, const char **args)
 {
     client_t *cl;
@@ -115,11 +137,11 @@ void cmd_eject(server_t *server, int index, const char **args)
     cl = &server->poll.client_list[index];
     fd = server->poll.pollfds[index].fd;
     if (cl->whoAmI != PLAYER || !cl->player)
-        return (void)dprintf(fd, "ko\n");
+        return send_ko(server, fd);
     ag = cl->player;
     for (teams_t *t = server->teams; t; t = t->next)
         total += eject_team(t, ag, server);
-    dprintf(ag->socket_fd, total ? "ok\n" : "ko\n");
+    send_eject_response(server, ag, total);
     if (total)
         event_pex(server, ag);
 }

@@ -14,14 +14,18 @@
 /**
  * @brief Sends inventory of a player to GUI.
  */
-static void send_pin(int fd, const player_t *p)
+static void send_pin(server_t *server, int fd, const player_t *p)
 {
-    dprintf(fd, "pin %u %u %u %u %u %u %u %u %u %u\n",
+    char *buffer = NULL;
+
+    if (asprintf(&buffer, "pin %u %u %u %u %u %u %u %u %u %u\n",
         p->id, p->position[0], p->position[1],
         p->inventory.food, p->inventory.linemate,
         p->inventory.deraumere, p->inventory.sibur,
         p->inventory.mendiane, p->inventory.phiras,
-        p->inventory.thystame);
+        p->inventory.thystame) == -1)
+        logger(server, "ASPRINTF : PIN", PERROR, true);
+    send_str(server, fd, buffer);
 }
 
 static int find_gui_command_index(const char *name)
@@ -52,5 +56,5 @@ void cmd_pin(server_t *server, int index, char **args)
     p = find_player_by_id(server, (unsigned int)id);
     if (!p)
         return event_sbp(server, index, args, i);
-    send_pin(fd, p);
+    send_pin(server, fd, p);
 }

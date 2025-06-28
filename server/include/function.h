@@ -492,7 +492,7 @@ void event_ebo(server_t *server, unsigned int egg_id);
  * @param fd File descriptor of the graphical client.
  * @param egg Pointer to the egg structure.
 */
-void send_enw(int fd, eggs_t *egg);
+void send_enw(server_t *server, int fd, eggs_t *egg);
 
 /**
  * @brief Creates a new egg associated with the given player.
@@ -846,5 +846,15 @@ void event_pie(server_t *server, player_t *player, bool succes);
 void init_server(server_t *server);
 void send_str(server_t *server, int fd, char *message);
 void add_cmd(server_t *server, char *cmd, int index);
+void send_same_tile_message(server_t *srv, player_t *rcv,
+    const char *msg);
+void send_directional_message(server_t *srv, player_t *snd,
+    player_t *rcv, const char *msg);
+int adjust_to_player_dir(int raw, player_t *pl);
+int get_raw_direction(int **map, server_t *srv, player_t *rcv);
+void propagate_sound_map(int **map, server_t *srv,
+    player_t *sender);
+void free_broadcast_map(server_t *srv, int **map);
+int **create_broadcast_map(server_t *srv);
 
 #endif /* !FUCNTION_H_ */

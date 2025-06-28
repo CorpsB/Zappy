@@ -78,41 +78,26 @@ static int parse_bct_coords(char **args, const server_t *server,
     return 1;
 }
 
-/**
- * @brief Serialize the content of a single map tile and send it to the
- *        graphical client.
- *
- * The definitive protocol line is:
- * @code
- *   bct x y food linemate deraumere sibur mendiane phiras thystame\n
- * @endcode
- *
- * @param fd   Connected socket to the GUI client.
- * @param x    X coordinate of the tile (echoed in the reply).
- * @param y    Y coordinate of the tile (echoed in the reply).
- * @param t    Pointer to the tile’s @c resources_t structure
- *             (may be @c NULL during early start-up).
-*/
-static void send_bct_line(int fd, int x, int y, const resources_t *t)
-{
-    dprintf(fd, "bct %d %d %u %u %u %u %u %u %u\n", y, x,
-        t->food, t->linemate, t->deraumere, t->sibur,
-        t->mendiane, t->phiras, t->thystame);
-}
-
 void cmd_bct(server_t *server, int index, char **args)
 {
     int x = 0;
     int y = 0;
     int fd;
     int i = find_gui_command_index("bct");
+    char *buffer = NULL;
+    const resources_t *t;
 
     if (!server || !args || !args[1] || !args[2])
         return event_sbp(server, index, args, i);
     fd = server->poll.pollfds[index].fd;
     if (parse_bct_coords(args, server, &x, &y) != 0) {
-        send_bct_line(fd, 0, 0, &server->map[0][0]);
-        return;
+        x = 0;
+        y = 0;
     }
-    send_bct_line(fd, x, y, &server->map[y][x]);
+    t = &server->map[y][x];
+    if (asprintf(&buffer, "bct %d %d %u %u %u %u %u %u %u\n", y, x,
+        t->food, t->linemate, t->deraumere, t->sibur,
+        t->mendiane, t->phiras, t->thystame) == -1)
+        logger(server, "ASPRINTF : BCT", PERROR, true);
+    send_str(server, fd, buffer);
 }

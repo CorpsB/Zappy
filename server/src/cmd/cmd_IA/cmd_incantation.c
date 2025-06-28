@@ -78,7 +78,7 @@ bool start_incantation(server_t *server, player_t *pl)
     player_t *tmp;
 
     if (!check_condition(server, pl)) {
-        dprintf(pl->socket_fd, "ko\n");
+        send_str(server, pl->socket_fd, "ko\n");
         return false;
     }
     for (int i = 0; i < server->poll.connected_client; i++) {
@@ -87,7 +87,7 @@ bool start_incantation(server_t *server, player_t *pl)
         tmp = server->poll.client_list[i].player;
         if (!tmp->is_dead && tmp->lvl == pl->lvl && is_same_pos(tmp, pl)) {
             tmp->is_freeze = true;
-            dprintf(tmp->socket_fd, "Elevation underway\n");
+            send_str(server, tmp->socket_fd, "Elevation underway\n");
         }
     }
     event_pic(server, pl);
@@ -112,7 +112,7 @@ static void elevation_failed(server_t *server, int index)
         if (tmp->lvl == pl->lvl && is_same_pos(tmp, pl) && !tmp->is_dead
             && tmp->is_freeze) {
             tmp->is_freeze = false;
-            dprintf(tmp->socket_fd, "ko\n");
+            send_str(server, tmp->socket_fd, "ko\n");
         }
     }
     event_pie(server, pl, false);
@@ -136,6 +136,31 @@ static void delete_stuff(server_t *server, int index)
     map.thystame -= requirement[pl->lvl - 1].thystame;
 }
 
+static void notify_success(server_t *server, player_t *player)
+{
+    char *buffer = NULL;
+
+    player->lvl++;
+    player->is_freeze = false;
+    event_plv(server, player);
+    if (asprintf(&buffer, "Current level: %u\n", player->lvl) == -1)
+        logger(server, "ASPRINTF : INCANTATION", PERROR, true);
+    send_str(server, player->socket_fd, buffer);
+}
+
+static void upgrade_players_on_tile(server_t *server, player_t *pl)
+{
+    player_t *tmp;
+
+    for (int i = 0; i < server->poll.connected_client; i++) {
+        if (server->poll.client_list[i].whoAmI != PLAYER)
+            continue;
+        tmp = server->poll.client_list[i].player;
+        if (tmp->lvl == pl->lvl && is_same_pos(tmp, pl) && !tmp->is_dead)
+            notify_success(server, tmp);
+    }
+}
+
 /**
  * @brief Finalize an incantation attempt.
  * Checks conditions again, applies consequences, and levels up players.
@@ -146,24 +171,11 @@ static void delete_stuff(server_t *server, int index)
 static void end_incantation(server_t *server, int index, char **)
 {
     player_t *pl = server->poll.client_list[index].player;
-    player_t *tmp;
 
-    if (!check_condition(server, pl)) {
-        elevation_failed(server, index);
-        return;
-    }
+    if (!check_condition(server, pl))
+        return elevation_failed(server, index);
     delete_stuff(server, index);
-    for (int i = 0; i < server->poll.connected_client; i++) {
-        if (server->poll.client_list[i].whoAmI != PLAYER)
-            continue;
-        tmp = server->poll.client_list[i].player;
-        if (tmp->lvl == pl->lvl && is_same_pos(tmp, pl) && !tmp->is_dead) {
-            tmp->lvl++;
-            tmp->is_freeze = false;
-            event_plv(server, tmp);
-            dprintf(tmp->socket_fd, "Current level: %u\n", tmp->lvl);
-        }
-    }
+    upgrade_players_on_tile(server, pl);
     event_pie(server, pl, true);
 }
 

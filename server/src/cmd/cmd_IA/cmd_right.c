@@ -45,5 +45,5 @@ void cmd_right(server_t *server, int index, char **args)
         return;
     rotate_right(p);
     event_ppo(server, p);
-    dprintf(server->poll.pollfds[index].fd, "ok\n");
+    send_str(server, server->poll.pollfds[index].fd, "ok\n");
 }

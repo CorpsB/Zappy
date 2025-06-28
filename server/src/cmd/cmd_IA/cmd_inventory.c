@@ -13,6 +13,7 @@ void cmd_inventory(server_t *server, int index, const char **args)
 {
     player_t *player;
     char buf[160];
+    char *buffer = NULL;
 
     (void)args;
     if (!server || !server->poll.client_list ||
@@ -26,5 +27,7 @@ void cmd_inventory(server_t *server, int index, const char **args)
         player->inventory.deraumere, player->inventory.sibur,
         player->inventory.mendiane, player->inventory.phiras,
         player->inventory.thystame);
-    dprintf(player->socket_fd, "%s", buf);
+    if (asprintf(&buffer, "%s", buf) == -1)
+        logger(server, "ASPRINTF : INVENTORY", PERROR, true);
+    send_str(server, player->socket_fd, buffer);
 }

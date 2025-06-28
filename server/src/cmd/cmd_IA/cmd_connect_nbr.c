@@ -14,6 +14,7 @@ void cmd_connect_nbr(server_t *server, int index, char **args)
     player_t *pl;
     teams_t *team;
     int free_slots;
+    char *buffer = NULL;
 
     (void)args;
     if (!server || !server->poll.client_list ||
@@ -24,5 +25,7 @@ void cmd_connect_nbr(server_t *server, int index, char **args)
     free_slots = (int)server->starter_eggs_number - team->slots_used;
     if (free_slots < 0)
         free_slots = 0;
-    dprintf(pl->socket_fd, "%d\n", free_slots);
+    if (asprintf(&buffer, "%d\n", free_slots) == -1)
+        logger(server, "ASPRINTF : CONNECT_NBR", PERROR, true);
+    send_str(server, pl->socket_fd, buffer);
 }

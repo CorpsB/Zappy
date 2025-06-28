@@ -22,6 +22,7 @@ void cmd_mct(server_t *server, int index, char **args)
     for (unsigned y = 0; y < server->height; y++) {
         for (unsigned x = 0; x < server->width; x++) {
             tile = &server->map[y][x];
+            //to do refacto
             dprintf(fd, "bct %u %u %u %u %u %u %u %u %u\n",
                 x, y, tile->food, tile->linemate, tile->deraumere,
                 tile->sibur, tile->mendiane, tile->phiras, tile->thystame);
