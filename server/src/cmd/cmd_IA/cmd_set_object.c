@@ -102,7 +102,7 @@ static void set_obj(server_t *server, r_ressource_t obj, int index)
     if (!pos)
         logger(server, "MALLOC : POSITION", PERROR, true);
     if (nbr <= 0) {
-        send_str(server, pl->socket_fd, "ko\n");
+        send_str(server, pl->socket_fd, "ko\n", false);
         return;
     }
     pos[0] = pl->position[0];
@@ -114,7 +114,7 @@ static void set_obj(server_t *server, r_ressource_t obj, int index)
     event(server, pl, obj);
     if (pos)
         free(pos);
-    send_str(server, pl->socket_fd, "ok\n");
+    send_str(server, pl->socket_fd, "ok\n", false);
 }
 
 void cmd_set_object(server_t *server, int index, char **args)
@@ -126,5 +126,5 @@ void cmd_set_object(server_t *server, int index, char **args)
                 return;
             }
     }
-    send_str(server, server->poll.pollfds[index].fd, "ko\n");
+    send_str(server, server->poll.pollfds[index].fd, "ko\n", false);
 }

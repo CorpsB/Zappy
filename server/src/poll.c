@@ -30,9 +30,10 @@ static void add_client(server_t *serv, int socket, whoAmI_t state)
     serv->poll.pollfds[serv->poll.connected_client].revents = 0;
     serv->poll.client_list[serv->poll.connected_client].whoAmI = state;
     serv->poll.client_list[serv->poll.connected_client].player = NULL;
+    serv->poll.client_list[serv->poll.connected_client].cmd = NULL;
     if (state == UNKNOWN)
         send_str(serv, serv->poll.pollfds[serv->poll.connected_client].fd,
-            "WELCOME\n");
+            "WELCOME\n", false);
     serv->poll.client_index++;
     serv->poll.connected_client++;
     logger(serv, "NEW CLIENT", DEBUG, false);

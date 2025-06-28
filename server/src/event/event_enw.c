@@ -18,7 +18,7 @@ void send_enw(server_t *server, int fd, eggs_t *egg)
     if (asprintf(&buffer, "enw #%u #%d %u %u\n",
         egg->id, egg->creator_id, egg->position[0], egg->position[1]) == -1)
         logger(server, "ASPRINTF : ENW", PERROR, true);
-    send_str(server, fd, buffer);
+    send_str(server, fd, buffer, true);
 }
 
 /**

@@ -99,5 +99,5 @@ void cmd_bct(server_t *server, int index, char **args)
         t->food, t->linemate, t->deraumere, t->sibur,
         t->mendiane, t->phiras, t->thystame) == -1)
         logger(server, "ASPRINTF : BCT", PERROR, true);
-    send_str(server, fd, buffer);
+    send_str(server, fd, buffer, true);
 }

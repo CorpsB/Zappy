@@ -27,5 +27,5 @@ void cmd_connect_nbr(server_t *server, int index, char **args)
         free_slots = 0;
     if (asprintf(&buffer, "%d\n", free_slots) == -1)
         logger(server, "ASPRINTF : CONNECT_NBR", PERROR, true);
-    send_str(server, pl->socket_fd, buffer);
+    send_str(server, pl->socket_fd, buffer, true);
 }

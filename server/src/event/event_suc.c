@@ -11,7 +11,7 @@
 
 void event_suc(server_t *server, int index, char **args)
 {
-    send_str(server, server->poll.pollfds[index].fd, "suc\n");
+    send_str(server, server->poll.pollfds[index].fd, "suc\n", false);
     logger(server, "UNKNOW GUI COMMAND:", INFO, false);
     logger(server, args[0], INFO, false);
 }

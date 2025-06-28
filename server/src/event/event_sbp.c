@@ -17,7 +17,7 @@ void event_sbp(server_t *server, int index, char **args, int i)
 
     if (!server)
         return;
-    send_str(server, server->poll.pollfds[index].fd, "sbp\n");
+    send_str(server, server->poll.pollfds[index].fd, "sbp\n", false);
     logger(server, "INVALID ARGS OR ARGS NUMBER FOR THIS COMMAND",
         INFO, false);
     if (server->debug) {
@@ -31,6 +31,6 @@ void event_sbp(server_t *server, int index, char **args, int i)
             table_size(args),
             gui_command_table[i].argument_nbr) == -1)
             logger(server, "ASPRINTF : SBP DEBUG", PERROR, true);
-        send_str(server, server->debug_fd, buffer);
+        send_str(server, server->debug_fd, buffer, true);
     }
 }

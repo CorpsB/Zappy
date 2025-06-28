@@ -17,7 +17,7 @@ void event_pdi(server_t *server, player_t *player, bool is_open)
         logger(server, "PDI", ERROR, true);
     send_to_all_gui(server, buffer);
     if (is_open)
-        send_str(server, player->socket_fd, "dead\n");
+        send_str(server, player->socket_fd, "dead\n", false);
 }
 
 void event_pdi_by_index(server_t *server, int index)

@@ -61,5 +61,5 @@ void cmd_plv(server_t *server, int index, char **args)
         return event_sbp(server, index, args, i);
     if (asprintf(&buffer, "plv %u %u\n", pl->id, pl->lvl) == -1)
         logger(server, "ASPRINTF : PLV", PERROR, true);
-    send_str(server, fd, buffer);
+    send_str(server, fd, buffer, true);
 }

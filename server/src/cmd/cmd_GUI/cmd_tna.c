@@ -25,6 +25,6 @@ void cmd_tna(server_t *server, int index, char **args)
             continue;
         if (asprintf(&buffer, "tna %s\n", team->name) == -1)
             logger(server, "ASPRINTF : TNA", PERROR, true);
-        send_str(server, fd, buffer);
+        send_str(server, fd, buffer, true);
     }
 }

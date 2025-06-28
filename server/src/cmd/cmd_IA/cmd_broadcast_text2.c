@@ -52,7 +52,7 @@ void send_same_tile_message(server_t *srv, player_t *rcv,
 
     if (asprintf(&buffer, "message 0, %s\n", msg) == -1)
         logger(srv, "ASPRINTF : BROADCAST", PERROR, true);
-    send_str(srv, rcv->socket_fd, buffer);
+    send_str(srv, rcv->socket_fd, buffer, true);
 }
 
 void send_directional_message(server_t *srv, player_t *snd,
@@ -71,6 +71,6 @@ void send_directional_message(server_t *srv, player_t *snd,
     adj = adjust_to_player_dir(raw, rcv);
     if (asprintf(&buffer, "message %d, %s\n", adj, msg) == -1)
         logger(srv, "ASPRINTF : BROADCAST", PERROR, true);
-    send_str(srv, rcv->socket_fd, buffer);
+    send_str(srv, rcv->socket_fd, buffer, true);
     free_broadcast_map(srv, map);
 }

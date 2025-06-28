@@ -47,7 +47,7 @@ static void debug_logger(server_t *server, char *message, logs_t log)
     if (log == INFO)
         asprintf(&buffer, "[INFO] - %s\n", message);
     if (buffer)
-        send_str(server, server->debug_fd, buffer);
+        send_str(server, server->debug_fd, buffer, true);
 }
 
 void logger(server_t *server, char *message, logs_t log, bool is_end)

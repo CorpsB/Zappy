@@ -25,7 +25,7 @@ static void send_pin(server_t *server, int fd, const player_t *p)
         p->inventory.mendiane, p->inventory.phiras,
         p->inventory.thystame) == -1)
         logger(server, "ASPRINTF : PIN", PERROR, true);
-    send_str(server, fd, buffer);
+    send_str(server, fd, buffer, true);
 }
 
 static int find_gui_command_index(const char *name)

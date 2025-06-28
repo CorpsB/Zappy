@@ -15,10 +15,10 @@ void send_all_information(server_t *server, int fd)
 
     if (asprintf(&buffer, "%u\n", server->poll.client_index) == -1)
         logger(server, "ASPRINTF : PLAYER INFO", PERROR, true);
-    send_str(server, fd, buffer);
+    send_str(server, fd, buffer, true);
     if (asprintf(&buffer, "%u %u\n", server->width, server->height) == -1)
         logger(server, "ASPRINTF : SERV INFO", PERROR, true);
-    send_str(server, fd, buffer);
+    send_str(server, fd, buffer, true);
 }
 
 void cmd_player(server_t *server, int index, teams_t *team)
@@ -30,11 +30,11 @@ void cmd_player(server_t *server, int index, teams_t *team)
     fd = server->poll.pollfds[index].fd;
     if (cl->whoAmI != UNKNOWN ||
         team->slots_used >= server->starter_eggs_number) {
-        send_str(server, fd, "klo\n");
+        send_str(server, fd, "ko\n", false);
         return;
     }
     if (team->slots_used >= team->slots_max || team->egg == NULL) {
-        send_str(server, fd, "lko\n");
+        send_str(server, fd, "ko\n", false);
         return;
     }
     add_player(server, index, team);

@@ -45,5 +45,5 @@ void cmd_left(server_t *server, int index, char **args)
         return;
     rotate_left(p);
     event_ppo(server, p);
-    send_str(server, server->poll.pollfds[index].fd, "ok\n");
+    send_str(server, server->poll.pollfds[index].fd, "ok\n", true);
 }

@@ -29,5 +29,5 @@ void cmd_inventory(server_t *server, int index, const char **args)
         player->inventory.thystame);
     if (asprintf(&buffer, "%s", buf) == -1)
         logger(server, "ASPRINTF : INVENTORY", PERROR, true);
-    send_str(server, player->socket_fd, buffer);
+    send_str(server, player->socket_fd, buffer, true);
 }

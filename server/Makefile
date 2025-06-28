@@ -95,7 +95,6 @@ SRC	=	src/main.c								\
 		src/event/event_pie.c					\
 		src/utils/send_and_recieve/add_cmd.c	\
 		src/utils/send_and_recieve/send_str.c	\
-		src/utils/send_and_recieve/send_str.c	\
 
 OBJ	=	$(SRC:.c=.o)
 

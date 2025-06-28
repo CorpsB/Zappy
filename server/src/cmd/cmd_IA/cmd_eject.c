@@ -77,7 +77,7 @@ static void notify_and_push(player_t *pl, direction_t dir,
 
     if (asprintf(&buffer, "Eject %d\n", dir) == -1)
         logger(server, "ASPRINTF : Eject", PERROR, true);
-    send_str(server, pl->socket_fd, buffer);
+    send_str(server, pl->socket_fd, buffer, true);
     push_player(pl, dir, server->width, server->height);
     destroy_eggs(server, pl->position[0], pl->position[1]);
 }
@@ -112,7 +112,7 @@ static void send_ko(server_t *server, int fd)
 
     if (asprintf(&buffer, "ko\n") == -1)
         logger(server, "ASPRINTF : EJECT KO", PERROR, true);
-    send_str(server, fd, buffer);
+    send_str(server, fd, buffer, true);
 }
 
 static void send_eject_response(server_t *server, player_t *ag, unsigned total)
@@ -121,7 +121,7 @@ static void send_eject_response(server_t *server, player_t *ag, unsigned total)
 
     if (asprintf(&buffer, total ? "ok\n" : "ko\n") == -1)
         logger(server, "ASPRINTF : EJECT RESPONSE", PERROR, true);
-    send_str(server, ag->socket_fd, buffer);
+    send_str(server, ag->socket_fd, buffer, true);
 }
 
 void cmd_eject(server_t *server, int index, const char **args)

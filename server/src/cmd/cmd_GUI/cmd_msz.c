@@ -21,5 +21,5 @@ void cmd_msz(server_t *server, int index, char **args)
     fd = server->poll.pollfds[index].fd;
     if (asprintf(&buffer, "msz %u %u\n", server->width, server->height) == -1)
         logger(server, "ASPRINTF : MSZ", PERROR, true);
-    send_str(server, fd, buffer);
+    send_str(server, fd, buffer, true);
 }

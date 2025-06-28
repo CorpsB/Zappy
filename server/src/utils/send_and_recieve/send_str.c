@@ -9,7 +9,7 @@
 #include "include/function.h"
 #include "include/structure.h"
 
-void send_str(server_t *server, int fd, char *message)
+void send_str(server_t *server, int fd, char *message, bool need_free)
 {
     int lenght = strlen(message);
     int tmp = 0;
@@ -20,6 +20,6 @@ void send_str(server_t *server, int fd, char *message)
             logger(server, "SEND : WRITE", PERROR, true);
         i += tmp;
     }
-    if (message)
+    if (need_free && message)
         free(message);
 }

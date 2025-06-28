@@ -20,7 +20,7 @@ void send_to_all_gui(server_t *server, char *message)
             continue;
         if (asprintf(&buffer, "%s\n", message) == -1)
             logger(server, "ASPRINTF : SEND TO ALL GUI", PERROR, true);
-        send_str(server, server->poll.pollfds[i].fd, buffer);
+        send_str(server, server->poll.pollfds[i].fd, buffer, true);
     }
     free(message);
 }

@@ -844,7 +844,6 @@ bool start_incantation(server_t *server, player_t *pl);
 void event_pic(server_t *server, player_t *player);
 void event_pie(server_t *server, player_t *player, bool succes);
 void init_server(server_t *server);
-void send_str(server_t *server, int fd, char *message);
 void add_cmd(server_t *server, char *cmd, int index);
 void send_same_tile_message(server_t *srv, player_t *rcv,
     const char *msg);
@@ -856,5 +855,6 @@ void propagate_sound_map(int **map, server_t *srv,
     player_t *sender);
 void free_broadcast_map(server_t *srv, int **map);
 int **create_broadcast_map(server_t *srv);
+void send_str(server_t *server, int fd, char *message, bool need_free);
 
 #endif /* !FUCNTION_H_ */

@@ -50,7 +50,7 @@ static bool unknown_client(server_t *server, int index, char *cmd)
 static void parse_unknown_client(server_t *server, int index, char *cmd)
 {
     if (!unknown_client(server, index, cmd)) {
-        send_str(server, server->poll.pollfds[index].fd, "ko\n");
+        send_str(server, server->poll.pollfds[index].fd, "ko\n", false);
         logger(server, "UNKNOWN CLIENT SEND CMD BEFORE AUTHENTIFICATION CMD:",
         INFO, false);
         logger(server, cmd, INFO, false);
@@ -98,7 +98,7 @@ static void send_debug_message(server_t *server, int index,
         player_command_table[i].name, table_size(args),
         player_command_table[i].argument_nbr) == -1)
         logger(server, "ASPRINTF : ARG CHECKER", PERROR, true);
-    send_str(server, server->poll.pollfds[index].fd, buffer);
+    send_str(server, server->poll.pollfds[index].fd, buffer, true);
 }
 
 static void player_args_checker(server_t *server, int index,
@@ -109,7 +109,7 @@ static void player_args_checker(server_t *server, int index,
         player_command_table[i].func(server, index, args);
         return;
     }
-    send_str(server, server->poll.pollfds[index].fd, "ko\n");
+    send_str(server, server->poll.pollfds[index].fd, "ko\n", false);
     logger(server, "INVALID ARGS NUMBER FOR THIS COMMAND", INFO, false);
     if (server->debug)
         send_debug_message(server, index, args, i);
@@ -129,7 +129,7 @@ static void parse_player_client(server_t *server, int index, char **args)
             return;
         }
     }
-    send_str(server, server->poll.pollfds[index].fd, "ko\n");
+    send_str(server, server->poll.pollfds[index].fd, "ko\n", false);
     logger(server, "UNKNOW PLAYER COMMAND:", INFO, false);
     logger(server, args[0], INFO, false);
 }

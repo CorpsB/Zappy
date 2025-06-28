@@ -78,7 +78,7 @@ bool start_incantation(server_t *server, player_t *pl)
     player_t *tmp;
 
     if (!check_condition(server, pl)) {
-        send_str(server, pl->socket_fd, "ko\n");
+        send_str(server, pl->socket_fd, "ko\n", false);
         return false;
     }
     for (int i = 0; i < server->poll.connected_client; i++) {
@@ -87,7 +87,7 @@ bool start_incantation(server_t *server, player_t *pl)
         tmp = server->poll.client_list[i].player;
         if (!tmp->is_dead && tmp->lvl == pl->lvl && is_same_pos(tmp, pl)) {
             tmp->is_freeze = true;
-            send_str(server, tmp->socket_fd, "Elevation underway\n");
+            send_str(server, tmp->socket_fd, "Elevation underway\n", false);
         }
     }
     event_pic(server, pl);
@@ -112,7 +112,7 @@ static void elevation_failed(server_t *server, int index)
         if (tmp->lvl == pl->lvl && is_same_pos(tmp, pl) && !tmp->is_dead
             && tmp->is_freeze) {
             tmp->is_freeze = false;
-            send_str(server, tmp->socket_fd, "ko\n");
+            send_str(server, tmp->socket_fd, "ko\n", false);
         }
     }
     event_pie(server, pl, false);
@@ -145,7 +145,7 @@ static void notify_success(server_t *server, player_t *player)
     event_plv(server, player);
     if (asprintf(&buffer, "Current level: %u\n", player->lvl) == -1)
         logger(server, "ASPRINTF : INCANTATION", PERROR, true);
-    send_str(server, player->socket_fd, buffer);
+    send_str(server, player->socket_fd, buffer, true);
 }
 
 static void upgrade_players_on_tile(server_t *server, player_t *pl)

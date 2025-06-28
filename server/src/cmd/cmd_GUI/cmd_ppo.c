@@ -62,5 +62,5 @@ void cmd_ppo(server_t *server, int index, char **args)
     if (asprintf(&buffer, "ppo %d %d %d %d\n", target->id,
         target->position[0], target->position[1], target->direction) == -1)
         logger(server, "ASPRINTF : PPO", PERROR, true);
-    send_str(server, fd, buffer);
+    send_str(server, fd, buffer, true);
 }
