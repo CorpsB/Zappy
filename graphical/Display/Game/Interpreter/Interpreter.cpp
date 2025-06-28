@@ -192,7 +192,7 @@ void Interpreter::_pnw(const std::smatch &m)
         {posX, OFFSET_FROM_GROUND + OFFSET_EYES_Y, posY + Renderer::offsetEyesZ[level - 1]},
         sf::Color::Black, Renderer::pathEyes[level - 1], orientation, {0.f, 0.f, 0.f}, level);
 
-    static constexpr std::array<std::string_view, 4> orienToStr = { "NORTH", "EAST", "SOUTH", "WEST" };
+    static constexpr std::array<std::string_view, 4> orienToStr = { "NORTH", "WEST", "SOUTH", "EAST" };
 
     std::ostringstream oss;
 

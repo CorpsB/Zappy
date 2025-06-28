@@ -20,6 +20,20 @@ namespace Renderer {
     float cameraYaw = 0.0f;
     float cameraSpeed = 15.0f;
     float cameraRotationSpeed = 60.0f;
+    bool buttonToggle = false;
+    bool buttonIsPressed = false;
+    bool escapeMenuToggle = false;
+    bool escapeWasPressed = false;
+    bool zToggle = false;
+    bool zWasPressed = false;
+    bool sToggle = false;
+    bool sWasPressed = false;
+    bool qToggle = false;
+    bool qWasPressed = false;
+    bool dToggle = false;
+    bool dWasPressed = false;
+    bool tabToggle = false;
+    bool tabWasPressed = false;
 
     Mat4x4 pointAt(const Vec3& pos, const Vec3& target, const Vec3& up) {
         return Mat4x4::pointAt(pos, target, up);
@@ -50,6 +64,56 @@ namespace Renderer {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) { cameraPitch += rot; }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::F)) { cameraPitch -= rot; }
 
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab)) {
+            if (!tabWasPressed) {
+                tabToggle = !tabToggle;
+                tabWasPressed = true;
+            }
+        } else {
+            tabWasPressed = false;
+        }
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+            if (!escapeWasPressed) {
+                escapeMenuToggle = !escapeMenuToggle;
+                escapeWasPressed = true;
+            }
+        } else {
+            escapeWasPressed = false;
+        }
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
+            if (!zWasPressed) {
+                zToggle = !zToggle;
+                zWasPressed = true;
+            }
+        } else {
+            zWasPressed = false;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+            if (!sWasPressed) {
+                sToggle = !sToggle;
+                sWasPressed = true;
+            }
+        } else {
+            sWasPressed = false;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
+            if (!qWasPressed) {
+                qToggle = !qToggle;
+                qWasPressed = true;
+            }
+        } else {
+            qWasPressed = false;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+            if (!dWasPressed) {
+                dToggle = !dToggle;
+                dWasPressed = true;
+            }
+        } else {
+            dWasPressed = false;
+        }
     }
 
 } // namespace Renderer

@@ -28,8 +28,6 @@ namespace Renderer {
     std::unordered_map<int, Renderer::MovementState> pendingMovementsAfterRotation;
     int map_size_x = 0;
     int map_size_y = 0;
-    bool tabToggle = false;
-    bool tabWasPressed = false;
     static sf::RectangleShape bgMenu;
     // We need it to display it even though it's not really supposed to be here
     std::unordered_map<int, std::array<int, 7>> _resourcesOnTiles;
@@ -42,20 +40,9 @@ namespace Renderer {
     static sf::Color buttonHoverColor = sf::Color(150, 150, 150);
     static Entity currentTrantorian;
     static std::array<std::string, 4> orientation = {"NORTH", "WEST", "SOUTH", "EAST"};
-    static bool buttonToggle = false;
-    static bool buttonIsPressed = false;
-    static bool escapeMenuToggle = false;
-    static bool escapeWasPressed = false;
-    static bool zToggle = false;
-    static bool zWasPressed = false;
-    static bool sToggle = false;
-    static bool sWasPressed = false;
-    static bool qToggle = false;
-    static bool qWasPressed = false;
-    static bool dToggle = false;
-    static bool dWasPressed = false;
     static sf::RectangleShape escapeMenuBg;
     static std::pair<int, int> currentTile;
+    Update _update;
 
     bool initRenderer(sf::RenderWindow &window) {
         // window = new sf::RenderWindow(sf::VideoMode(width, height), title);
@@ -116,6 +103,7 @@ namespace Renderer {
         currentTrantorian.clientId = -1;
 
         currentTile = {0, 0};
+
         return true;
     }
 
@@ -156,73 +144,10 @@ namespace Renderer {
             }
         }
     }
-    //A function useful for update
-    Vec3 rotateY(const Vec3& v, float angleDegrees)
-    {
-        float angleRad = angleDegrees * (3.14159265f / 180.f);
-        float cosA = std::cos(angleRad);
-        float sinA = std::sin(angleRad);
-
-        return {
-            v.x * cosA - v.z * sinA,
-            v.y,
-            v.x * sinA + v.z * cosA
-        };
-    }
 
     void update(float dt) {
         processInput(dt);
         cooldownAction -= dt;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab)) {
-            if (!tabWasPressed) {
-                tabToggle = !tabToggle;
-                tabWasPressed = true;
-            }
-        } else {
-            tabWasPressed = false;
-        }
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-            if (!escapeWasPressed) {
-                escapeMenuToggle = !escapeMenuToggle;
-                escapeWasPressed = true;
-            }
-        } else {
-            escapeWasPressed = false;
-        }
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
-            if (!zWasPressed) {
-                zToggle = !zToggle;
-                zWasPressed = true;
-            }
-        } else {
-            zWasPressed = false;
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-            if (!sWasPressed) {
-                sToggle = !sToggle;
-                sWasPressed = true;
-            }
-        } else {
-            sWasPressed = false;
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
-            if (!qWasPressed) {
-                qToggle = !qToggle;
-                qWasPressed = true;
-            }
-        } else {
-            qWasPressed = false;
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-            if (!dWasPressed) {
-                dToggle = !dToggle;
-                dWasPressed = true;
-            }
-        } else {
-            dWasPressed = false;
-        }
         if (zToggle) {
             if (currentTile.first < map_size_x - 1)
                 currentTile.first += 1;
@@ -250,99 +175,11 @@ namespace Renderer {
         std::vector<std::tuple<int, Vec3, Vec3>> valuesForSynchro;
 
         for (auto& e : sceneEntities) {
-            Vec3 offset = {0.f, OFFSET_EYES_Y, Renderer::offsetEyesZ[e.level - 1]};
-            auto itMove = activeMovements.find(e.clientId);
-            if (itMove != activeMovements.end() && itMove->second.active) {
-                MovementState& m = itMove->second;
-                m.timeElapsed += dt;
-                // X axis wrap
-                if (e.position.x < -35.f) {
-                    e.position.x = (map_size_x - 1) * TILE_SIZE + 35.f + (35.f + e.position.x);
-                } else if (e.position.x > (map_size_x - 1) * TILE_SIZE + 35.f) {
-                    e.position.x = (map_size_x - 1) * TILE_SIZE - e.position.x;
-                }
-
-                // Z axis wrap
-                if (e.position.z < -35.f) {
-                    e.position.z = (map_size_y - 1) * TILE_SIZE + 35.f + (35.f + e.position.z);
-                } else if (e.position.z > (map_size_y - 1) * TILE_SIZE + 35.f) {
-                    e.position.z = (map_size_y - 1) * TILE_SIZE - e.position.z;
-                }
-                while (m.stepsRemaining > 0 && m.timeElapsed >= 0.025f) {
-                    m.timeElapsed -= 0.025f;
-
-                    // Appliquer un déplacement de 5.5 dans la bonne direction
-                    e.position.x += m.direction.x;
-                    e.position.y += m.direction.y;
-                    e.position.z += m.direction.z;
-
-                    m.stepsRemaining--;
-
-                    if (m.stepsRemaining == 0)
-                        m.active = false;
-                }
-            }
-            auto itRot = activeRotations.find(e.clientId);
-            if (itRot != activeRotations.end() && itRot->second.active) {
-                RotationState& r = itRot->second;
-                r.timeElapsed += dt;
-                while (r.stepsRemaining > 0 && r.timeElapsed >= 0.025f) {
-                    r.timeElapsed -= 0.025f;
-                    if (r.goingRight) {
-                        e.rotation.y -= 9.f;
-                        r.totalRotated -= 9.f;
-                    } else {
-                        e.rotation.y += 9.f;
-                        r.totalRotated += 9.f;
-                    }
-                    r.stepsRemaining--;
-
-                    if (r.stepsRemaining == 0) {
-                        r.active = false;
-                        // Reset if more than 360° or less than 0°
-                        if (e.rotation.y >= 360.f)
-                            e.rotation.y -= 360.f;
-                        else if (e.rotation.y < 0.f)
-                            e.rotation.y += 360.f;
-                    }
-                }
-            }
-            // Fin de rotation -> on démarre le mouvement
-            for (auto it = Renderer::activeRotations.begin(); it != Renderer::activeRotations.end(); ++it) {
-                int clientId = it->first;
-                if (!it->second.active && pendingMovementsAfterRotation.contains(clientId)) {
-                    Renderer::activeMovements[clientId] = pendingMovementsAfterRotation[clientId];
-                    pendingMovementsAfterRotation.erase(clientId);
-                }
-            }
-            if (e.type == Renderer::PartType::BODY) {
-                valuesForSynchro.emplace_back(e.clientId, e.position, Vec3{0.f, e.rotation.y, 0.f});
-            }
-            if (e.type == Renderer::PartType::EYES) {
-                // Searching for the corresponding body
-                auto it = std::find_if(
-                    valuesForSynchro.begin(), valuesForSynchro.end(),
-                    [&e](const std::tuple<int, Vec3, Vec3>& t) {
-                        return std::get<0>(t) == e.clientId;
-                    });
-
-                if (it != valuesForSynchro.end()) {
-                    Vec3 bodyPos = std::get<1>(*it);
-                    float bodyRotY = std::get<2>(*it).y;
-                    Vec3 rotatedOffset = rotateY(offset, bodyRotY);
-                    e.position = {
-                        bodyPos.x + rotatedOffset.x,
-                        bodyPos.y + rotatedOffset.y,
-                        bodyPos.z + rotatedOffset.z
-                    };
-                    e.rotation.y = bodyRotY;
-                }
-            }
-            if (e.type == Renderer::PartType::RING) {
-                e.rotation.y += 20.0f * dt;
-                if (e.rotation.y >= 360.f)
-                    e.rotation.y -= 360.f;
-            }
+            _update.moveTrantorian(dt, e, activeMovements);
+            _update.rotateTrantorian(dt, e, activeRotations);
+            _update.startMoveAfterRotate(activeMovements, activeRotations, pendingMovementsAfterRotation);
+            _update.sychroEyes(e, valuesForSynchro);
+            _update.incantationRing(dt, e);
             if (e.type == Renderer::PartType::EXPULSION) {
                 if (e.orientation == Compass::EAST || e.orientation == Compass::WEST)
                     e.rotation.x += 60.0f * dt;
@@ -350,13 +187,13 @@ namespace Renderer {
                     e.rotation.z += 60.0f * dt;
             }
 
-            if (e.type == PartType::GROUND) {
-                if (static_cast<int>(e.position.x) == currentTile.first * TILE_SIZE
-                    && static_cast<int>(e.position.z) == currentTile.second * TILE_SIZE) {
-                    e.color = sf::Color::Red;
-                } else
-                    e.color = sf::Color {65, 65, 65};
-            }
+            // if (e.type == PartType::GROUND) {
+            //     if (static_cast<int>(e.position.x) == currentTile.first * TILE_SIZE
+            //         && static_cast<int>(e.position.z) == currentTile.second * TILE_SIZE) {
+            //         e.color = sf::Color::Red;
+            //     } else
+            //         e.color = sf::Color {65, 65, 65};
+            // }
         }
         // erase expulsion after 5 rotations
         for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {

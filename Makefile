@@ -20,6 +20,7 @@ SRC	= graphical/main.cpp	\
 	graphical/3DRenderer/src/Math.cpp \
 	graphical/3DRenderer/src/Renderer.cpp \
 	graphical/3DRenderer/src/STLLoader.cpp \
+	graphical/3DRenderer/src/Update.cpp \
 
 OBJ	= $(SRC:.cpp=.o)
 
