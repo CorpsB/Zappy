@@ -6,8 +6,6 @@
 */
 
 #include "Camera.hpp"
-#include <SFML/Window.hpp>
-#include <cmath>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846f
@@ -63,57 +61,6 @@ namespace Renderer {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) { cameraYaw   += rot; }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) { cameraPitch += rot; }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::F)) { cameraPitch -= rot; }
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab)) {
-            if (!tabWasPressed) {
-                tabToggle = !tabToggle;
-                tabWasPressed = true;
-            }
-        } else {
-            tabWasPressed = false;
-        }
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-            if (!escapeWasPressed) {
-                escapeMenuToggle = !escapeMenuToggle;
-                escapeWasPressed = true;
-            }
-        } else {
-            escapeWasPressed = false;
-        }
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
-            if (!zWasPressed) {
-                zToggle = !zToggle;
-                zWasPressed = true;
-            }
-        } else {
-            zWasPressed = false;
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-            if (!sWasPressed) {
-                sToggle = !sToggle;
-                sWasPressed = true;
-            }
-        } else {
-            sWasPressed = false;
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
-            if (!qWasPressed) {
-                qToggle = !qToggle;
-                qWasPressed = true;
-            }
-        } else {
-            qWasPressed = false;
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-            if (!dWasPressed) {
-                dToggle = !dToggle;
-                dWasPressed = true;
-            }
-        } else {
-            dWasPressed = false;
-        }
     }
 
 } // namespace Renderer

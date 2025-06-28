@@ -1,5 +1,12 @@
-// include/Renderer.hpp
+/*
+** EPITECH PROJECT, 2025
+** B-YEP-400-STG-4-1-zappy-noe.carabin
+** File description:
+** Update
+*/
+
 #pragma once
+
 #include <string>
 #include <SFML/Graphics.hpp>
 #include "Camera.hpp"
@@ -9,7 +16,6 @@
 #include "HUD.hpp"
 #include "Math.hpp"
 #include "Renderer.hpp"
-#include <memory>
 
 #define TILE_SIZE 70
 #define OFFSET_EYES_Y -1.5f

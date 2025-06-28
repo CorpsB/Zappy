@@ -2,6 +2,9 @@
 #pragma once
 #include "Math.hpp"
 #include "Renderer.hpp"
+#include <SFML/Window.hpp>
+#include <cmath>
+#include "InputHandler.hpp"
 
 namespace Renderer {
     // Caméra

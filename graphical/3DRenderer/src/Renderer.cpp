@@ -43,6 +43,7 @@ namespace Renderer {
     static sf::RectangleShape escapeMenuBg;
     static std::pair<int, int> currentTile;
     Update _update;
+    InputHandler _inputhandler;
 
     bool initRenderer(sf::RenderWindow &window) {
         // window = new sf::RenderWindow(sf::VideoMode(width, height), title);
@@ -148,6 +149,12 @@ namespace Renderer {
     void update(float dt) {
         processInput(dt);
         cooldownAction -= dt;
+        _inputhandler.switchInput(tabToggle, tabWasPressed, sf::Keyboard::Tab);
+        _inputhandler.switchInput(escapeMenuToggle, escapeWasPressed, sf::Keyboard::Escape);
+        _inputhandler.switchInput(zToggle, zWasPressed, sf::Keyboard::Z);
+        _inputhandler.switchInput(sToggle, sWasPressed, sf::Keyboard::S);
+        _inputhandler.switchInput(qToggle, qWasPressed, sf::Keyboard::Q);
+        _inputhandler.switchInput(dToggle, dWasPressed, sf::Keyboard::D);
         if (zToggle) {
             if (currentTile.first < map_size_x - 1)
                 currentTile.first += 1;
