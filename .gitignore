@@ -4,5 +4,8 @@
 *.log
 .vscode
 zappy_gui.AppImage
+
+#Binary : 
 zappy_server
-ai/
+zappy_gui
+zappy_ai
