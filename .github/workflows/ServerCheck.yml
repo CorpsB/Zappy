@@ -1,0 +1,120 @@
+##
+## EPITECH PROJECT, 2024
+## B-YEP-400-STG-4-1-zappy-noe.carabin
+## File description:
+## githubAct.yaml
+##
+
+name: ZAPPY_CHECKER
+on:
+  push:
+    branches-ignore:
+      - 'ga-ignore-*'
+  pull_request:
+    branches-ignore:
+      - 'ga-ignore-*'
+env:
+  EXECUTABLES: zappy_server,zappy_gui,zappy_ai
+
+jobs:
+  push_to_mirror:
+    if: ${{vars.MIRROR_URL != ''}}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Mirror to epitech repo
+        uses: pixta-dev/repository-mirroring-action@v1.1.1
+        with:
+          target_repo_url: ${{ vars.MIRROR_URL }}
+          ssh_private_key: ${{ secrets.GIT_SSH_PRIVATE_KEY }}
+
+  check_coding_style:
+    needs: push_to_mirror
+    runs-on: ubuntu-latest
+    container: ghcr.io/epitech/coding-style-checker:latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Run coding-style checker
+        run: |
+          check.sh "$PWD" "$PWD"
+          if test -s coding-style-reports.log; then
+            while IFS= read -r line; do
+              file=$(echo "$line" | cut -d':' -f1)
+              line_num=$(echo "$line" | cut -d':' -f2-3)
+              error_type=$(echo "$line" | cut -d' ' -f2 | cut -d':' -f1)
+              error_name=$(echo "$line" | cut -d':' -f4)
+              echo "::error file=$file,line=$line_num::$error_type: $error_name"
+            done < coding-style-reports.log
+            exit 1
+          else
+            echo "::notice ::No coding-style error detected."
+          fi
+
+  check-build:
+    needs: check_coding_style
+    runs-on: ubuntu-latest
+    container: epitechcontent/epitest-docker
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Check for Makefile
+        run: |
+          if [ ! -f "Makefile" ]; then
+            echo "::error ::/!\\ WARNING NO MAKEFILE FOUND /!\\"
+            exit 1
+          else
+            echo "::notice::Makefile found."
+          fi
+      - name: Launch make
+        run: |
+            if make; then
+              echo "::notice file=Makefile::Succesfully compilation (make)."
+            else
+              echo "::error file=Makefile::/!\\ COMPILATION ERROR (make)/!\\"
+            fi   
+      - name: Launch make clean
+        run: |
+          if make clean; then
+            echo "::notice file=Makefile::Succesfully compilation (make clean)."
+          else
+            echo "::error file=Makefile::/!\\ COMPILATION ERROR (make clean)/!\\"
+          fi
+      - name: Check EXECUTABLES
+        run: |
+          echo "$EXECUTABLES" | tr ',' '\n' | while read -r exe; do
+            if [ ! -x "$exe" ]; then
+              echo "::error file=$exe::Executable $exe missing or not executable."
+              exit 1
+            fi
+            echo "::notice file=$exe::Executable $exe found and is executable."
+          done
+
+  check-leaks:
+    needs: check-build
+    runs-on: ubuntu-latest
+    container: epitechcontent/epitest-docker
+    timeout-minutes: 60
+    steps:
+      - name: Recover files
+        uses: actions/download-artifact@v4
+        with:
+          name: bin
+          path: .
+      - name: Install valgrind
+        run: |
+          apt-get update
+          apt-get install -y valgrind
+      - name: Check leaks
+        run: |
+          echo "$EXECUTABLES" | tr ',' '\n' | while read -r exe; do
+            if [ ! -x "$exe" ]; then
+              echo "::error file=$exe::Executable $exe missing or not executable."
+              exit 1
+            fi
+            valgrind --leak-check=full --error-exitcode=1 ./"$exe"
+          done

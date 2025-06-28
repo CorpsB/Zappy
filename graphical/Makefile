@@ -24,8 +24,9 @@ SRC	= main.cpp	\
 
 OBJ	= $(SRC:.cpp=.o)
 
-# CXXFLAGS = -std=c++20 -Wall -Wextra -Werror -g -I3DRenderer/include -O3 -march=x86-64 -mtune=generic
-CXXFLAGS = -std=c++20 -Wall -Wextra -Werror -g -I3DRenderer/include -O3 -march=native
+CXXFLAGS = -std=c++20 -Wall -Wextra -Werror -g -I3DRenderer/include \
+	-O3 -march=native
+
 LDFLAGS = -lsfml-graphics -lsfml-window -lsfml-system
 
 NAME = ../zappy_gui
@@ -34,12 +35,13 @@ all: $(NAME)
 
 $(NAME): $(OBJ)
 	g++ -o $(NAME) $(OBJ) $(LDFLAGS)
+	mv $(NAME) ..
 
 clean:
 	rm -f $(OBJ)
 
 fclean:	clean
-	rm -f $(NAME)
+	rm -f ../$(NAME)
 
 re:	fclean all
 
