@@ -24,6 +24,13 @@ char *append_token(char *dest, const char *token, server_t *srv)
     return out;
 }
 
+/**
+ * @brief Count the number of players from a specific team on a given tile.
+ * @param t The team structure.
+ * @param y The Y coordinate of the tile.
+ * @param x The X coordinate of the tile.
+ * @return The number of players on the tile.
+*/
 static unsigned int player_on_team(teams_t *t, int y, int x)
 {
     unsigned int nb = 0;
@@ -43,6 +50,13 @@ unsigned int players_at(server_t *srv, int y, int x)
     return nb;
 }
 
+/**
+ * @brief Count the number of eggs from a specific team on a given tile.
+ * @param t The team structure.
+ * @param y The Y coordinate of the tile.
+ * @param x The X coordinate of the tile.
+ * @return The number of eggs on the tile.
+*/
 static unsigned int egg_on_team(teams_t *t, int y, int x)
 {
     unsigned int nb = 0;
@@ -62,6 +76,14 @@ unsigned int eggs_at(server_t *srv, int y, int x)
     return nb;
 }
 
+/**
+ * @brief Build the response string for the "Look" command.
+ * Generates a JSON-like description of the surroundings based on
+ * player level.
+ * @param srv The server structure.
+ * @param pl The player requesting the look.
+ * @return A newly allocated string describing the surroundings.
+*/
 static char *build_look(server_t *srv, player_t *pl)
 {
     char *out = strdup("[");

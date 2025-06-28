@@ -403,6 +403,11 @@ void event_msz(server_t *server);
 */
 void event_bct(server_t *server);
 
+/**
+ * @brief Triggers a player death event for a player at the given index.
+ * @param server Pointer to the server structure.
+ * @param index Index of the player in the client list.
+*/
 void event_pdi_by_index(server_t *server, int index);
 
 /**
@@ -733,14 +738,56 @@ void event_sbp(server_t *server, int index, char **args, int i);
  * @return The number of elements in the array.
 */
 int table_size(char **table);
+
+/**
+ * @brief Command handler for the "Look" player command.
+ * Sends a description of the surroundings to the player.
+ * @param srv The server structure.
+ * @param idx The index of the player in the poll list.
+ * @param args Command arguments (unused).
+*/
 void cmd_look(server_t *server, int index, char **);
 
+/**
+ * @brief Handles the "Broadcast" command from a player.
+ * Sends the message to all other alive players on the map
+ * with directional information.
+ * @param srv Pointer to the server structure.
+ * @param idx Index of the sending player in the client list.
+ * @param args Array of command arguments (the message is built
+ * from args[1] onward).
+*/
 void cmd_broadcast_text(server_t *server, int index, char **args);
+
 typedef char *(*line_builder_t)(server_t *, int, int, int);
 
 char *build_line(server_t *srv, player_t *pl, int lvl);
+
+/**
+ * @brief Append a token to a string, reallocating memory if necessary.
+ * @param dest The original string (can be NULL).
+ * @param token The token to append.
+ * @param srv The server structure (used for logging on error).
+ * @return A new string with the token appended, or NULL on error.
+*/
 char *append_token(char *dest, const char *token, server_t *srv);
+
+/**
+ * @brief Count the number of eggs on a specific tile.
+ * @param srv The server structure.
+ * @param y The Y coordinate of the tile.
+ * @param x The X coordinate of the tile.
+ * @return The total number of eggs on the tile.
+*/
 unsigned int eggs_at(server_t *srv, int y, int x);
+
+/**
+ * @brief Count the number of players on a specific tile.
+ * @param srv The server structure.
+ * @param y The Y coordinate of the tile.
+ * @param x The X coordinate of the tile.
+ * @return The total number of players on the tile.
+*/
 unsigned int players_at(server_t *srv, int y, int x);
 
 /**
@@ -776,7 +823,22 @@ zappy_clock_t *init_clock(server_t *server, size_t freq);
  * @param server Pointer to the server structure.
 */
 void player_cmd_execution(server_t *server);
+
+/**
+ * @brief Command handler for the "Incantation" player command.
+ * @param server The server structure.
+ * @param index The index of the player in the poll list.
+ * @param args Command arguments (unused).
+*/
 void cmd_incantation(server_t *server, int index, char **args);
+
+/**
+ * @brief Start an incantation attempt for a player.
+ * Freezes all involved players and notifies them if conditions are met.
+ * @param server The server structure.
+ * @param pl The player initiating the incantation.
+ * @return true if the incantation has started, false otherwise.
+*/
 bool start_incantation(server_t *server, player_t *pl);
 
 #endif /* !FUCNTION_H_ */

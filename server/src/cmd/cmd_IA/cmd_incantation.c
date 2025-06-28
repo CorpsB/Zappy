@@ -10,6 +10,12 @@
 #include "include/structure.h"
 #include "include/incantation_table.h"
 
+/**
+ * @brief Check if two players are on the same position.
+ * @param first First player.
+ * @param second Second player.
+ * @return true if positions are identical, false otherwise.
+*/
 static bool is_same_pos(player_t *first, player_t *second)
 {
     if (first->position[0] == second->position[0] &&
@@ -18,6 +24,14 @@ static bool is_same_pos(player_t *first, player_t *second)
     return false;
 }
 
+/**
+ * @brief Count the number of players on the same tile with the same level.
+ * If a frozen player is already on the tile, returns -1 to indicate
+ * an ongoing incantation.
+ * @param server The server structure.
+ * @param pl The reference player.
+ * @return The number of matching players, or -1 if an incantation is active.
+*/
 static unsigned int found_player_on_tile(server_t *server, player_t *pl)
 {
     unsigned int count = 0;
@@ -35,6 +49,13 @@ static unsigned int found_player_on_tile(server_t *server, player_t *pl)
     return count;
 }
 
+/**
+ * @brief Check if all conditions for an incantation are met.
+ * Verifies required resources on the tile and the number of players.
+ * @param server The server structure.
+ * @param pl The player attempting the incantation.
+ * @return true if all conditions are satisfied, false otherwise.
+*/
 static bool check_condition(server_t *server, player_t *pl)
 {
     resources_t map = server->map[pl->position[0]][pl->position[1]];
@@ -72,6 +93,12 @@ bool start_incantation(server_t *server, player_t *pl)
     return true;
 }
 
+/**
+ * @brief Handle an incantation failure.
+ * Unfreezes involved players and notifies them of the failure.
+ * @param server The server structure.
+ * @param index The index of the player in the poll list.
+*/
 static void elevation_failed(server_t *server, int index)
 {
     player_t *pl = server->poll.client_list[index].player;
@@ -89,6 +116,11 @@ static void elevation_failed(server_t *server, int index)
     }
 }
 
+/**
+ * @brief Remove resources from the tile after a successful incantation.
+ * @param server The server structure.
+ * @param index The index of the player in the poll list.
+*/
 static void delete_stuff(server_t *server, int index)
 {
     player_t *pl = server->poll.client_list[index].player;
@@ -102,6 +134,13 @@ static void delete_stuff(server_t *server, int index)
     map.thystame -= requirement[pl->lvl - 1].thystame;
 }
 
+/**
+ * @brief Finalize an incantation attempt.
+ * Checks conditions again, applies consequences, and levels up players.
+ * @param server The server structure.
+ * @param index The index of the player in the poll list.
+ * @param args Unused parameter (command arguments).
+*/
 static void end_incantation(server_t *server, int index, char **)
 {
     player_t *pl = server->poll.client_list[index].player;
