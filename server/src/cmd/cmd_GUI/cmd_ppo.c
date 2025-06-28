@@ -49,6 +49,7 @@ void cmd_ppo(server_t *server, int index, char **args)
     long id;
     player_t *target;
     int i = find_gui_command_index("ppo");
+    char *buffer = NULL;
 
     if (!server || !args || !args[1])
             return event_sbp(server, index, args, i);
@@ -58,6 +59,8 @@ void cmd_ppo(server_t *server, int index, char **args)
     target = find_player_by_id(server, (unsigned int)id);
     if (!target)
         return event_sbp(server, index, args, i);
-    dprintf(fd, "ppo %d %d %d %d\n", target->id,
-        target->position[0], target->position[1], target->direction);
+    if (asprintf(&buffer, "ppo %d %d %d %d\n", target->id,
+        target->position[0], target->position[1], target->direction) == -1)
+        logger(server, "ASPRINTF : PPO", PERROR, true);
+    send_str(server, fd, buffer);
 }

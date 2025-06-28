@@ -31,31 +31,39 @@ static void need_stop(server_t *server, bool is_end)
 */
 static void debug_logger(server_t *server, char *message, logs_t log)
 {
+    char *buffer = NULL;
+
     if (server->debug_fd == -1) {
         server->debug = false;
         logger(server, "IMPOSSIBLE OPEN", PERROR, true);
+        return;
     }
     if (log == ERROR)
-        dprintf(server->debug_fd, "[ERROR] - %s\n", message);
+        asprintf(&buffer, "[ERROR] - %s\n", message);
     if (log == PERROR)
-        dprintf(server->debug_fd, "[ERROR] - %s: %s\n", message,
-            strerror(errno));
+        asprintf(&buffer, "[ERROR] - %s: %s\n", message, strerror(errno));
     if (log == DEBUG)
-        dprintf(server->debug_fd, "[DEBUG] - %s\n", message);
+        asprintf(&buffer, "[DEBUG] - %s\n", message);
     if (log == INFO)
-        dprintf(server->debug_fd, "[INFO] - %s\n", message);
+        asprintf(&buffer, "[INFO] - %s\n", message);
+    if (buffer)
+        send_str(server, server->debug_fd, buffer);
 }
 
 void logger(server_t *server, char *message, logs_t log, bool is_end)
 {
+    char *buffer = NULL;
+
     if (log == ERROR)
-        dprintf(2, "[ERROR] - %s\n", message);
+        asprintf(&buffer, "[ERROR] - %s\n", message);
     if (log == PERROR)
-        dprintf(2, "[ERROR] - %s: %s\n", message, strerror(errno));
+        asprintf(&buffer, "[ERROR] - %s: %s\n", message, strerror(errno));
     if (log == DEBUG)
-        dprintf(2, "[DEBUG] - %s\n", message);
+        asprintf(&buffer, "[DEBUG] - %s\n", message);
     if (log == INFO)
-        dprintf(2, "[INFO] - %s\n", message);
+        asprintf(&buffer, "[INFO] - %s\n", message);
+    if (buffer)
+        write(2, buffer, strlen(buffer));
     if (server->debug)
         debug_logger(server, message, log);
     need_stop(server, is_end);

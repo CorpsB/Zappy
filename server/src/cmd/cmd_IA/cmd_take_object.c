@@ -100,7 +100,7 @@ static void take_obj(server_t *srv, r_ressource_t obj, int index)
     if (!pos)
         logger(srv, "MALLOC : POS", PERROR, true);
     if (nbr <= 0) {
-        dprintf(pl->socket_fd, "ko\n");
+        send_str(srv, pl->socket_fd, "ko\n");
         return;
     }
     pos[0] = pl->position[0];
@@ -112,7 +112,7 @@ static void take_obj(server_t *srv, r_ressource_t obj, int index)
     event(srv, pl, obj);
     if (pos)
         free(pos);
-    dprintf(pl->socket_fd, "ok\n");
+    send_str(srv, pl->socket_fd, "ok\n");
 }
 
 void cmd_take_object(server_t *server, int index, char **args)
@@ -124,5 +124,5 @@ void cmd_take_object(server_t *server, int index, char **args)
                 return;
             }
     }
-    dprintf(server->poll.pollfds[index].fd, "ko\n");
+    send_str(server, server->poll.pollfds[index].fd, "ko\n");
 }

@@ -28,6 +28,7 @@ static void send_bct_tile(int fd, int x, int y, resources_t *tile)
         tile->deraumere, tile->sibur, tile->mendiane, tile->phiras,
         tile->thystame
     );
+    //je sais pas quoi faire ici...
 }
 
 /**

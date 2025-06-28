@@ -28,42 +28,6 @@ static void safe_pos_update(server_t *srv, int *x, int *y)
 }
 
 /**
- * @brief Allocates and initializes a broadcast distance map.
- * @param srv Pointer to the server structure.
- * @return A 2D int array representing the broadcast map, or NULL on failure.
-*/
-static int **create_broadcast_map(server_t *srv)
-{
-    int **map = malloc(sizeof(int *) * srv->height);
-
-    if (!map)
-        return NULL;
-    for (unsigned y = 0; y < srv->height; ++y) {
-        map[y] = malloc(sizeof(int) * srv->width);
-        if (!map[y]) {
-            free_int_map(y, map);
-            logger(srv, "INTMAP : BROADCAST", PERROR, true);
-        }
-        for (unsigned x = 0; x < srv->width; ++x)
-            map[y][x] = -1;
-    }
-    return map;
-}
-
-/**
- * @brief Frees the memory of a broadcast map.
- * @param srv Pointer to the server structure.
- * @param map The 2D int array to free.
-*/
-static void free_broadcast_map(server_t *srv, int **map)
-{
-    (void)srv;
-    for (unsigned y = 0; map && y < srv->height; ++y)
-        free(map[y]);
-    free(map);
-}
-
-/**
  * @brief Recursively propagates sound distance values to adjacent tiles.
  * @param map The 2D broadcast map.
  * @param srv Pointer to the server structure.
@@ -94,7 +58,7 @@ static void propagate_sound_map_tile(int **map, server_t *srv,
  * @param srv Pointer to the server structure.
  * @param sender Pointer to the player sending the broadcast.
 */
-static void propagate_sound_map(int **map, server_t *srv,
+void propagate_sound_map(int **map, server_t *srv,
     player_t *sender)
 {
     map[sender->position[1]][sender->position[0]] = 0;
@@ -123,7 +87,7 @@ static int get_tile_dist(int **map, server_t *srv, int x, int y)
  * @param rcv Pointer to the receiving player.
  * @return The raw direction index (1 to 8).
 */
-static int get_raw_direction(int **map, server_t *srv, player_t *rcv)
+int get_raw_direction(int **map, server_t *srv, player_t *rcv)
 {
     int x = rcv->position[0];
     int y = rcv->position[1];
@@ -151,7 +115,7 @@ static int get_raw_direction(int **map, server_t *srv, player_t *rcv)
  * @param pl Pointer to the receiving player.
  * @return The adjusted direction index (1 to 8).
 */
-static int adjust_to_player_dir(int raw, player_t *pl)
+int adjust_to_player_dir(int raw, player_t *pl)
 {
     int idx_raw = raw - 1;
     int idx_rot = (idx_raw - pl->direction * 2 + 8) % 8;
@@ -159,34 +123,15 @@ static int adjust_to_player_dir(int raw, player_t *pl)
     return idx_rot + 1;
 }
 
-/**
- * @brief Sends a broadcast message to a receiving player with proper
- * direction information.
- * @param srv Pointer to the server structure.
- * @param snd Pointer to the player sending the message.
- * @param rcv Pointer to the receiving player.
- * @param msg The message to send.
-*/
-static void send_broadcast_to_rcv(server_t *srv, player_t *snd,
+void send_broadcast_to_rcv(server_t *srv, player_t *snd,
     player_t *rcv, const char *msg)
 {
-    int raw;
-    int adj;
-    int **map;
-
     if (snd->position[0] == rcv->position[0] &&
-        snd->position[1] == rcv->position[1]) {
-        dprintf(rcv->socket_fd, "message 0, %s\n", msg);
+            snd->position[1] == rcv->position[1]) {
+        send_same_tile_message(srv, rcv, msg);
         return;
     }
-    map = create_broadcast_map(srv);
-    if (!map)
-        return;
-    propagate_sound_map(map, srv, snd);
-    raw = get_raw_direction(map, srv, rcv);
-    adj = adjust_to_player_dir(raw, rcv);
-    dprintf(rcv->socket_fd, "message %d, %s\n", adj, msg);
-    free_broadcast_map(srv, map);
+    send_directional_message(srv, snd, rcv, msg);
 }
 
 void cmd_broadcast_text(server_t *srv, int idx, char **args)

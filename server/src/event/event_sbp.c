@@ -13,18 +13,24 @@
 
 void event_sbp(server_t *server, int index, char **args, int i)
 {
-    dprintf(server->poll.pollfds[index].fd, "sbp\n");
-    logger(server, "INVALID ARGS  OR ARGS NUMBER FOR THIS COMMAND",
+    char *buffer = NULL;
+
+    if (!server)
+        return;
+    send_str(server, server->poll.pollfds[index].fd, "sbp\n");
+    logger(server, "INVALID ARGS OR ARGS NUMBER FOR THIS COMMAND",
         INFO, false);
     if (server->debug) {
         printf("CMD : %s\tARGS SIZE : %u\tEXPECTED SIZE : %u\n\n",
             gui_command_table[i].name,
             table_size(args),
             gui_command_table[i].argument_nbr);
-        dprintf(server->debug_fd,
+        if (asprintf(&buffer,
             "CMD : %s\t ARGS SIZE : %u\tEXPECTED SIZE : %u\n\n",
             gui_command_table[i].name,
             table_size(args),
-            gui_command_table[i].argument_nbr);
+            gui_command_table[i].argument_nbr) == -1)
+            logger(server, "ASPRINTF : SBP DEBUG", PERROR, true);
+        send_str(server, server->debug_fd, buffer);
     }
 }

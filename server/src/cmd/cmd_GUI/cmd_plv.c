@@ -49,6 +49,7 @@ void cmd_plv(server_t *server, int index, char **args)
     unsigned int id;
     player_t *pl;
     int i = find_gui_command_index("plv");
+    char *buffer = NULL;
 
     if (!server)
         return;
@@ -58,5 +59,7 @@ void cmd_plv(server_t *server, int index, char **args)
     pl = find_player_by_id(server, id);
     if (!pl)
         return event_sbp(server, index, args, i);
-    dprintf(fd, "plv %u %u\n", pl->id, pl->lvl);
+    if (asprintf(&buffer, "plv %u %u\n", pl->id, pl->lvl) == -1)
+        logger(server, "ASPRINTF : PLV", PERROR, true);
+    send_str(server, fd, buffer);
 }

@@ -12,8 +12,11 @@
 void cmd_sgt(server_t *server, int index, char **args)
 {
     int fd;
+    char *buffer = NULL;
 
     (void)args;
     fd = server->poll.pollfds[index].fd;
-    dprintf(fd, "sgt %u\n", server->frequency);
+    if (asprintf(&buffer, "sgt %u\n", server->frequency) == -1)
+        logger(server, "ASPRINTF : SGT", PERROR, true);
+    send_str(server, fd, buffer);
 }

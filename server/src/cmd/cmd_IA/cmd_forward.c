@@ -42,5 +42,5 @@ void cmd_forward(server_t *server, int index, char **args)
         return;
     move_player_forward(server, player);
     event_ppo(server, player);
-    dprintf(server->poll.pollfds[index].fd, "ok\n");
+    send_str(server, server->poll.pollfds[index].fd, "ok\n");
 }

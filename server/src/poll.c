@@ -102,7 +102,7 @@ static void add_cmd(server_t *server, char *cmd, int index)
     }
     pl = server->poll.client_list[index].player;
     if (pl->cmd[9] != NULL) {
-        dprintf(pl->socket_fd, "suc\n");
+        send_str(server, pl->socket_fd, "suc\n");
         return;
     }
     for (int k = 0; k < 10; k++) {

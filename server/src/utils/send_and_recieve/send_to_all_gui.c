@@ -11,12 +11,16 @@
 
 void send_to_all_gui(server_t *server, char *message)
 {
+    char *buffer = NULL;
+
+    if (!server || !message)
+        return;
     for (int i = 0; i < server->poll.connected_client; i++) {
-        if (server->poll.client_list[i].whoAmI == GUI)
-            dprintf(server->poll.pollfds[i].fd, "%s\n", message);
+        if (server->poll.client_list[i].whoAmI != GUI)
+            continue;
+        if (asprintf(&buffer, "%s\n", message) == -1)
+            logger(server, "ASPRINTF : SEND TO ALL GUI", PERROR, true);
+        send_str(server, server->poll.pollfds[i].fd, buffer);
     }
-    if (message) {
-        free(message);
-        message = NULL;
-    }
+    free(message);
 }

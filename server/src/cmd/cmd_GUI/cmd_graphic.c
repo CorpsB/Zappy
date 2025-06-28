@@ -23,9 +23,9 @@ void cmd_graphic(server_t *server, int index, char **)
 {
     if (server->poll.client_list[index].whoAmI == UNKNOWN) {
         server->poll.client_list[index].whoAmI = GUI;
-        dprintf(server->poll.pollfds[index].fd, "ok\n");
+        send_str(server, server->poll.pollfds[index].fd, "ok\n");
         start_gui_event(server);
     } else {
-        dprintf(server->poll.pollfds[index].fd, "ko\n");
+        send_str(server, server->poll.pollfds[index].fd, "ko\n");
     }
 }

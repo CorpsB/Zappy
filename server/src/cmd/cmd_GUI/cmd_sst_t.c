@@ -41,7 +41,7 @@ void cmd_sst(server_t *server, int index, char **args)
 
     fd = server->poll.pollfds[index].fd;
     if (!parse_sst_argument(args, &freq)) {
-        dprintf(fd, "ko\n");
+        send_str(server, fd, "ko\n");
         return;
     }
     server->frequency = (unsigned int)freq;
