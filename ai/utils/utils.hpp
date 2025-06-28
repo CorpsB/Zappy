@@ -29,5 +29,6 @@ namespace ai::utils
     namespace string
     {
         std::vector<std::string> split(const std::string &str, char delim);
+        std::string capitalize(const std::string &str);
     }
 }

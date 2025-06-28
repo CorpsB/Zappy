@@ -12,36 +12,30 @@
 ai::entity::SoundSystem::SoundSystem()
 {
     _player = UP;
-    for (int i = 0; i < 9; ++i) {
-        _cells[i].id = -1;
-        _cells[i].message = "";
-    }
+    for (int i = 0; i < 9; ++i)
+        _cells[i].clear();
 }
 
 void ai::entity::SoundSystem::update()
 {
-    const auto actual = std::chrono::high_resolution_clock::now();
+    const auto now = std::chrono::high_resolution_clock::now();
 
     for (int i = 0; i < 9; ++i) {
-        if (_cells[i].id == -1)
-            continue;
-
-        const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(actual - _cells[i].received_at);
-
-        if (duration.count() > MAX_SOUND_DURATION) {
-            _cells[i].id = -1;
-            _cells[i].message = "";
-        }
+        auto &vec = _cells[i];
+        vec.erase(std::remove_if(vec.begin(), vec.end(), [&](const SoundCell &cell) {
+            const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(now - cell.received_at);
+            return duration.count() > MAX_SOUND_DURATION;
+        }), vec.end());
     }
 }
 
 void ai::entity::SoundSystem::clearIdMemory(int id)
 {
-    for (int i = 0; i < 9; ++i)
-        if (_cells[i].id == id) {
-            _cells[i].id = -1;
-            _cells[i].message = "";
-        }
+    for (auto &vec : _cells) {
+        vec.erase(std::remove_if(vec.begin(), vec.end(), [&](const SoundCell &cell) {
+            return cell.id == id;
+        }), vec.end());
+    }
 }
 
 void ai::entity::SoundSystem::setPlayerOrientation(Direction orientation)
@@ -65,15 +59,42 @@ ai::entity::Direction ai::entity::SoundSystem::getRawDirection(Direction adjuste
 
 ai::entity::SoundCell &ai::entity::SoundSystem::getDirectionSound(Direction ajusted)
 {
-    return _cells[ajusted];
+    if (_cells[ajusted].empty())
+        throw std::runtime_error("No SoundCell available in this direction.");
+
+    auto &vec = _cells[ajusted];
+    auto minId = std::min_element(vec.begin(), vec.end(), [](const SoundCell &a, const SoundCell &b) {
+        return a.id < b.id;
+    });
+
+    return *minId;
 }
 
 ai::entity::Direction ai::entity::SoundSystem::getNearestSoundDirection(const std::string &target)
 {
+    int bestId = std::numeric_limits<int>::max();
+    Direction bestDir = NONE;
+
+    for (int i = 0; i < 9; ++i) {
+        for (const auto &cell : _cells[i]) {
+            if (cell.message == target && cell.id < bestId) {
+                bestId = cell.id;
+                bestDir = getRawDirection(static_cast<Direction>(i));
+            }
+        }
+    }
+    return bestDir;
+}
+
+int ai::entity::SoundSystem::getNbMessage(const std::string &target)
+{
+    int cpt = 0;
+
     for (int i = 0; i < 9; ++i)
-        if (_cells[i].id != -1 && _cells[i].message == target)
-            return getRawDirection(static_cast<Direction>(i));
-    return NONE;
+        for (const auto &cell : _cells[i])
+            if (cell.message == target && getRawDirection(static_cast<Direction>(i)) == HERE)
+                ++cpt;
+    return cpt;
 }
 
 // message [direction], [id]|[timestamp]|[message]
@@ -97,12 +118,12 @@ ai::entity::Direction ai::entity::SoundSystem::setSound(const std::string &sound
         return NONE;
     }
 
-    const auto date_now = std::chrono::high_resolution_clock::now();
-
     clearIdMemory(id);
     direction = getAjustedDirection(static_cast<Direction>(direction));
-    _cells[direction].id = id;
-    _cells[direction].message = message;
-    _cells[direction].received_at = date_now;
+    _cells[direction].push_back(SoundCell{
+        std::chrono::high_resolution_clock::now(),
+        message,
+        id
+    });
     return static_cast<Direction>(direction);
 }

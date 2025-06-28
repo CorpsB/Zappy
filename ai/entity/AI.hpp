@@ -7,7 +7,10 @@
 
 #pragma once
 
-#define FOOD_THRESHOLD 8.0
+#define MAX_FOOD_THRESHOLD 20.0
+#define HIGH_FOOD_THRESHOLD 16.0
+#define LOW_FOOD_THRESHOLD 6.0
+
 #define REPRODUCE_THRESHOLD 10
 #define ACTION_DELAY_MS 50
 
@@ -62,10 +65,12 @@ namespace ai::entity
             void stop();
 
             // helper
-            int countPlayersOnTile(int idx, const std::string &look);
+            int countItemInLook(const std::string &look, const std::string &item);
+            int countItemOnTile(int idx, const std::string &look, const std::string &item);
             int findItemInLook(const std::string &look, const std::string &item);
             int determineLookDistance(int idx);
-            bool collectItem(const std::string &look, const std::string &name, int recipe_qty);
+            bool collectItem(const std::string &look, const std::string &name,
+                int recipe_qty, bool is_players);
             bool collectAllItems(const std::string &look);
 
             // goal
@@ -102,6 +107,7 @@ namespace ai::entity
             Inventory _inventory;
             SoundSystem _sound_system;
             SpiralState _spiral_state;
+            bool _dock_mode;
 
             int _free_slots;
             std::string _thread_name;

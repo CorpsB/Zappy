@@ -46,34 +46,44 @@ std::string ai::entity::AI::getRarestMissingStone()
 
 ai::entity::Goal ai::entity::AI::getGoal(const std::string &look)
 {
-    if (_food_level < FOOD_THRESHOLD)
-        return FOOD;
+    if (!_dock_mode || _food_level < LOW_FOOD_THRESHOLD)
+    {
+        _dock_mode = false;
 
-    if (_level == 8)
-        return STONE;
+        if (_food_level < HIGH_FOOD_THRESHOLD)
+            return FOOD;
 
-    if (_free_slots > 0)
-        return REPRODUCE;
+        if (_level == 8)
+            return STONE;
 
+        if (_free_slots > 0)
+            return REPRODUCE;
+    }
+
+    int nb_players = _sound_system.getNbMessage("READY_" + std::to_string(_level + 1)) + 1;
     const bool enough_rocks = hasEnoughRocks();
     const Direction meetup = _sound_system.getNearestSoundDirection("MEETUP_" + std::to_string(_level + 1));
     if (meetup != NONE) {
         SoundCell &cell = _sound_system.getDirectionSound(meetup);
 
+        if (meetup == HERE)
+            ++nb_players;
+        if (_food_level >= HIGH_FOOD_THRESHOLD)
+            _dock_mode = true;
         if (enough_rocks) {
-            if (countPlayersOnTile(0, look) >= RECIPES[_level - 1].player)
+            if (nb_players >= RECIPES[_level - 1].player)
                 return (cell.id < _id) ? ELEVATION_SLAVE : ELEVATION_MASTER;
-            return (cell.id < _id) ? MEETUP : MEETUP_POINT;
+            if (cell.id < _id)
+                return (meetup == HERE) ? ELEVATION_SLAVE : MEETUP;
+            return MEETUP_POINT;
         }
-        if (countPlayersOnTile(0, look) >= RECIPES[_level - 1].player)
-            return ELEVATION_SLAVE;
-        return MEETUP;
+        return (meetup == HERE) ? ELEVATION_SLAVE : MEETUP;
     } else if (enough_rocks) {
-        if (_level == 1 || countPlayersOnTile(0, look) >= RECIPES[_level - 1].player)
+        if (_level == 1 || nb_players >= RECIPES[_level - 1].player)
             return ELEVATION_MASTER;
         return MEETUP_POINT;
     }
-    return STONE;
+    return (_food_level < HIGH_FOOD_THRESHOLD) ? FOOD : STONE;
 }
 
 bool ai::entity::AI::handleGoal(std::string &look, const std::string &goal)
@@ -82,16 +92,16 @@ bool ai::entity::AI::handleGoal(std::string &look, const std::string &goal)
     const int item_idx = findItemInLook(look, goal);
 
     if (item_idx == 0) {
-        logger.log(goal + " on current tile. Taking.");
+        logger.log(utils::string::capitalize(goal) + " on current tile. Taking.");
         return doKoAction("Take " + goal);
     } else if (item_idx > 0) {
         const std::vector<Direction> moves = getMovesToTileLevelVision(item_idx);
-        logger.log(goal + " on tile " + std::to_string(item_idx) + ". Moving to take.");
+        logger.log(utils::string::capitalize(goal) + " on tile " + std::to_string(item_idx) + ". Moving to take.");
         if (!executeMoves(look, moves))
             return false;
         return doKoAction("Take " + goal);
     } else if (item_idx == -2) {
-        logger.log(goal + " not seen. Executing spiral move.");
+        logger.log(utils::string::capitalize(goal) + " not seen. Executing spiral move.");
         return executeSpiralMove(_spiral_state);
     } else {
         logger.log("Halting " + goal + " goal due to look parse error.");

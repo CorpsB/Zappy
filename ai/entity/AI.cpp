@@ -18,6 +18,7 @@ ai::entity::AI::AI(int id)
     _food_level = 1;
     _goal = FOOD;
     _thread_name = std::string("[Bot ") + std::to_string(id) + std::string("]");
+    _dock_mode = false;
 }
 
 void ai::entity::AI::start(const ai::parser::Config &config)
@@ -55,7 +56,7 @@ std::string ai::entity::AI::doAction(const std::string &action)
             const Direction dir = _sound_system.setSound(result);
             if (dir != NONE) {
                 const SoundCell &cell = _sound_system.getDirectionSound(dir);
-                logger.log("Message received from " + std::to_string(cell.id) + " '" + cell.message + "'");
+                // logger.log("Message received from " + std::to_string(cell.id) + " '" + cell.message + "'");
 
                 // incantate to level up
                 if (cell.message == "INCANTATION_" + std::to_string(_level + 1) && dir == HERE)
@@ -78,7 +79,13 @@ bool ai::entity::AI::doKoAction(const std::string &action)
 
     if (result == "ko") {
         utils::debug::Logger &logger = utils::debug::Logger::GetInstance();
-        logger.log("[Warn] Action failed: '" + action + "'.");
+        logger.log("[Warn] Action failed: '" + action + "'. Direction changed.");
+
+        // change direction randomly to avoid following another bot.
+        const int new_dir = utils::random::number(1, 3);
+        for (int i = 0; i < new_dir; ++i)
+            if (doAction("Left") == "dead")
+                return false;
         return true;
     }
     if (result == "dead")
@@ -123,7 +130,7 @@ void ai::entity::AI::run(const ai::parser::Config &config)
         }
 
         // check available slots to reproduce
-        if (_level < 8 && _food_level >= FOOD_THRESHOLD &&
+        if (_level < 8 && _food_level >= HIGH_FOOD_THRESHOLD &&
         findItemInLook(look_str, "egg") != 0) {
             const int wcount = worker::WorkerManager::getInstance().getWorkerCount();
 

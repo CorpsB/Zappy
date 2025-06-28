@@ -12,6 +12,7 @@
 
 #include <chrono>
 #include <string>
+#include <vector>
 
 namespace ai::entity
 {
@@ -46,10 +47,11 @@ namespace ai::entity
             Direction getRawDirection(Direction adjusted);
             SoundCell &getDirectionSound(Direction direction);
             Direction getNearestSoundDirection(const std::string &target);
+            int getNbMessage(const std::string &target);
             Direction setSound(const std::string &sound_str);
 
         private:
             Direction _player;
-            SoundCell _cells[9];
+            std::vector<SoundCell> _cells[9];
     };
 }

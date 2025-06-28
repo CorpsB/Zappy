@@ -28,8 +28,16 @@ bool ai::entity::AI::performActionForGoal(std::string &look)
     utils::debug::Logger &logger = ai::utils::debug::Logger::GetInstance();
 
     switch (_goal) {
-        case FOOD:
+        case FOOD: {
+            for (int i = 0; i < 3; ++i) {
+                if (countItemInLook(look, "player") > 2) {
+                    if (doAction("Left") == "dead")
+                        return false;
+                } else
+                    break;
+            }
             return handleGoal(look, "food");
+        }
 
         case STONE: {
             const std::string rarest_missing = getRarestMissingStone();
@@ -42,6 +50,8 @@ bool ai::entity::AI::performActionForGoal(std::string &look)
         }
 
         case ELEVATION_MASTER: {
+            _dock_mode = true;
+
             logger.log("Attempting L" + std::to_string(_level + 1) + " Incantation.");
             if (!setStonesForIncantation()) {
                 logger.log("L" + std::to_string(_level + 1) + " stone setting phase failed.");
@@ -61,8 +71,13 @@ bool ai::entity::AI::performActionForGoal(std::string &look)
         }
 
         case ELEVATION_SLAVE: {
+            _dock_mode = true;
+
+            if (!useBroadcast("READY_" + std::to_string(_level + 1)))
+                return false;
+
             logger.log("Waiting elevation signal for level " + std::to_string(_level + 1));
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            std::this_thread::sleep_for(std::chrono::milliseconds(ACTION_DELAY_MS));
             return true;
         }
 
@@ -78,6 +93,8 @@ bool ai::entity::AI::performActionForGoal(std::string &look)
         }
 
         case MEETUP_POINT: {
+            _dock_mode = true;
+
             logger.log("Sending everyone a point meetup request for level " + std::to_string(_level + 1));
             if (!useBroadcast("MEETUP_" + std::to_string(_level + 1)))
                 return false;
