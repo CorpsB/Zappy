@@ -6,10 +6,9 @@
 */
 
 #include "Clipper.hpp"
-#include <algorithm>
 
 namespace Renderer {
-    Vec3 vectorIntersectPlane(const Vec3& p_p, const Vec3& p_n, const Vec3& lS, const Vec3& lE) {
+    Vec3 Clipper::vectorIntersectPlane(const Vec3& p_p, const Vec3& p_n, const Vec3& lS, const Vec3& lE) {
         float p_d = -(p_n.x*p_p.x + p_n.y*p_p.y + p_n.z*p_p.z);
         float ad  = lS.x*p_n.x + lS.y*p_n.y + lS.z*p_n.z;
         float bd  = lE.x*p_n.x + lE.y*p_n.y + lE.z*p_n.z;
@@ -18,7 +17,7 @@ namespace Renderer {
         return { lS.x + dir.x * t, lS.y + dir.y * t, lS.z + dir.z * t };
     }
 
-    int clipAgainstPlane(const Vec3& p_p, const Vec3& p_n, const Triangle& in, Triangle& out1, Triangle& out2) {
+    int Clipper::clipAgainstPlane(const Vec3& p_p, const Vec3& p_n, const Triangle& in, Triangle& out1, Triangle& out2) {
         auto dist = [&](const Vec3& p) {
             return p_n.x*p.x + p_n.y*p.y + p_n.z*p.z - (p_n.x*p_p.x + p_n.y*p_p.y + p_n.z*p_p.z);
         };

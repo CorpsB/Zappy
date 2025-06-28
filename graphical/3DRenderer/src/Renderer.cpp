@@ -61,6 +61,7 @@ namespace Renderer {
     Update _update;
     InputHandler _inputhandler;
     Camera _camera;
+    Clipper _clipper;
 
     bool initRenderer(sf::RenderWindow &window) {
         // window = new sf::RenderWindow(sf::VideoMode(width, height), title);
@@ -334,7 +335,7 @@ namespace Renderer {
                 std::list<Triangle> trisToRaster;
                 Triangle clipped[2];
                 triViewed.color = finalColor;
-                int nClipped = clipAgainstPlane({0,0,0.1f}, {0,0,1}, triViewed, clipped[0], clipped[1]);
+                int nClipped = _clipper.clipAgainstPlane({0,0,0.1f}, {0,0,1}, triViewed, clipped[0], clipped[1]);
                 for (int i = 0; i < nClipped; ++i)
                     trisToRaster.push_back(clipped[i]);
 

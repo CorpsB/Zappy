@@ -1,5 +1,12 @@
-// include/Camera.hpp
+/*
+** EPITECH PROJECT, 2025
+** B-YEP-400-STG-4-1-zappy-noe.carabin
+** File description:
+** Camera
+*/
+
 #pragma once
+
 #include "Math.hpp"
 #include "Renderer.hpp"
 #include <SFML/Window.hpp>
