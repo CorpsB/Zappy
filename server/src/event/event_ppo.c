@@ -20,6 +20,4 @@ void event_ppo(server_t *server, player_t *player)
         player->position[1], player->direction) == -1)
         logger(server, "PPO", ERROR, true);
     send_to_all_gui(server, buffer);
-    if (buffer)
-        free(buffer);
 }

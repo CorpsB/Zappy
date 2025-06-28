@@ -21,8 +21,6 @@ void event_tna(server_t *server)
         if (asprintf(&buffer, "tna %s", team->name) == -1)
             logger(server, "TNA", ERROR, true);
         send_to_all_gui(server, buffer);
-        if (buffer)
-            free(buffer);
         team = team->next;
     }
 }

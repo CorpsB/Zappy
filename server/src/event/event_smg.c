@@ -16,6 +16,4 @@ void event_smg(server_t *server, char *name)
     if (asprintf(&buffer, "SMG %s", name) == -1)
         logger(server, "SMG", ERROR, true);
     send_to_all_gui(server, buffer);
-    if (buffer)
-        free(buffer);
 }

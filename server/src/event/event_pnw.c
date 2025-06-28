@@ -20,6 +20,4 @@ void event_pnw(server_t *server, player_t *player)
         player->direction, player->lvl, player->team->name) == -1)
         logger(server, "PNW", ERROR, true);
     send_to_all_gui(server, buffer);
-    if (buffer)
-        free(buffer);
 }

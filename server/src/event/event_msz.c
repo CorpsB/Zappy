@@ -16,6 +16,4 @@ void event_msz(server_t *server)
     if (asprintf(&buffer, "msz %u %u", server->width, server->height) == -1)
         logger(server, "MSZ", ERROR, true);
     send_to_all_gui(server, buffer);
-    if (buffer)
-        free(buffer);
 }

@@ -24,6 +24,4 @@ void event_pin(server_t *server, player_t *player)
         player->inventory.thystame) == -1)
         logger(server, "PIN", ERROR, true);
     send_to_all_gui(server, buffer);
-    if (buffer)
-        free(buffer);
 }

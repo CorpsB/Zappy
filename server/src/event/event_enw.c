@@ -53,8 +53,6 @@ void event_enw(server_t *server, player_t *player, eggs_t *egg)
         egg->id, id, egg->position[0], egg->position[1]) == -1)
         logger(server, "ENW", ERROR, true);
     send_to_all_gui(server, buffer);
-    if (buffer)
-        free(buffer);
 }
 
 void event_new_gui_enw(server_t *server)

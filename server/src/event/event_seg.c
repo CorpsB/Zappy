@@ -16,6 +16,4 @@ void event_seg(server_t *server, char *name)
     if (asprintf(&buffer, "seg %s", name) == -1)
         logger(server, "SEG", ERROR, true);
     send_to_all_gui(server, buffer);
-    if (buffer)
-        free(buffer);
 }

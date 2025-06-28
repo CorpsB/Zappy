@@ -16,6 +16,4 @@ void event_edi(server_t *server, unsigned int egg_id)
     if (asprintf(&buffer, "edi #%u", egg_id) == -1)
         logger(server, "EDI", ERROR, true);
     send_to_all_gui(server, buffer);
-    if (buffer)
-        free(buffer);
 }

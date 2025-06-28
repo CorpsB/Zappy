@@ -16,6 +16,4 @@ void event_pdr(server_t *server, int id, r_ressource_t type)
     if (asprintf(&buffer, "pdr #%u %u", id, (int)type) == -1)
         logger(server, "PDR PER TILE", ERROR, true);
     send_to_all_gui(server, buffer);
-    if (buffer)
-        free(buffer);
 }

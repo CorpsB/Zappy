@@ -16,8 +16,6 @@ void event_plv(server_t *server, player_t *player)
     if (asprintf(&buffer, "plv #%u %u", player->id, player->lvl) == -1)
         logger(server, "PLV", ERROR, true);
     send_to_all_gui(server, buffer);
-    if (buffer)
-        free(buffer);
 }
 
 void event_all_plv(server_t *server)

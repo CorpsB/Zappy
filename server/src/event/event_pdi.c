@@ -18,8 +18,6 @@ void event_pdi(server_t *server, player_t *player, bool is_open)
     send_to_all_gui(server, buffer);
     if (is_open)
         dprintf(player->socket_fd, "dead\n");
-    if (buffer)
-        free(buffer);
 }
 
 void event_pdi_by_index(server_t *server, int index)

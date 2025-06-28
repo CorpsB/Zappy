@@ -73,6 +73,4 @@ void event_bct_per_tile(server_t *server, int y, int x)
         tile.thystame) == -1)
         logger(server, "BCT PER TILE", ERROR, true);
     send_to_all_gui(server, buffer);
-    if (buffer)
-        free(buffer);
 }
