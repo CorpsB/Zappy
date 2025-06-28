@@ -31,9 +31,7 @@ static void delete_cmd(server_t *, player_t *pl)
 */
 int load_next_time(server_t *server, player_t *pl)
 {
-    printf("Coucou1 : %s\n", pl->cmd[0]);
     if (strncmp(pl->cmd[0], "Incantation", 11) == 0) {
-        printf("Coucou\n");
         if (start_incantation(server, pl))
             return 300;
         pl->is_waiting = false;

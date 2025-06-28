@@ -35,7 +35,7 @@ static void add_client(server_t *server, int socket, whoAmI_t state)
             "WELCOME\n");
     server->poll.client_index++;
     server->poll.connected_client++;
-    logger(server, "AJOUT D'UN CLIENT", DEBUG, false);
+    logger(server, "NEW CLIENT", DEBUG, false);
     see_poll(server->poll, 2, server->poll.connected_client);
 }
 
