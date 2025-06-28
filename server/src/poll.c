@@ -170,9 +170,10 @@ void run_server(server_t *server)
 {
     zappy_clock_t *clock = init_clock(server, server->frequency);
 
+
     init_server(server);
     add_client(server, server->poll.socket, LISTEN);
-    for (; !is_game_over(server);) {
+    for (int count = 0; !is_game_over(server); count++) {
         update_clock(clock);
         if (clock->accumulator < 1.0) {
             poll_func(server, clock);
@@ -180,6 +181,8 @@ void run_server(server_t *server)
         }
         eat(server);
         player_cmd_execution(server);
+        if (count % 20 == 0)
+            map_update(server);
         while (clock->accumulator >= 1.0)
             clock->accumulator -= 1.0;
     }

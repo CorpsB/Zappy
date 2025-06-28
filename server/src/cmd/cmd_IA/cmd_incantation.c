@@ -8,12 +8,19 @@
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
-#include "incantation_table.h"
+#include "include/incantation_table.h"
 
-static int found_player_on_tile(server_t *server, int index)
+static bool is_same_pos(player_t *first, player_t *second)
 {
-    int count = 0;
-    player_t *pl = server->poll.client_list[index].player;
+    if (first->position[0] == second->position[0] &&
+    first->position[1] == second->position[1])
+        return true;
+    return false;
+}
+
+static unsigned int found_player_on_tile(server_t *server, player_t *pl)
+{
+    unsigned int count = 0;
     player_t *tmp;
 
     for (int i = 0; i < server->poll.connected_client; i++) {
@@ -28,14 +35,13 @@ static int found_player_on_tile(server_t *server, int index)
     return count;
 }
 
-static bool check_condition(server_t *server, int index)
+static bool check_condition(server_t *server, player_t *pl)
 {
-    player_t *pl = server->poll.client_list[index].player;
     resources_t map = server->map[pl->position[0]][pl->position[1]];
 
     if (pl->lvl >= 8)
         return false;
-    if (found_player_on_tile(server, index) < requirement[pl->lvl -1].lvl ||
+    if (found_player_on_tile(server, pl) < requirement[pl->lvl -1].lvl ||
         map.linemate < requirement[pl->lvl -1].linemate ||
         map.deraumere < requirement[pl->lvl -1].deraumere ||
         map.sibur < requirement[pl->lvl -1].sibur ||
@@ -46,22 +52,14 @@ static bool check_condition(server_t *server, int index)
     return true;
 }
 
-static bool is_same_pos(player_t *first, player_t *second)
-{
-    if (first->position[0] == second->position[0] &&
-    first->position[1] == second->position[1])
-        return true;
-    return false;
-}
-
-static void start_incantation(server_t *server, int index, char **args)
+bool start_incantation(server_t *server, int index, char **)
 {
     player_t *pl = server->poll.client_list[index].player;
     player_t *tmp;
 
-    if (!check_condition(server, index)) {
-        drpintf(pl, "ko\n");
-        return;
+    if (!check_condition(server, pl)) {
+        dprintf(pl->socket_fd, "ko\n");
+        return false;
     }
     for (int i = 0; i < server->poll.connected_client; i++) {
         if (server->poll.client_list[i].whoAmI != PLAYER)
@@ -72,6 +70,7 @@ static void start_incantation(server_t *server, int index, char **args)
             dprintf(tmp->socket_fd, "Elevation underway\n");
         }
     }
+    return true;
 }
 
 static void elevation_failed(server_t *server, int index)
@@ -104,12 +103,12 @@ static void delete_stuff(server_t *server, int index)
     map.thystame -= requirement[pl->lvl - 1].thystame;
 }
 
-static void end_incantation(server_t *server, int index, char **args)
+static void end_incantation(server_t *server, int index, char **)
 {
     player_t *pl = server->poll.client_list[index].player;
     player_t *tmp;
 
-    if (!check_condition(server, index)) {
+    if (!check_condition(server, pl)) {
         elevation_failed(server, index);
         return;
     }
@@ -126,7 +125,7 @@ static void end_incantation(server_t *server, int index, char **args)
     }
 }
 
-void cmd_incantation(server_t *server, int index, const char *args)
+void cmd_incantation(server_t *server, int index, char **args)
 {
-    return;
+    end_incantation(server, index, args);
 }

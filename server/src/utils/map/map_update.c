@@ -143,6 +143,7 @@ static void ressource_update(server_t *server, r_ressource_t type)
     int size = search_map_information(server, type, &min);
     int *table = malloc(sizeof(int) * (size * 2));
 
+    logger(server, "RELOAD", DEBUG, false);
     if (!table)
         logger(server, "MALLOC", PERROR, true);
     update_map_inventory(server, type);

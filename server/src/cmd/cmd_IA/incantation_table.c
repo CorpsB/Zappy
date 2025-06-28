@@ -8,7 +8,7 @@
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
-#include "incantation_table.h"
+#include "include/incantation_table.h"
 
 const incantation_requirement_t requirement[] = {
     {1, 1, 0, 0, 0, 0, 0, 1},

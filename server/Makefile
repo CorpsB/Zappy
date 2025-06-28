@@ -88,6 +88,8 @@ SRC	=	src/main.c								\
 		src/clock.c								\
 		src/utils/map/del_map.c					\
 		src/player_cmd_execution.c				\
+		src/cmd/cmd_IA/cmd_incantation.c		\
+		src/cmd/cmd_IA/incantation_table.c		\
 
 OBJ	=	$(SRC:.c=.o)
 

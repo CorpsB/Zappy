@@ -47,41 +47,41 @@ static void del_ressource(server_t *server, int y, int x, r_ressource_t type)
         server->map[y][x].thystame = 0;
 }
 
-static void del_map_inventory(server_t *server, r_ressource_t type, int nbr)
+static void del_map_inventory(server_t *server, r_ressource_t type)
 {
     if (type == FOOD)
-        server->actual_map_inventory.food -= nbr;
+        server->actual_map_inventory.food -= 1;
     if (type == LINEMATE)
-        server->actual_map_inventory.linemate -= nbr;
+        server->actual_map_inventory.linemate -= 1;
     if (type == DERAUMERE)
-        server->actual_map_inventory.deraumere -= nbr;
+        server->actual_map_inventory.deraumere -= 1;
     if (type == SIBUR)
-        server->actual_map_inventory.sibur -= nbr;
+        server->actual_map_inventory.sibur -= 1;
     if (type == MENDIANE)
-        server->actual_map_inventory.mendiane -= nbr;
+        server->actual_map_inventory.mendiane -= 1;
     if (type == PHIRAS)
-        server->actual_map_inventory.phiras -= nbr;
+        server->actual_map_inventory.phiras -= 1;
     if (type == THYSTAME)
-        server->actual_map_inventory.thystame -= nbr;
+        server->actual_map_inventory.thystame -= 1;
 }
 
 static void player_add_ressource(server_t *, player_t *player,
-    r_ressource_t type, int quanity)
+    r_ressource_t type)
 {
     if (type == FOOD)
-        player->inventory.food += quanity;
+        player->inventory.food += 1;
     if (type == LINEMATE)
-        player->inventory.linemate += quanity;
+        player->inventory.linemate += 1;
     if (type == DERAUMERE)
-        player->inventory.deraumere += quanity;
+        player->inventory.deraumere += 1;
     if (type == SIBUR)
-        player->inventory.sibur += quanity;
+        player->inventory.sibur += 1;
     if (type == MENDIANE)
-        player->inventory.mendiane += quanity;
+        player->inventory.mendiane += 1;
     if (type == PHIRAS)
-        player->inventory.phiras += quanity;
+        player->inventory.phiras += 1;
     if (type == THYSTAME)
-        player->inventory.thystame += quanity;
+        player->inventory.thystame += 1;
 }
 
 static void take_obj(server_t *srv, r_ressource_t obj, int index)
@@ -92,24 +92,32 @@ static void take_obj(server_t *srv, r_ressource_t obj, int index)
 
     if (!pos)
         logger(srv, "MALLOC : POS", PERROR, true);
+    if (nbr <= 0) {
+        dprintf(pl->socket_fd, "ko\n");
+        return;
+    }
     pos[0] = pl->position[0];
     pos[1] = pl->position[1];
-    player_add_ressource(srv, pl, obj, nbr);
+    player_add_ressource(srv, pl, obj);
     del_ressource(srv, pl->position[0], pl->position[1], obj);
     change_arround(srv, pos, obj, density_table[obj].repartition_value * -1);
-    del_map_inventory(srv, obj, nbr);
+    del_map_inventory(srv, obj);
     event_pgt(srv, pl->id, obj);
     event_pin(srv, pl);
     event_bct_per_tile(srv, pl->position[0], pl->position[1]);
     if (pos)
         free(pos);
+    dprintf(pl->socket_fd, "ok\n");
 }
 
 void cmd_take_object(server_t *server, int index, char **args)
 {
     for (int i = FOOD; i < THYSTAME; i++) {
         if (strncmp(args[1], density_table[i].name,
-            strlen(density_table[i].name)) == 0)
+            strlen(density_table[i].name)) == 0) {
                 take_obj(server, (r_ressource_t)i, index);
+                return;
+            }
     }
+    dprintf(server->poll.pollfds[index].fd, "ko\n");
 }

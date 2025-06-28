@@ -32,6 +32,7 @@ static void complete_node(player_t *node)
     node->cmd[9] = NULL;
     node->cmd[10] = NULL;
     node->inventory.food = 10;
+    node->is_waiting = false;
 }
 
 static player_t *init_player_node(server_t *server, int index,

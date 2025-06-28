@@ -86,7 +86,7 @@ static void map_add_ressource(server_t *server, int *pos,
         server->map[pos[0]][pos[1]].thystame += quanity;
 }
 
-static void take_obj(server_t *server, r_ressource_t obj, int index)
+static void set_obj(server_t *server, r_ressource_t obj, int index)
 {
     player_t *pl = server->poll.client_list[index].player;
     int nbr = get_ressource(server, pl, obj);
@@ -94,6 +94,10 @@ static void take_obj(server_t *server, r_ressource_t obj, int index)
 
     if (!pos)
         logger(server, "MALLOC : POSITION", PERROR, true);
+    if (nbr <= 0) {
+        dprintf(pl->socket_fd, "ko\n");
+        return;
+    }
     pos[0] = pl->position[0];
     pos[1] = pl->position[1];
     map_add_ressource(server, pos, obj, nbr);
@@ -105,13 +109,17 @@ static void take_obj(server_t *server, r_ressource_t obj, int index)
     event_bct_per_tile(server, pl->position[0], pl->position[1]);
     if (pos)
         free(pos);
+    dprintf(pl->socket_fd, "ok\n");
 }
 
 void cmd_set_object(server_t *server, int index, char **args)
 {
     for (int i = FOOD; i < THYSTAME; i++) {
         if (strncmp(args[1], density_table[i].name,
-            strlen(density_table[i].name)) == 0)
-                take_obj(server, (r_ressource_t)i, index);
+            strlen(density_table[i].name)) == 0) {
+                set_obj(server, (r_ressource_t)i, index);
+                return;
+            }
     }
+    dprintf(server->poll.pollfds[index].fd, "ko\n");
 }

@@ -12,7 +12,6 @@
 #include "include/cmd_parser_table.h"
 
 const player_command_t player_command_table[] = {
-    {"test", cmd_test, 1, 0},
     {"Forward", cmd_forward, 1, 7},
     {"Right", cmd_right, 1, 7},
     {"Left", cmd_left, 1, 7},
@@ -24,7 +23,7 @@ const player_command_t player_command_table[] = {
     {"Eject", cmd_eject, 1, 7},
     {"Take", cmd_take_object, 2, 7},
     {"Set", cmd_set_object, 2, 7},
-    {"Incantation", cmd_test, 1, 0},
+    {"Incantation", cmd_incantation, 1, 300},
     {NULL, NULL, 0, 0}
 };
 

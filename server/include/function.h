@@ -468,5 +468,5 @@ void free_int_map(int y, int **map);
 void update_clock(zappy_clock_t *clock);
 zappy_clock_t *init_clock(server_t *server, size_t freq);
 void player_cmd_execution(server_t *server);
-
+void cmd_incantation(server_t *server, int index, char **args);
 #endif /* !FUCNTION_H_ */

@@ -261,6 +261,7 @@ struct player {
 
     bool is_dead;
     bool is_freeze;
+    bool is_waiting;
 
     char *cmd[11];
     unsigned int time;
