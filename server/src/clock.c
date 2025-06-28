@@ -20,8 +20,9 @@ static double get_elapsed_time_units(zappy_clock_t *clock)
     return elapsed_sec * (double)clock->freq;
 }
 
-void update_clock(zappy_clock_t *clock)
+void update_clock(zappy_clock_t *clock, server_t *server)
 {
+    clock->freq = server->frequency;
     clock->accumulator += get_elapsed_time_units(clock);
     clock_gettime(CLOCK_MONOTONIC, &clock->last_tick);
 }

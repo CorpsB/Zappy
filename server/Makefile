@@ -90,6 +90,8 @@ SRC	=	src/main.c								\
 		src/player_cmd_execution.c				\
 		src/cmd/cmd_IA/cmd_incantation.c		\
 		src/cmd/cmd_IA/incantation_table.c		\
+		src/event/event_pic.c					\
+		src/event/event_pie.c					\
 
 OBJ	=	$(SRC:.c=.o)
 

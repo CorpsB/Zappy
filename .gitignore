@@ -3,6 +3,7 @@
 *.o
 *.log
 .vscode
+zappy_gui.AppImage
 
 #Binary : 
 zappy_server

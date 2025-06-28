@@ -15,4 +15,7 @@ void send_to_all_gui(server_t *server, char *message)
         if (server->poll.client_list[i].whoAmI == GUI)
             dprintf(server->poll.pollfds[i].fd, "%s\n", message);
     }
+    if (message)
+        free(message);
+    message = NULL;
 }

@@ -621,9 +621,11 @@ unsigned int players_at(server_t *srv, int y, int x);
  * @param map Pointer to the 2D integer array to free.
 */
 void free_int_map(int y, int **map);
-void update_clock(zappy_clock_t *clock);
+void update_clock(zappy_clock_t *clock, server_t *server);
 zappy_clock_t *init_clock(server_t *server, size_t freq);
 void player_cmd_execution(server_t *server);
 void cmd_incantation(server_t *server, int index, char **args);
 bool start_incantation(server_t *server, player_t *pl);
+void event_pic(server_t *server, player_t *player);
+void event_pie(server_t *server, player_t *player, bool succes);
 #endif /* !FUCNTION_H_ */
