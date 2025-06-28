@@ -10,32 +10,6 @@
 #include "include/structure.h"
 
 /**
- * @brief Initialize the main server socket and bind it.
- * This function creates the listening socket, configures its parameters,
- * binds it to the specified port, and starts listening for connections.
- * @param server Pointer to the server structure.
-*/
-static void init_server(server_t *server)
-{
-    socklen_t size = sizeof(struct sockaddr_in);
-
-    server->poll.socket = socket(AF_INET, SOCK_STREAM, 0);
-    if (server->poll.socket == -1)
-        logger(server, "SOCKET", PERROR, true);
-    memset(&server->poll.sockaddr, 0, size);
-    server->poll.sockaddr.sin_family = AF_INET;
-    server->poll.sockaddr.sin_port = htons(server->port);
-    server->poll.sockaddr.sin_addr.s_addr = INADDR_ANY;
-    server->poll.connected_client = 0;
-    server->poll.client_index = 0;
-    if (bind(server->poll.socket, (struct sockaddr *)&server->poll.sockaddr,
-        size) == -1)
-        logger(server, "SOCKET BIND", PERROR, true);
-    if (listen(server->poll.socket, 200) == -1)
-        logger(server, "LISTEN", PERROR, true);
-}
-
-/**
  * @brief Add a new client to the server's poll and client list.
  * @param server Pointer to the server structure.
  * @param socket Socket descriptor of the new client.
@@ -120,11 +94,13 @@ static bool del_client(server_t *server, int index)
 */
 static void add_cmd(server_t *server, char *cmd, int index)
 {
+    player_t *pl;
+
     if (server->poll.client_list[index].whoAmI != PLAYER) {
         cmd_parser(server, index, cmd);
         return;
     }
-    player_t *pl = server->poll.client_list[index].player;
+    pl = server->poll.client_list[index].player;
     if (pl->cmd[9] != NULL) {
         dprintf(pl->socket_fd, "suc\n");
         return;
@@ -230,10 +206,19 @@ static void eat(server_t *server)
         eat_per_teams(server, tmp);
 }
 
+static void action_per_turn(server_t *server, int count)
+{
+    eat(server);
+    player_cmd_execution(server);
+    if (count % 20 == 0) {
+        map_update(server);
+        logger(server, "RESSOURCE ++", DEBUG, false);
+    }
+}
+
 void run_server(server_t *server)
 {
     zappy_clock_t *clock = init_clock(server, server->frequency);
-
 
     init_server(server);
     add_client(server, server->poll.socket, LISTEN);
@@ -243,12 +228,7 @@ void run_server(server_t *server)
             poll_func(server, clock);
             continue;
         }
-        eat(server);
-        player_cmd_execution(server);
-        if (count % 20 == 0) {
-            map_update(server);
-            logger(server, "RESSOURCE ++", DEBUG, false);
-        }
+        action_per_turn(server, count);
         while (clock->accumulator >= 1.0)
             clock->accumulator -= 1.0;
     }

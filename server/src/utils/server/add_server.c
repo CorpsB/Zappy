@@ -10,6 +10,32 @@
 #include "include/structure.h"
 
 /**
+ * @brief Initialize the main server socket and bind it.
+ * This function creates the listening socket, configures its parameters,
+ * binds it to the specified port, and starts listening for connections.
+ * @param server Pointer to the server structure.
+*/
+void init_server(server_t *server)
+{
+    socklen_t size = sizeof(struct sockaddr_in);
+
+    server->poll.socket = socket(AF_INET, SOCK_STREAM, 0);
+    if (server->poll.socket == -1)
+        logger(server, "SOCKET", PERROR, true);
+    memset(&server->poll.sockaddr, 0, size);
+    server->poll.sockaddr.sin_family = AF_INET;
+    server->poll.sockaddr.sin_port = htons(server->port);
+    server->poll.sockaddr.sin_addr.s_addr = INADDR_ANY;
+    server->poll.connected_client = 0;
+    server->poll.client_index = 0;
+    if (bind(server->poll.socket, (struct sockaddr *)&server->poll.sockaddr,
+        size) == -1)
+        logger(server, "SOCKET BIND", PERROR, true);
+    if (listen(server->poll.socket, 200) == -1)
+        logger(server, "LISTEN", PERROR, true);
+}
+
+/**
  * @brief Initialize/reset the server's actual map inventory
  * and poll structures.
  * Sets all resource counts in actual_map_inventory to zero and

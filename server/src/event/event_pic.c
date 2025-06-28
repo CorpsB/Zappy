@@ -10,7 +10,8 @@
 #include "include/structure.h"
 #include "include/incantation_table.h"
 
-static char *add_id_on_message(server_t *server, player_t *player, char *message)
+static char *add_id_on_message(server_t *server, player_t *player,
+    char *message)
 {
     char *result = NULL;
 
@@ -35,7 +36,7 @@ void event_pic(server_t *server, player_t *player)
         tmp = server->poll.client_list[i].player;
         if (tmp != player && !tmp->is_dead &&
         tmp->position[0] == player->position[0] &&
-        tmp->position[1] == player->position[1] && tmp->is_freeze && 
+        tmp->position[1] == player->position[1] && tmp->is_freeze &&
         tmp->lvl == player->lvl)
             message = add_id_on_message(server, tmp, message);
     }

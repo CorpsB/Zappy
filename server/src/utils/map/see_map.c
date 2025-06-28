@@ -72,17 +72,17 @@ static void print_tile_quantity(const server_t *server,
  * @param res_type The resource type to print from the repartition
  * map (enum r_ressource_t).
 */
-// static void print_repartition_map(const server_t *server,
-//     const r_ressource_t res_type)
-// {
-//     for (unsigned int y = 0; y < server->height; y++) {
-//         for (unsigned int x = 0; x < server->width; x++) {
-//             printf("[%2d] ",
-//                 server->map[y][x].repartition_map[res_type]);
-//         }
-//         printf("\n");
-//     }
-// }
+static void print_repartition_map(const server_t *server,
+    const r_ressource_t res_type)
+{
+    for (unsigned int y = 0; y < server->height; y++) {
+        for (unsigned int x = 0; x < server->width; x++) {
+            printf("[%2d] ",
+                server->map[y][x].repartition_map[res_type]);
+        }
+        printf("\n");
+    }
+}
 
 void debug_print_resource_map(server_t *server)
 {
@@ -90,9 +90,9 @@ void debug_print_resource_map(server_t *server)
         printf("===== RESOURCE: %s =====\n",
             density_table[res_type].name);
         print_tile_quantity(server, res_type);
-        // printf("\n--- Repartition Map (%s) ---\n",
-        //     density_table[res_type].name);
-        // print_repartition_map(server, res_type);
+        printf("\n--- Repartition Map (%s) ---\n",
+            density_table[res_type].name);
+        print_repartition_map(server, res_type);
         printf("\n");
     }
 }

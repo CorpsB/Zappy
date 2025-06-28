@@ -130,6 +130,25 @@ void change_arround(server_t *srv, int *pos, r_ressource_t type, int weight)
     }
 }
 
+static void add_ressources_on_map(server_t *server, r_ressource_t type,
+    int *pos)
+{
+    if (type == FOOD)
+    server->map[pos[0]][pos[1]].food++;
+    if (type == LINEMATE)
+        server->map[pos[0]][pos[1]].linemate++;
+    if (type == DERAUMERE)
+        server->map[pos[0]][pos[1]].deraumere++;
+    if (type == SIBUR)
+        server->map[pos[0]][pos[1]].sibur++;
+    if (type == MENDIANE)
+        server->map[pos[0]][pos[1]].mendiane++;
+    if (type == PHIRAS)
+        server->map[pos[0]][pos[1]].phiras++;
+    if (type == THYSTAME)
+        server->map[pos[0]][pos[1]].thystame++;
+}
+
 /**
  * @brief Spawns a resource on the map at one of the least occupied cells.
  * Selects a random position from cells with minimum repartition value and
@@ -150,20 +169,7 @@ static void spawn_ressource(server_t *server, r_ressource_t type,
 
     server->map[pos[0]][pos[1]].repartition_map[type] += weight;
     change_arround(server, pos, type, weight - 1);
-    if (type == FOOD)
-        server->map[pos[0]][pos[1]].food++;
-    if (type == LINEMATE)
-        server->map[pos[0]][pos[1]].linemate++;
-    if (type == DERAUMERE)
-        server->map[pos[0]][pos[1]].deraumere++;
-    if (type == SIBUR)
-        server->map[pos[0]][pos[1]].sibur++;
-    if (type == MENDIANE)
-        server->map[pos[0]][pos[1]].mendiane++;
-    if (type == PHIRAS)
-        server->map[pos[0]][pos[1]].phiras++;
-    if (type == THYSTAME)
-        server->map[pos[0]][pos[1]].thystame++;
+    add_ressources_on_map(server, type, pos);
     event_bct_per_tile(server, pos[0], pos[1]);
 }
 

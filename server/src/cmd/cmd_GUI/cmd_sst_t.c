@@ -45,5 +45,5 @@ void cmd_sst(server_t *server, int index, char **args)
         return;
     }
     server->frequency = (unsigned int)freq;
-    event_sgt(server);    
+    event_sgt(server);
 }

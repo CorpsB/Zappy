@@ -86,6 +86,13 @@ static void map_add_ressource(server_t *server, int *pos,
         server->map[pos[0]][pos[1]].thystame += quanity;
 }
 
+static void event(server_t *server, player_t *pl, r_ressource_t obj)
+{
+    event_pdr(server, pl->id, obj);
+    event_pin(server, pl);
+    event_bct_per_tile(server, pl->position[0], pl->position[1]);
+}
+
 static void set_obj(server_t *server, r_ressource_t obj, int index)
 {
     player_t *pl = server->poll.client_list[index].player;
@@ -104,9 +111,7 @@ static void set_obj(server_t *server, r_ressource_t obj, int index)
     pl_del_ressource(server, pl, obj);
     change_arround(server, pos, obj, density_table[obj].repartition_value);
     add_theorique_map_inventory(server, obj, nbr);
-    event_pdr(server, pl->id, obj);
-    event_pin(server, pl);
-    event_bct_per_tile(server, pl->position[0], pl->position[1]);
+    event(server, pl, obj);
     if (pos)
         free(pos);
     dprintf(pl->socket_fd, "ok\n");

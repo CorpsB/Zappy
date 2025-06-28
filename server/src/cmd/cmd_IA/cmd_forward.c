@@ -20,9 +20,9 @@
 */
 static void move_player_forward(server_t *server, player_t *player)
 {
-    if (player->direction == NORTH)
-        player->position[1] = (player->position[1] + 1) % server->height;
     if (player->direction == SOUTH)
+        player->position[1] = (player->position[1] + 1) % server->height;
+    if (player->direction == NORTH)
         player->position[1] =
             (player->position[1] + server->height - 1) % server->height;
     if (player->direction == EAST)

@@ -843,5 +843,6 @@ bool start_incantation(server_t *server, player_t *pl);
 
 void event_pic(server_t *server, player_t *player);
 void event_pie(server_t *server, player_t *player, bool succes);
+void init_server(server_t *server);
 
 #endif /* !FUCNTION_H_ */

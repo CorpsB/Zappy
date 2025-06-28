@@ -26,5 +26,4 @@ void event_pie(server_t *server, player_t *player, bool succes)
         }
     }
     send_to_all_gui(server, message);
-            
 }

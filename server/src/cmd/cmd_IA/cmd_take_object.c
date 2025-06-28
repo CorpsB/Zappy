@@ -84,6 +84,13 @@ static void player_add_ressource(server_t *, player_t *player,
         player->inventory.thystame += 1;
 }
 
+static void event(server_t *srv, player_t *pl, r_ressource_t obj)
+{
+    event_pgt(srv, pl->id, obj);
+    event_pin(srv, pl);
+    event_bct_per_tile(srv, pl->position[0], pl->position[1]);
+}
+
 static void take_obj(server_t *srv, r_ressource_t obj, int index)
 {
     player_t *pl = srv->poll.client_list[index].player;
@@ -102,9 +109,7 @@ static void take_obj(server_t *srv, r_ressource_t obj, int index)
     del_ressource(srv, pl->position[0], pl->position[1], obj);
     change_arround(srv, pos, obj, density_table[obj].repartition_value * -1);
     del_map_inventory(srv, obj);
-    event_pgt(srv, pl->id, obj);
-    event_pin(srv, pl);
-    event_bct_per_tile(srv, pl->position[0], pl->position[1]);
+    event(srv, pl, obj);
     if (pos)
         free(pos);
     dprintf(pl->socket_fd, "ok\n");

@@ -69,7 +69,6 @@ void player_cmd_execution(server_t *server)
             pl->is_waiting = true;
             continue;
         }
-        if (pl->time > 0)
-        pl->time--;
+        pl->time = pl->time > 0 ? pl->time - 1 : pl->time;
     }
 }
