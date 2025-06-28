@@ -67,6 +67,7 @@ static bool is_game_over(server_t *server)
 static bool del_client(server_t *server, int index)
 {
     close(server->poll.pollfds[index].fd);
+    event_pdi_by_index(server, index);
     for (int i = 0; i < server->poll.connected_client; i++) {
         if (i > index) {
             server->poll.client_list[i - 1] = server->poll.client_list[i];
@@ -81,7 +82,6 @@ static bool del_client(server_t *server, int index)
         sizeof(struct pollfd) * server->poll.connected_client);
     if (!server->poll.pollfds || !server->poll.client_list)
         logger(server, "REALLOC", PERROR, true);
-    event_pdi_by_index(server, index);
     return true;
 }
 
@@ -156,7 +156,7 @@ static void eat_per_teams(server_t *server, teams_t *teams)
         if ((int)tmp->cycle_before_death - 1 <= 0 &&
         tmp->inventory.food == 0) {
             tmp->is_dead = true;
-            event_pdi(server, tmp);
+            event_pdi(server, tmp, true);
             continue;
         }
         if ((int)tmp->cycle_before_death - 1 <= 0) {

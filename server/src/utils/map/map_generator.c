@@ -58,9 +58,16 @@ static void spawn_eggs(server_t *server)
 void map_generator(server_t *server)
 {
     server->map = malloc(sizeof(resources_t *) * (server->height + 1));
+    if (!server->map)
+        logger(server, "MALLOC", PERROR, true);
     server->map[server->height] = NULL;
-    for (unsigned int i = 0; i < server->height; i++)
+    for (unsigned int i = 0; i < server->height; i++) {
         server->map[i] = malloc(sizeof(resources_t) * server->width);
+        if (!server->map[i])
+            logger(server, "MALLOC", PERROR, true);
+        for (unsigned int j = 0; j < server->width; j++)
+            memset(&server->map[i][j], 0, sizeof(resources_t));
+    }
     define_actual_map_inventory(server);
     define_goals(server);
     init_rapartition_cells(server);

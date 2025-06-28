@@ -49,7 +49,7 @@ static player_t *init_player_node(server_t *server, int index,
     node->team = teams;
     node->is_dead = false;
     node->cycle_before_death = 0;
-    node->direction = (rand() % 4) + 1;
+    node->direction = rand() % 4;
     node->socket_fd = server->poll.pollfds[index].fd;
     node->inventory = create_resources();
     complete_node(node);

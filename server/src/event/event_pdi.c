@@ -9,14 +9,15 @@
 #include "include/function.h"
 #include "include/structure.h"
 
-void event_pdi(server_t *server, player_t *player)
+void event_pdi(server_t *server, player_t *player, bool is_open)
 {
     char *buffer = NULL;
 
     if (asprintf(&buffer, "pdi %d", player->id) == -1)
         logger(server, "PDI", ERROR, true);
     send_to_all_gui(server, buffer);
-    dprintf(player->socket_fd, "dead\n");
+    if (is_open)
+        dprintf(player->socket_fd, "dead\n");
     if (buffer)
         free(buffer);
 }
@@ -24,5 +25,5 @@ void event_pdi(server_t *server, player_t *player)
 void event_pdi_by_index(server_t *server, int index)
 {
     if (server->poll.client_list[index].whoAmI == PLAYER)
-        event_pdi(server, server->poll.client_list->player);
+        event_pdi(server, server->poll.client_list[index].player, false);
 }

@@ -9,6 +9,19 @@
 #include "include/function.h"
 #include "include/structure.h"
 
+void server_actual_map(server_t *server)
+{
+    server->actual_map_inventory.food = 0;
+    server->actual_map_inventory.linemate = 0;
+    server->actual_map_inventory.deraumere = 0;
+    server->actual_map_inventory.sibur = 0;
+    server->actual_map_inventory.mendiane = 0;
+    server->actual_map_inventory.phiras = 0;
+    server->actual_map_inventory.thystame = 0;
+    server->poll.pollfds = NULL;
+    server->poll.client_list = NULL;
+}
+
 server_t *add_server(void)
 {
     server_t *server = malloc(sizeof(server_t));
@@ -25,5 +38,8 @@ server_t *add_server(void)
     server->width = 0;
     server->eggs_count = 0;
     server->player_count = 0;
+    server->debug = false;
+    server->debug_fd = -1;
+    server_actual_map(server);
     return server;
 }

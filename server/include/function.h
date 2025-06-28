@@ -128,7 +128,7 @@ void generate_starter_eggs(server_t *server, teams_t *teams);
  * @param server Pointer to the game server.
  * @param player Pointer to the player who has died.
 */
-void event_pdi(server_t *server, player_t *player);
+void event_pdi(server_t *server, player_t *player, bool is_open);
 
 
 //EVENTS
@@ -139,17 +139,6 @@ void event_pdi(server_t *server, player_t *player);
  * @param server The main server structure containing map and clients.
  */
 void event_msz(server_t *server);
-
-/**
- * @brief Notify the GUI and the player that a player has died.
- *
- * GUI clients receive: pdi <id>
- * The player receives: dead
- *
- * @param server Pointer to the game server.
- * @param player Pointer to the player who has died.
- */
-void event_pdi(server_t *server, player_t *player);
 
 /**
  * @brief Broadcast the entire map content to all connected graphical clients.
