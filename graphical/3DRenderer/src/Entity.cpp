@@ -17,14 +17,14 @@ namespace Renderer {
     int nextEntityID = 0;
     int rotatingEntityId = -1;
     std::array<std::string, 8> pathEyes = {
-        "./Assets/Eyes_lv1.stl",
-        "./Assets/Eyes_lv2.stl",
-        "./Assets/Eyes_lv3.stl",
-        "./Assets/Eyes_lv4.stl",
-        "./Assets/Eyes_lv5.stl",
-        "./Assets/Eyes_lv6.stl",
-        "./Assets/Eyes_lv7.stl",
-        "./Assets/Eyes_lv8.stl"
+        "./bonus/Assets/Eyes_lv1.stl",
+        "./bonus/Assets/Eyes_lv2.stl",
+        "./bonus/Assets/Eyes_lv3.stl",
+        "./bonus/Assets/Eyes_lv4.stl",
+        "./bonus/Assets/Eyes_lv5.stl",
+        "./bonus/Assets/Eyes_lv6.stl",
+        "./bonus/Assets/Eyes_lv7.stl",
+        "./bonus/Assets/Eyes_lv8.stl"
     };
     std::array<float, 8> offsetEyesZ = {
         -8.8f,
@@ -36,10 +36,12 @@ namespace Renderer {
         -7.2f,
         -6.4f
     };
+    STLLoader stlloader;
+    Geometry geometry;
 
     int spawn(EntityType type, PartType partType, int clientId, const Vec3& pos,
               const sf::Color& c, const std::string& filepath, Compass orientation,
-              const Vec3& rotation, int level) {
+              const Vec3& rotation, int level, std::string teamName) {
         Entity newEnt;
         newEnt.id = nextEntityID++;
         newEnt.type = partType;
@@ -49,19 +51,22 @@ namespace Renderer {
         newEnt.scale    = {1.f, 1.f, 1.f};
         newEnt.orientation = orientation;
         newEnt.level = level;
+        newEnt.teamName = teamName;
+        newEnt.color = c;
+        newEnt.inventory = {0, 0, 0, 0, 0, 0, 0};
         // newEnt.rotation.y = compassToAngle(orientation);
         try {
             switch (type) {
             case EntityType::CUBE:
-                newEnt.mesh = createCubeMesh(c);
+                newEnt.mesh = geometry.createCubeMesh(c);
                 break;
             case EntityType::SPHERE:
-                newEnt.mesh = createSphereMesh(c);
+                newEnt.mesh = geometry.createSphereMesh(c);
                 break;
             case EntityType::STL:
                 if (filepath.empty())
                     throw std::runtime_error("STL type requires a filepath.");
-                newEnt.mesh = createSTLMesh(filepath, c);
+                newEnt.mesh = stlloader.createSTLMesh(filepath, c);
                 break;
             }
         } catch (const std::runtime_error& e) {

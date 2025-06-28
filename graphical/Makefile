@@ -20,14 +20,16 @@ SRC	= main.cpp	\
 	3DRenderer/src/Math.cpp \
 	3DRenderer/src/Renderer.cpp \
 	3DRenderer/src/STLLoader.cpp \
+	3DRenderer/src/Update.cpp \
 
 OBJ	= $(SRC:.cpp=.o)
 
 CXXFLAGS = -std=c++20 -Wall -Wextra -Werror -g -I3DRenderer/include \
 	-O3 -march=native
+
 LDFLAGS = -lsfml-graphics -lsfml-window -lsfml-system
 
-NAME = zappy_gui
+NAME = ../zappy_gui
 
 all: $(NAME)
 

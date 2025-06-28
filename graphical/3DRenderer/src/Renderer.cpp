@@ -28,6 +28,21 @@ namespace Renderer {
     std::unordered_map<int, Renderer::MovementState> pendingMovementsAfterRotation;
     int map_size_x = 0;
     int map_size_y = 0;
+    static sf::RectangleShape bgMenu;
+    // We need it to display it even though it's not really supposed to be here
+    std::unordered_map<int, std::array<int, 7>> _resourcesOnTiles;
+    static std::array<int, 7> totalResources;
+    static std::array<sf::Color, 7> colorResources;
+    static std::array<std::string, 7> nameResources;
+    bool resourcesChange;
+    static sf::RectangleShape buttonNextTrantorian;
+    static sf::Color buttonIdleColor = sf::Color(100, 100, 100);
+    static sf::Color buttonHoverColor = sf::Color(150, 150, 150);
+    static Entity currentTrantorian;
+    static std::array<std::string, 4> orientation = {"NORTH", "WEST", "SOUTH", "EAST"};
+    static sf::RectangleShape escapeMenuBg;
+    static std::pair<int, int> currentTile;
+    Update _update;
 
     bool initRenderer(sf::RenderWindow &window) {
         // window = new sf::RenderWindow(sf::VideoMode(width, height), title);
@@ -37,8 +52,16 @@ namespace Renderer {
         backBuffer.create(window.getSize().x, window.getSize().y);
         depthBuffer.assign(window.getSize().x * window.getSize().y, std::numeric_limits<float>::max());
         backBufferTexture.create(window.getSize().x, window.getSize().y);
+        escapeMenuBg.setSize(sf::Vector2f(600.f, 500.f));
+        escapeMenuBg.setFillColor(sf::Color(20, 20, 20, 220));
+        escapeMenuBg.setOutlineColor(sf::Color::White);
+        escapeMenuBg.setOutlineThickness(2.f);
+        escapeMenuBg.setPosition(
+            (window.getSize().x - escapeMenuBg.getSize().x) / 2.f,
+            (window.getSize().y - escapeMenuBg.getSize().y) / 2.f
+        );
 
-        if (!hudFont.loadFromFile("./Assets/zappy_font.ttf")) {
+        if (!hudFont.loadFromFile("./bonus/Assets/zappy_font.ttf")) {
             std::cerr << "Failed to load font\n";
             return false;
         }
@@ -47,6 +70,39 @@ namespace Renderer {
         hudText.setFillColor(sf::Color::White);
         hudText.setOutlineColor(sf::Color::Black);
         hudText.setOutlineThickness(1.0f);
+
+        bgMenu.setSize(sf::Vector2f(window.getSize().x, window.getSize().y));
+        bgMenu.setPosition(0.f, 0.f);
+        bgMenu.setFillColor(sf::Color(0, 0, 0, 128));
+        buttonNextTrantorian.setSize(sf::Vector2f(100.f, 40.f));
+        buttonNextTrantorian.setPosition(120.f, 550.f);
+        buttonNextTrantorian.setFillColor(buttonIdleColor);
+
+        totalResources = {0, 0, 0, 0, 0, 0, 0};
+
+        colorResources = {
+            sf::Color::Yellow,
+            sf::Color {96, 96, 96},
+            sf::Color::Green,
+            sf::Color {204, 0, 102},
+            sf::Color {255, 255, 255},
+            sf::Color {127, 0, 255},
+            sf::Color::Red
+        };
+        nameResources = {
+            "FOOD: ",
+            "LINEMATE: ",
+            "DERAUMERE: ",
+            "SIBUR: ",
+            "MENDIANE: ",
+            "PHIRAS: ",
+            "THYSTAME: "
+        };
+        resourcesChange = true;
+        
+        currentTrantorian.clientId = -1;
+
+        currentTile = {0, 0};
 
         return true;
     }
@@ -88,23 +144,30 @@ namespace Renderer {
             }
         }
     }
-    //A function useful for update
-    Vec3 rotateY(const Vec3& v, float angleDegrees)
-    {
-        float angleRad = angleDegrees * (3.14159265f / 180.f);
-        float cosA = std::cos(angleRad);
-        float sinA = std::sin(angleRad);
-
-        return {
-            v.x * cosA - v.z * sinA,
-            v.y,
-            v.x * sinA + v.z * cosA
-        };
-    }
 
     void update(float dt) {
         processInput(dt);
         cooldownAction -= dt;
+        if (zToggle) {
+            if (currentTile.first < map_size_x - 1)
+                currentTile.first += 1;
+            zToggle = false;
+        }
+        if (sToggle) {
+            if (currentTile.first > 0)
+                currentTile.first -= 1;
+            sToggle = false;
+        }
+        if (qToggle) {
+            if (currentTile.second < map_size_y - 1)
+                currentTile.second += 1;
+            qToggle = false;
+        }
+        if (dToggle) {
+            if (currentTile.second > 0)
+                currentTile.second -= 1;
+            dToggle = false;
+        }
         // Values in valuesForSynchro :
         // int -> client id
         // Vec3 -> body position
@@ -112,98 +175,35 @@ namespace Renderer {
         std::vector<std::tuple<int, Vec3, Vec3>> valuesForSynchro;
 
         for (auto& e : sceneEntities) {
-            Vec3 offset = {0.f, OFFSET_EYES_Y, Renderer::offsetEyesZ[e.level - 1]};
-            auto itMove = activeMovements.find(e.clientId);
-            if (itMove != activeMovements.end() && itMove->second.active) {
-                MovementState& m = itMove->second;
-                m.timeElapsed += dt;
-                // X axis wrap
-                if (e.position.x < -35.f) {
-                    e.position.x = (map_size_x - 1) * TILE_SIZE + 35.f + (35.f + e.position.x);
-                } else if (e.position.x > (map_size_x - 1) * TILE_SIZE + 35.f) {
-                    e.position.x = (map_size_x - 1) * TILE_SIZE - e.position.x;
-                }
-
-                // Z axis wrap
-                if (e.position.z < -35.f) {
-                    e.position.z = (map_size_y - 1) * TILE_SIZE + 35.f + (35.f + e.position.z);
-                } else if (e.position.z > (map_size_y - 1) * TILE_SIZE + 35.f) {
-                    e.position.z = (map_size_y - 1) * TILE_SIZE - e.position.z;
-                }
-                while (m.stepsRemaining > 0 && m.timeElapsed >= 0.025f) {
-                    m.timeElapsed -= 0.025f;
-
-                    // Appliquer un déplacement de 5.5 dans la bonne direction
-                    e.position.x += m.direction.x;
-                    e.position.y += m.direction.y;
-                    e.position.z += m.direction.z;
-
-                    m.stepsRemaining--;
-
-                    if (m.stepsRemaining == 0)
-                        m.active = false;
-                }
+            _update.moveTrantorian(dt, e, activeMovements);
+            _update.rotateTrantorian(dt, e, activeRotations);
+            _update.startMoveAfterRotate(activeMovements, activeRotations, pendingMovementsAfterRotation);
+            _update.sychroEyes(e, valuesForSynchro);
+            _update.incantationRing(dt, e);
+            if (e.type == Renderer::PartType::EXPULSION) {
+                if (e.orientation == Compass::EAST || e.orientation == Compass::WEST)
+                    e.rotation.x += 60.0f * dt;
+                else if (e.orientation == Compass::NORTH || e.orientation == Compass::SOUTH)
+                    e.rotation.z += 60.0f * dt;
             }
-            auto itRot = activeRotations.find(e.clientId);
-            if (itRot != activeRotations.end() && itRot->second.active) {
-                RotationState& r = itRot->second;
-                r.timeElapsed += dt;
-                while (r.stepsRemaining > 0 && r.timeElapsed >= 0.025f) {
-                    r.timeElapsed -= 0.025f;
-                    if (r.goingRight) {
-                        e.rotation.y -= 9.f;
-                        r.totalRotated -= 9.f;
-                    } else {
-                        e.rotation.y += 9.f;
-                        r.totalRotated += 9.f;
-                    }
-                    r.stepsRemaining--;
 
-                    if (r.stepsRemaining == 0) {
-                        r.active = false;
-                        // Reset if more than 360° or less than 0°
-                        if (e.rotation.y >= 360.f)
-                            e.rotation.y -= 360.f;
-                        else if (e.rotation.y < 0.f)
-                            e.rotation.y += 360.f;
-                    }
-                }
-            }
-            // Fin de rotation -> on démarre le mouvement
-            for (auto it = Renderer::activeRotations.begin(); it != Renderer::activeRotations.end(); ++it) {
-                int clientId = it->first;
-                if (!it->second.active && pendingMovementsAfterRotation.contains(clientId)) {
-                    Renderer::activeMovements[clientId] = pendingMovementsAfterRotation[clientId];
-                    pendingMovementsAfterRotation.erase(clientId);
-                }
-            }
-            if (e.type == Renderer::PartType::BODY) {
-                valuesForSynchro.emplace_back(e.clientId, e.position, Vec3{0.f, e.rotation.y, 0.f});
-            }
-            if (e.type == Renderer::PartType::EYES) {
-                // Searching for the corresponding body
-                auto it = std::find_if(
-                    valuesForSynchro.begin(), valuesForSynchro.end(),
-                    [&e](const std::tuple<int, Vec3, Vec3>& t) {
-                        return std::get<0>(t) == e.clientId;
-                    });
-
-                if (it != valuesForSynchro.end()) {
-                    Vec3 bodyPos = std::get<1>(*it);
-                    float bodyRotY = std::get<2>(*it).y;
-                    Vec3 rotatedOffset = rotateY(offset, bodyRotY);
-                    e.position = {
-                        bodyPos.x + rotatedOffset.x,
-                        bodyPos.y + rotatedOffset.y,
-                        bodyPos.z + rotatedOffset.z
-                    };
-                    e.rotation.y = bodyRotY;
-                }
-            }
-            if (e.type == Renderer::PartType::RING) {
-                e.rotation.y += 20.0f * dt;
-                if (e.rotation.y >= 360.f)
-                    e.rotation.y -= 360.f;
+            // if (e.type == PartType::GROUND) {
+            //     if (static_cast<int>(e.position.x) == currentTile.first * TILE_SIZE
+            //         && static_cast<int>(e.position.z) == currentTile.second * TILE_SIZE) {
+            //         e.color = sf::Color::Red;
+            //     } else
+            //         e.color = sf::Color {65, 65, 65};
+            // }
+        }
+        // erase expulsion after 5 rotations
+        for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
+            Renderer::Entity &e = *it;
+            if (e.type == Renderer::PartType::EXPULSION && e.rotation.x > static_cast<float>(360 * 5)) {
+                it = Renderer::sceneEntities.erase(it);
+            } else if (e.type == Renderer::PartType::EXPULSION && e.rotation.z > static_cast<float>(360 * 5)) {
+                it = Renderer::sceneEntities.erase(it);
+            } else {
+                ++it;
             }
         }
         // HUD message à timer
@@ -214,12 +214,33 @@ namespace Renderer {
             else
                 ++it;
         }
+        // Remove old messages
+        while (histInstruc.size() > 21)
+            histInstruc.pop_front();
     }
 
     void render(float dt, sf::RenderWindow &window) {
         int w = window.getSize().x;
         int h = window.getSize().y;
+        sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+        sf::Vector2f mousePosF(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
 
+        //Bottom left button
+        if (buttonNextTrantorian.getGlobalBounds().contains(mousePosF)) {
+            buttonNextTrantorian.setFillColor(buttonHoverColor);
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+                if (!buttonToggle && !buttonIsPressed) {
+                    buttonToggle = true;
+                } else
+                    buttonToggle = false;
+                buttonIsPressed = true;
+            } else {
+                buttonIsPressed = false;
+                buttonToggle = false;
+            }
+        } else {
+            buttonNextTrantorian.setFillColor(buttonIdleColor);
+        }
         // Gradient ciel
         for (int y = 0; y < h; ++y) {
             float t = float(y) / float(h);
@@ -343,9 +364,10 @@ namespace Renderer {
             frameCount = 0;
             fpsTimer = 0.0f;
         }
+        hudText.setFillColor(sf::Color {255, 255, 255});
         hudText.setString("FPS: " + std::to_string(lastFps));
         hudText.setPosition(5.f, 5.f);
-        window.draw(hudText);
+
 
         float y = 30.f;
         for (const auto& m : hudMessages) {
@@ -355,25 +377,213 @@ namespace Renderer {
             y += 20.f;
         }
 
-        // window.display();
+        // display menu
+        if (tabToggle) {
+            bgMenu.setPosition(0.f, 0.f);
+            window.draw(bgMenu);
+            window.draw(hudText);
+            window.draw(buttonNextTrantorian);
+            // Calculate only if something changed
+            if (resourcesChange) {
+                for (int i = 0; i < 7; i++)
+                    totalResources[i] = 0;
+                // Calculate the total of resources
+                for (int i = 0; i < map_size_x; i++) {
+                    for (int j = 0; j < map_size_y; j++) {
+                        if (_resourcesOnTiles.find(i * map_size_y + j) != _resourcesOnTiles.end()) {
+                            const auto& tileResources = _resourcesOnTiles[i * map_size_y + j];
+                            for (int resIndex = 0; resIndex < 7; ++resIndex)
+                                totalResources[resIndex] += tileResources[resIndex];
+                        }
+                    }
+                }
+            }
+            resourcesChange = false;
+            float y = 10.f;
+            for (int i = 0; i < 7; i++) {
+                hudText.setString(nameResources[i] + std::to_string(totalResources[i]));
+                hudText.setFillColor(colorResources[i]);
+                hudText.setPosition(window.getSize().x - 300, y);
+                window.draw(hudText);
+                y += 25.f;
+            }
+            y = 200.f;
+            for (auto it = histInstruc.rbegin(); it != histInstruc.rend(); ++it) {
+                const std::string& text = std::get<0>(*it);
+                const sf::Color& color = std::get<1>(*it);
+
+                hudText.setString(text);
+                hudText.setFillColor(color);
+                hudText.setPosition(window.getSize().x - 300, y);
+                window.draw(hudText);
+                y += 25.f;
+            }
+            if (currentTrantorian.clientId == -1) {
+                for (auto &e : sceneEntities) {
+                    if (e.type == PartType::BODY) {
+                        currentTrantorian = e;
+                        break;
+                    }
+                }
+            } else if (buttonToggle) {
+                bool wasItTheTrantorian = false;
+                for (auto &e : sceneEntities) {
+                    if (e.clientId == currentTrantorian.clientId)
+                        wasItTheTrantorian = true;
+                    if (e.type == PartType::BODY && wasItTheTrantorian && e.clientId != currentTrantorian.clientId) {
+                        currentTrantorian = e;
+                        wasItTheTrantorian = false;
+                        break;
+                    }
+                }
+                // if we arrive at the end, take the first entity (with BODY)
+                if (wasItTheTrantorian) {
+                    for (auto &e : sceneEntities) {
+                        if (e.type == PartType::BODY) {
+                            currentTrantorian = e;
+                            break;
+                        }
+                    }
+                }
+            }
+            // Actualizes informations
+            for (auto &e : sceneEntities) {
+                if (e.clientId == currentTrantorian.clientId) {
+                    currentTrantorian = e;
+                    break;
+                }
+            }
+            // condition just in case there is no Trantorian yet
+            if (currentTrantorian.clientId != -1) {
+                float y = 100.f;
+                hudText.setFillColor(currentTrantorian.color);
+                // id trantorian
+                hudText.setString("Id Trantorian: " + std::to_string(currentTrantorian.clientId));
+                hudText.setPosition(50.f, y);
+                window.draw(hudText);
+                // team name
+                hudText.setString("Team: " + currentTrantorian.teamName);
+                hudText.setPosition(50.f, y + 25.f);
+                window.draw(hudText);
+                // level
+                hudText.setString("Level: " + std::to_string(currentTrantorian.level));
+                hudText.setPosition(50.f, y + 50.f);
+                window.draw(hudText);
+                // position
+                hudText.setString("Position:");
+                hudText.setPosition(50.f, y + 75.f);
+                window.draw(hudText);
+                hudText.setString("x: " + std::to_string(static_cast<int>(currentTrantorian.position.x) / 70) +
+                                  "(real value: " + std::to_string(static_cast<int>(currentTrantorian.position.x)) + ")");
+                hudText.setPosition(75.f, y + 100.f);
+                window.draw(hudText);
+                hudText.setString("y: " + std::to_string(static_cast<int>(currentTrantorian.position.z) / 70) +
+                                  "(real value: " + std::to_string(static_cast<int>(currentTrantorian.position.z)) + ")");
+                hudText.setPosition(75.f, y + 125.f);
+                window.draw(hudText);
+                // orientation
+                hudText.setString("Orientation: " + orientation[static_cast<int>(currentTrantorian.orientation)]);
+                hudText.setPosition(50.f, y + 150.f);
+                window.draw(hudText);
+                // inventory
+                hudText.setString("Inventory:");
+                hudText.setPosition(50.f, y + 175.f);
+                window.draw(hudText);
+                y += 200.f;
+                for (int i = 0; i < 7; i++) {
+                    hudText.setString(nameResources[i] + std::to_string(currentTrantorian.inventory[i]));
+                    hudText.setFillColor(colorResources[i]);
+                    hudText.setPosition(75.f, y);
+                    window.draw(hudText);
+                    y += 25.f;
+                }
+            }
+            if (_resourcesOnTiles.find(currentTile.first * map_size_y + currentTile.second) != _resourcesOnTiles.end()) {
+                hudText.setFillColor(sf::Color {255, 255, 255});
+                float x = window.getSize().x / 2 - 75;
+                hudText.setString("Content of the selected tile:");
+                hudText.setPosition(x, 100);
+                window.draw(hudText);
+                hudText.setString("x: " + std::to_string(currentTile.first));
+                hudText.setPosition(x + 25, 125);
+                window.draw(hudText);
+                hudText.setString("y: " + std::to_string(currentTile.second));
+                hudText.setPosition(x + 25, 150);
+                window.draw(hudText);
+                float y = 175.f;
+                for (int i = 0; i < 7; i++) {
+                    hudText.setString(nameResources[i] + std::to_string(_resourcesOnTiles[currentTile.first * map_size_y + currentTile.second][i]));
+                    hudText.setFillColor(colorResources[i]);
+                    hudText.setPosition(x + 25, y);
+                    window.draw(hudText);
+                    y += 25.f;
+                }
+            }
+        }
+
+        if (escapeMenuToggle) {
+            window.draw(escapeMenuBg);
+    
+            sf::Vector2f menuPos = escapeMenuBg.getPosition();
+            
+            hudText.setString("PAUSE");
+            hudText.setFillColor(sf::Color::White);
+            hudText.setCharacterSize(30);
+            hudText.setPosition(menuPos.x + 250.f, menuPos.y + 20.f);
+            window.draw(hudText);
+            hudText.setCharacterSize(20);
+
+            hudText.setString("CAMERA :");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 100.f);
+            window.draw(hudText);
+            hudText.setString("A : horizontal rotation - left");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 150.f);
+            window.draw(hudText);
+            hudText.setString("E : horizontal rotation - right");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 170.f);
+            window.draw(hudText);
+            hudText.setString("R : vertical rotation - down");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 190.f);
+            window.draw(hudText);
+            hudText.setString("F : vertical rotation - up");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 210.f);
+            window.draw(hudText);
+            hudText.setString("LSHIFT : vertical translation - down");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 230.f);
+            window.draw(hudText);
+            hudText.setString("SPACE : vertical translation - up");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 250.f);
+            window.draw(hudText);
+            hudText.setString("Arrow up : horizontal translation - forward");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 270.f);
+            window.draw(hudText);
+            hudText.setString("Arrow down : horizontal translation - rearward");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 290.f);
+            window.draw(hudText);
+            hudText.setString("Arrow left : horizontal translation - left");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 310.f);
+            window.draw(hudText);
+            hudText.setString("Arrow right : horizontal translation - right");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 330.f);
+            window.draw(hudText);
+            hudText.setString("GAME");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 370.f);
+            window.draw(hudText);
+            hudText.setString("Tab : informations");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 400.f);
+            window.draw(hudText);
+            hudText.setString("ZQSD : select a tile to see what it contains");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 420.f);
+            window.draw(hudText);
+            hudText.setString("Note : You can press the grey button in the information menu");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 450.f);
+            window.draw(hudText);
+            hudText.setString("in order to display informations about the next Trantorian");
+            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 470.f);
+            window.draw(hudText);
+            // reset the size of the text
+            hudText.setCharacterSize(16);
+        }
     }
-
-    // bool getIsRunning() {
-    //     sf::Event event;
-
-    //     while (window.pollEvent(event)) {
-    //         if (event.type == sf::Event::Closed)
-    //             return false;
-    //     }
-    //     return window && window.isOpen();
-    // }
-
-    // void shutdownRenderer() {
-    //     if (window) {
-    //         window.close();
-    //         delete window;
-    //         window = nullptr;
-    //     }
-    // }
 
 } // namespace Renderer

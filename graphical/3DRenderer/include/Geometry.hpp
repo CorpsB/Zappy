@@ -13,8 +13,11 @@ namespace Renderer {
     struct Mesh {
         std::vector<Triangle> tris;
     };
-
-    // Primitives géométriques
-    Mesh createCubeMesh(const sf::Color& c);
-    Mesh createSphereMesh(const sf::Color& c, int subdivisions = 2);
+    class Geometry {
+        public:
+            // Primitives géométriques
+            Mesh createCubeMesh(const sf::Color& c);
+            Mesh createSphereMesh(const sf::Color& c, int subdivisions = 2);
+        private:
+    };
 }

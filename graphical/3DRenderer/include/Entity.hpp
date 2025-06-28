@@ -9,7 +9,7 @@
 
 namespace Renderer {
     enum class EntityType { CUBE, SPHERE, STL };
-    enum class PartType { BODY, EYES, GROUND, Q0, Q1, Q2, Q3, Q4, Q5, Q6, RING };
+    enum class PartType { BODY, EYES, GROUND, Q0, Q1, Q2, Q3, Q4, Q5, Q6, RING, EGG, EXPULSION };
     enum class Compass { NORTH, EAST, SOUTH, WEST };
 
     struct MovementState {
@@ -37,6 +37,9 @@ namespace Renderer {
         Vec3 rotation;
         Vec3 scale;
         int level;
+        std::string teamName;
+        sf::Color color;
+        std::array<int, 7> inventory;
     };
 
     extern std::vector<Entity> sceneEntities;
@@ -48,6 +51,6 @@ namespace Renderer {
     // Création d'entités
     int spawn(EntityType type, PartType partType, int clientId, const Vec3& pos,
               const sf::Color& c, const std::string& filepath = "", Compass orientation = Compass::NORTH,
-              const Vec3& rotation = {0.f, 0.f, 0.f}, int level = -1);
+              const Vec3& rotation = {0.f, 0.f, 0.f}, int level = -1, std::string teamName = "");
     float compassToAngle(Renderer::Compass c);
 }
