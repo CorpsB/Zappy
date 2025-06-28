@@ -10,7 +10,7 @@
 
 namespace Renderer {
 
-    bool isBinarySTL(std::ifstream& file, const std::string& filename, uint32_t& triCount) {
+    bool STLLoader::isBinarySTL(std::ifstream& file, const std::string& filename, uint32_t& triCount) {
         char header[80];
         file.read(header, 80);
         if (!file) return false;
@@ -25,7 +25,7 @@ namespace Renderer {
         return size == expected;
     }
 
-    void loadBinarySTL(std::ifstream& file, Mesh& mesh, uint32_t triCount, const sf::Color& c) {
+    void STLLoader::loadBinarySTL(std::ifstream& file, Mesh& mesh, uint32_t triCount, const sf::Color& c) {
         for (uint32_t i = 0; i < triCount; ++i) {
             file.ignore(sizeof(float) * 3);
             Vec3 v[3];
@@ -39,7 +39,7 @@ namespace Renderer {
         }
     }
 
-    void loadAsciiSTL(std::ifstream& file, Mesh& mesh, const sf::Color& c) {
+    void STLLoader::loadAsciiSTL(std::ifstream& file, Mesh& mesh, const sf::Color& c) {
         file.clear();
         file.seekg(0, std::ios::beg);
         std::string line;
@@ -61,7 +61,7 @@ namespace Renderer {
         }
     }
 
-    void centerMesh(Mesh& mesh) {
+    void STLLoader::centerMesh(Mesh& mesh) {
         if (mesh.tris.empty()) return;
         float minX = 1e9f, minY = 1e9f, minZ = 1e9f;
         float maxX = -1e9f, maxY = -1e9f, maxZ = -1e9f;
@@ -85,7 +85,7 @@ namespace Renderer {
         }
     }
 
-    Mesh createSTLMesh(const std::string& filename, const sf::Color& c) {
+    Mesh STLLoader::createSTLMesh(const std::string& filename, const sf::Color& c) {
         std::ifstream file(filename, std::ios::binary);
         if (!file) throw std::runtime_error("Impossible d'ouvrir STL: " + filename);
         Mesh mesh;

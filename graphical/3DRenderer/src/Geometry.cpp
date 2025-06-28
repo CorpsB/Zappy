@@ -11,7 +11,7 @@
 
 namespace Renderer {
 
-Mesh createCubeMesh(const sf::Color& c) {
+Mesh Geometry::createCubeMesh(const sf::Color& c) {
     Mesh mesh;
     mesh.tris = {
         {{Vec3{-0.5f,-0.5f,-0.5f}, Vec3{-0.5f, 0.5f,-0.5f}, Vec3{ 0.5f, 0.5f,-0.5f}}, c},
@@ -30,7 +30,7 @@ Mesh createCubeMesh(const sf::Color& c) {
     return mesh;
 }
 
-Mesh createSphereMesh(const sf::Color& c, int subdivisions) {
+Mesh Geometry::createSphereMesh(const sf::Color& c, int subdivisions) {
     Mesh mesh;
     auto normalize = [](Vec3 v) {
         float l = std::sqrt(v.x*v.x + v.y*v.y + v.z*v.z);

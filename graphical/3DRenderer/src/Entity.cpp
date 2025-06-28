@@ -36,6 +36,8 @@ namespace Renderer {
         -7.2f,
         -6.4f
     };
+    STLLoader stlloader;
+    Geometry geometry;
 
     int spawn(EntityType type, PartType partType, int clientId, const Vec3& pos,
               const sf::Color& c, const std::string& filepath, Compass orientation,
@@ -56,15 +58,15 @@ namespace Renderer {
         try {
             switch (type) {
             case EntityType::CUBE:
-                newEnt.mesh = createCubeMesh(c);
+                newEnt.mesh = geometry.createCubeMesh(c);
                 break;
             case EntityType::SPHERE:
-                newEnt.mesh = createSphereMesh(c);
+                newEnt.mesh = geometry.createSphereMesh(c);
                 break;
             case EntityType::STL:
                 if (filepath.empty())
                     throw std::runtime_error("STL type requires a filepath.");
-                newEnt.mesh = createSTLMesh(filepath, c);
+                newEnt.mesh = stlloader.createSTLMesh(filepath, c);
                 break;
             }
         } catch (const std::runtime_error& e) {

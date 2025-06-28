@@ -8,9 +8,15 @@
 
 namespace Renderer {
     // Chargement STL
-    bool isBinarySTL(std::ifstream& file, const std::string& filename, uint32_t& triCount);
-    void loadBinarySTL(std::ifstream& file, Mesh& mesh, uint32_t triCount, const sf::Color& c);
-    void loadAsciiSTL(std::ifstream& file, Mesh& mesh, const sf::Color& c);
-    void centerMesh(Mesh& mesh);
-    Mesh createSTLMesh(const std::string& filename, const sf::Color& c);
+    class STLLoader {
+        public:
+            STLLoader() = default;
+            ~STLLoader() = default;
+            Mesh createSTLMesh(const std::string& filename, const sf::Color& c);
+            bool isBinarySTL(std::ifstream& file, const std::string& filename, uint32_t& triCount);
+            void loadBinarySTL(std::ifstream& file, Mesh& mesh, uint32_t triCount, const sf::Color& c);
+            void loadAsciiSTL(std::ifstream& file, Mesh& mesh, const sf::Color& c);
+            void centerMesh(Mesh& mesh);
+        private:
+    };
 }
