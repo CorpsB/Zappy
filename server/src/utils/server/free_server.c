@@ -9,12 +9,22 @@
 #include "include/function.h"
 #include "include/structure.h"
 
+/**
+ * @brief Free memory allocated for a single map unit.
+ * @param map Pointer to the resources_t structure representing a map tile.
+*/
 static void free_map_unit(resources_t *map)
 {
     if (map)
         free(map);
 }
 
+/**
+ * @brief Free the entire map grid.
+ * Frees each allocated map unit in the 2D map array.
+ * @param server Pointer to the server structure containing map dimensions.
+ * @param map 2D array of resources_t pointers representing the map.
+*/
 static void free_map(server_t *server, resources_t **map)
 {
     return;

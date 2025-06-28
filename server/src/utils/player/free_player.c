@@ -9,6 +9,10 @@
 #include "include/function.h"
 #include "include/structure.h"
 
+/**
+ * @brief Free the memory allocated for a single player node.
+ * @param player Pointer to the player node to free.
+*/
 void free_a_player(player_t *player)
 {
     if (player)

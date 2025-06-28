@@ -9,6 +9,12 @@
 #include "include/function.h"
 #include "include/structure.h"
 
+/**
+ * @brief Free all resources associated with a single team.
+ * Frees the team name string, all associated eggs, all players,
+ * then frees the team node itself.
+ * @param teams Pointer to the team node to free.
+*/
 static void free_a_team(teams_t *teams)
 {
     if (!teams)

@@ -9,6 +9,13 @@
 #include "include/function.h"
 #include "include/structure.h"
 
+/**
+ * @brief Initialize/reset the server's actual map inventory
+ * and poll structures.
+ * Sets all resource counts in actual_map_inventory to zero and
+ * initializes pollfds and client_list pointers to NULL.
+ * @param server Pointer to the server structure to initialize.
+*/
 void server_actual_map(server_t *server)
 {
     server->actual_map_inventory.food = 0;

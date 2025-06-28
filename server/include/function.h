@@ -45,18 +45,83 @@
  * @param fd The file descriptor to write to.
 */
 void see_inventory(resources_t inv, int fd);
+
+/**
+ * @brief Print information of all players in a linked list.
+ * Prints each player’s details with an index number. If no players exist,
+ * prints a corresponding message.
+ * @param players Pointer to the head of the player linked list.
+ * @param fd File descriptor where output will be printed.
+*/
 void see_all_players(player_t *players, int fd);
 //server
+
+/**
+ * @brief Allocate and initialize a new server structure.
+ * Initializes all fields to default zero or NULL states,
+ * including map, teams, and counters.
+ * @return server_t* Pointer to the allocated and initialized server.
+ */
 server_t *add_server(void);
+
+/**
+ * @brief Print server information to the specified file descriptor.
+ * Prints key server parameters and calls additional printing functions
+ * for poll and teams.
+ * @param server Pointer to the server structure.
+ * @param fd File descriptor to print output to.
+*/
 void see_server(server_t *server, int fd);
+
+/**
+ * @brief Free all allocated resources associated with the server.
+ * Frees the map, teams, poll structures, and finally the server itself.
+ * @param server Pointer to the server to free.
+*/
 void free_server(server_t *server);
 void see_poll(poll_t poll, int fd, int size);
+
+/**
+ * @brief Print debug info for the server.
+ * If debug mode is enabled and a debug file descriptor is set,
+ * prints to that fd, then also prints to stderr (fd=2).
+ * @param server Pointer to the server structure.
+*/
 void debug_server(server_t *server);
 void free_poll(server_t *server);
 //teams
+
+/**
+ * @brief Add a new team to the server's linked list of teams.
+ * Allocates and initializes a new teams_t node, sets its name,
+ * IDs, and links it at the head of the list.
+ * @param server Pointer to the server struct.
+ * @param name Name of the team to add.
+*/
 void add_teams(server_t *server, char *name);
+
+/**
+ * @brief Print detailed information about a single team.
+ * Shows team name, ID, slots used, win/eliminated status,
+ * then prints the team's eggs and players.
+ * @param team Pointer to the team node.
+ * @param fd File descriptor to print to.
+*/
 void see_one_team(teams_t *team, int fd);
+
+/**
+ * @brief Print a list of all teams and their details.
+ * Iterates through the linked list of teams and prints each one.
+ * @param teams Pointer to the head of the team linked list.
+ * @param fd File descriptor to print to.
+*/
 void see_teams(teams_t *teams, int fd);
+
+/**
+ * @brief Free an entire linked list of teams.
+ * Iteratively frees all nodes and their contents.
+ * @param teams Pointer to the head of the team linked list.
+*/
 void free_all_teams(teams_t *teams);
 //player
 /**
@@ -66,7 +131,23 @@ void free_all_teams(teams_t *teams);
  * @return player_t* if found, NULL otherwise.
 */
 player_t *find_player_by_id(const server_t *server, unsigned int id);
+
+/**
+ * @brief Add a new player to the server and team.
+ * Calls hatching_egg to get spawn position, initializes the player node,
+ * sets pointers in client list and team, triggers the player spawn event,
+ * and frees the temporary position array.
+ * @param server Pointer to the server structure.
+ * @param index Index in the poll file descriptor array for the player.
+ * @param teams Pointer to the team structure the player belongs to.
+*/
 void add_player(server_t *server, int socket, teams_t *teams);
+
+/**
+ * @brief Free the memory of all players in a linked list.
+ * Iterates through the player linked list and frees each node.
+ * @param player Pointer to the head of the player linked list.
+*/
 void free_all_player(player_t *player);
 //cmd parser
 char **str_to_array(char *str, char *separator);
@@ -410,6 +491,13 @@ void del_egg(server_t *server, teams_t *teams, eggs_t *egg);
  * @warning The caller is responsible for freeing the returned array.
 */
 unsigned int *hatching_egg(server_t *server, teams_t *teams);
+
+/**
+ * @brief Update the slots_max value for all teams.
+ * Sets the maximum slots per team to the current starter eggs number
+ * stored in the server struct.
+ * @param server Pointer to the server struct.
+*/
 void complete_team_data(server_t *server);
 
 /**
