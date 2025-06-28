@@ -20,4 +20,6 @@ void send_str(server_t *server, int fd, char *message)
             logger(server, "SEND : WRITE", PERROR, true);
         i += tmp;
     }
+    if (message)
+        free(message);
 }

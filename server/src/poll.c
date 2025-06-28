@@ -15,28 +15,28 @@
  * @param socket Socket descriptor of the new client.
  * @param state Initial state of the client (UNKNOWN, PLAYER, GUI, etc.).
 */
-static void add_client(server_t *server, int socket, whoAmI_t state)
+static void add_client(server_t *serv, int socket, whoAmI_t state)
 {
-    server->poll.pollfds = realloc(
-        server->poll.pollfds,
-        sizeof(struct pollfd) * (server->poll.connected_client + 1));
-    server->poll.client_list = realloc(
-        server->poll.client_list,
-        sizeof(client_t) * (server->poll.connected_client + 1));
-    if (!server->poll.pollfds || !server->poll.client_list)
-        logger(server, "REALLOC", PERROR, true);
-    server->poll.pollfds[server->poll.connected_client].fd = socket;
-    server->poll.pollfds[server->poll.connected_client].events = POLLIN;
-    server->poll.pollfds[server->poll.connected_client].revents = 0;
-    server->poll.client_list[server->poll.connected_client].whoAmI = state;
-    server->poll.client_list[server->poll.connected_client].player = NULL;
+    serv->poll.pollfds = realloc(
+        serv->poll.pollfds,
+        sizeof(struct pollfd) * (serv->poll.connected_client + 1));
+    serv->poll.client_list = realloc(
+        serv->poll.client_list,
+        sizeof(client_t) * (serv->poll.connected_client + 1));
+    if (!serv->poll.pollfds || !serv->poll.client_list)
+        logger(serv, "REALLOC", PERROR, true);
+    serv->poll.pollfds[serv->poll.connected_client].fd = socket;
+    serv->poll.pollfds[serv->poll.connected_client].events = POLLIN;
+    serv->poll.pollfds[serv->poll.connected_client].revents = 0;
+    serv->poll.client_list[serv->poll.connected_client].whoAmI = state;
+    serv->poll.client_list[serv->poll.connected_client].player = NULL;
     if (state == UNKNOWN)
-        dprintf(server->poll.pollfds[server->poll.connected_client].fd,
+        send_str(serv, serv->poll.pollfds[serv->poll.connected_client].fd,
             "WELCOME\n");
-    server->poll.client_index++;
-    server->poll.connected_client++;
-    logger(server, "NEW CLIENT", DEBUG, false);
-    see_poll(server->poll, 2, server->poll.connected_client);
+    serv->poll.client_index++;
+    serv->poll.connected_client++;
+    logger(serv, "NEW CLIENT", DEBUG, false);
+    see_poll(serv->poll, 2, serv->poll.connected_client);
 }
 
 /**

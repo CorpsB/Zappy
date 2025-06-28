@@ -12,11 +12,14 @@
 void cmd_msz(server_t *server, int index, char **args)
 {
     int fd;
+    char *buffer = NULL;
 
     (void)args;
     if (!server || !server->poll.client_list ||
         index < 0 || index >= server->poll.client_index)
         return;
     fd = server->poll.pollfds[index].fd;
-    dprintf(fd, "msz %u %u\n", server->width, server->height);
+    if (asprintf(&buffer, "msz %u %u\n", server->width, server->height) == -1)
+        logger(server, "ASPRINTF : MSZ", PERROR, true);
+    send_str(server, fd, buffer);
 }
