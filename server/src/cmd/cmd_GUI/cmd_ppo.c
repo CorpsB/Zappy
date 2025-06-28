@@ -8,6 +8,8 @@
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
+#include "include/cmd.h"
+#include "include/cmd_parser_table.h"
 #include <ctype.h>
 
 /**
@@ -32,23 +34,30 @@ static int parse_ppo_id(const char *str, long *out)
     return 0;
 }
 
+static int find_gui_command_index(const char *name)
+{
+    for (int i = 0; gui_command_table[i].name; i++) {
+        if (strcmp(gui_command_table[i].name, name) == 0)
+            return i;
+    }
+    return -1;
+}
+
 void cmd_ppo(server_t *server, int index, char **args)
 {
     int fd;
     long id;
     player_t *target;
+    int i = find_gui_command_index("ppo");
 
-    if (!server || !args || !args[1]) {
-        if (server && args && !args[1])
-            dprintf(server->poll.pollfds[index].fd, "ko\n");
-        return;
-    }
+    if (!server || !args || !args[1])
+            return event_sbp(server, index, args, i);
     fd = server->poll.pollfds[index].fd;
     if (parse_ppo_id(args[1], &id) != 0)
-        return (void)dprintf(fd, "ko\n");
+        return event_sbp(server, index, args, i);
     target = find_player_by_id(server, (unsigned int)id);
     if (!target)
-        return (void)dprintf(fd, "ko\n");
+        return event_sbp(server, index, args, i);
     dprintf(fd, "ppo %d %d %d %d\n", target->id,
         target->position[0], target->position[1], target->direction);
 }

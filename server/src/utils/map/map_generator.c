@@ -10,6 +10,12 @@
 #include "include/structure.h"
 #include "include/density_table.h"
 
+/**
+ * @brief Initializes the actual map inventory resource counts to zero.
+ * This function resets the counters of each resource type in the server's
+ * goal inventory structure to zero, preparing for resource distribution.
+ * @param server Pointer to the server whose inventory is initialized.
+*/
 static void define_actual_map_inventory(server_t *server)
 {
     server->goal.food = 0;
@@ -21,6 +27,16 @@ static void define_actual_map_inventory(server_t *server)
     server->goal.thystame = 0;
 }
 
+/**
+ * @brief Defines the target goals of resource quantities based on
+ * map size and resource densities.
+ * Calculates the number of each resource to distribute on the map by
+ * multiplying
+ * the map size (width * height) by the resource's density value from
+ * the density table.
+ * Stores the results in the server's goal inventory structure.
+ * @param server Pointer to the server for which resource goals are defined.
+*/
 static void define_goals(server_t *server)
 {
     int map_size = server->width * server->height;
@@ -34,6 +50,11 @@ static void define_goals(server_t *server)
     server->goal.thystame = density_table[6].density * map_size;
 }
 
+/**
+ * @brief Initializes the repartition map for each cell in the map to zero.
+ * Sets all resource repartition counters to zero for every cell of the map.
+ * @param server Pointer to the server containing the map.
+*/
 static void init_rapartition_cells(server_t *server)
 {
     for (unsigned int i = 0; i < server->height; i++) {
@@ -48,6 +69,12 @@ static void init_rapartition_cells(server_t *server)
     }
 }
 
+/**
+ * @brief Spawns starter eggs for each team until the required number is met.
+ * Iterates through all teams and generates starter eggs using
+ * generate_starter_eggs() until each team reaches starter_eggs_number.
+ * @param server Pointer to the server containing teams and eggs.
+*/
 static void spawn_eggs(server_t *server)
 {
     for (teams_t *tmp = server->teams; tmp != NULL; tmp = tmp->next)
@@ -58,9 +85,16 @@ static void spawn_eggs(server_t *server)
 void map_generator(server_t *server)
 {
     server->map = malloc(sizeof(resources_t *) * (server->height + 1));
+    if (!server->map)
+        logger(server, "MALLOC", PERROR, true);
     server->map[server->height] = NULL;
-    for (unsigned int i = 0; i < server->height; i++)
+    for (unsigned int i = 0; i < server->height; i++) {
         server->map[i] = malloc(sizeof(resources_t) * server->width);
+        if (!server->map[i])
+            logger(server, "MALLOC", PERROR, true);
+        for (unsigned int j = 0; j < server->width; j++)
+            memset(&server->map[i][j], 0, sizeof(resources_t));
+    }
     define_actual_map_inventory(server);
     define_goals(server);
     init_rapartition_cells(server);

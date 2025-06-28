@@ -10,6 +10,18 @@
 #include "include/structure.h"
 #include "include/density_table.h"
 
+/**
+ * @brief Searches the map to find the minimum repartition value for a
+ * given resource and counts how many cells have it.
+ * Iterates through the map cells and updates the minimum repartition
+ * value found.
+ * Counts the number of cells that have this minimum value.
+ * @param server Pointer to the server containing the map.
+ * @param type Resource type to search repartition for.
+ * @param min Pointer to an integer holding the minimum repartition value;
+ * updated by the function.
+ * @return int Number of cells having the minimum repartition value.
+*/
 static int search_map_information(server_t *server, r_ressource_t type,
     int *min)
 {
@@ -34,6 +46,18 @@ static int search_map_information(server_t *server, r_ressource_t type,
     return size;
 }
 
+/**
+ * @brief Completes an integer table with coordinates of map cells
+ * matching a specific repartition value.
+ * Fills the provided table with pairs of coordinates (row, column)
+ * for all cells
+ * where the repartition map value for the resource equals 'min'.
+ * @param server Pointer to the server containing the map.
+ * @param type Resource type for which cells are searched.
+ * @param min The repartition value to match.
+ * @param table Pre-allocated integer array to store the coordinates.
+ * Must be large enough.
+*/
 static void complete_table(server_t *server, r_ressource_t type, int min,
     int *table)
 {
@@ -55,6 +79,18 @@ static void complete_table(server_t *server, r_ressource_t type, int min,
     }
 }
 
+/**
+ * @brief Increases repartition influence on map cells within a weighted
+ * "circle" around a position.
+ * Applies a diminishing influence based on Manhattan distance
+ * around the position,
+ * updating the repartition_map values accordingly.
+ * @param pos Array of two integers representing the position [row, column].
+ * @param type Resource type to update.
+ * @param server Pointer to the server containing the map.
+ * @param d Array of three integers: d[0] and d[1] are offsets, d[2] is the
+ * maximum influence (weight).
+*/
 static void draw_circle(int *pos, r_ressource_t type, server_t *server, int *d)
 {
     int x = pos[1] + d[0];
@@ -94,6 +130,17 @@ void change_arround(server_t *srv, int *pos, r_ressource_t type, int weight)
     }
 }
 
+/**
+ * @brief Spawns a resource on the map at one of the least occupied cells.
+ * Selects a random position from cells with minimum repartition value and
+ * increments resource counts both in repartition_map and the resource field
+ * for that cell. Also updates nearby cells' repartition with
+ * decreasing influence.
+ * @param server Pointer to the server containing the map.
+ * @param type Resource type to spawn.
+ * @param table Array of coordinates for candidate cells.
+ * @param size Number of candidate cells (pairs of coordinates).
+*/
 static void spawn_ressource(server_t *server, r_ressource_t type,
     int *table, int size)
 {
@@ -119,6 +166,13 @@ static void spawn_ressource(server_t *server, r_ressource_t type,
         server->map[pos[0]][pos[1]].thystame++;
 }
 
+/**
+ * @brief Updates the server's actual map inventory count for a given
+ * resource.
+ * Increments the count of the specified resource in the actual_map_inventory.
+ * @param server Pointer to the server whose inventory is updated.
+ * @param type Resource type to update.
+*/
 static void update_map_inventory(server_t *server, r_ressource_t type)
 {
     if (type == FOOD)
@@ -137,12 +191,20 @@ static void update_map_inventory(server_t *server, r_ressource_t type)
         server->actual_map_inventory.thystame++;
 }
 
+/**
+ * @brief Performs the update process for a specific resource on the map.
+ * Searches cells with minimum repartition, updates the inventory, completes
+ * coordinate table and spawns a resource in a chosen cell.
+ * @param server Pointer to the server containing the map.
+ * @param type Resource type to update.
+*/
 static void ressource_update(server_t *server, r_ressource_t type)
 {
     int min = INT_MAX;
     int size = search_map_information(server, type, &min);
     int *table = malloc(sizeof(int) * (size * 2));
 
+    logger(server, "RELOAD", DEBUG, false);
     if (!table)
         logger(server, "MALLOC", PERROR, true);
     update_map_inventory(server, type);
@@ -152,6 +214,13 @@ static void ressource_update(server_t *server, r_ressource_t type)
         free(table);
 }
 
+/**
+ * @brief Checks whether the actual inventory matches the goal
+ * inventory for all resources.
+ * Compares current actual_map_inventory and goal resource counts.
+ * @param server Pointer to the server whose inventory is checked.
+ * @return true if all resource counts match their goals; false otherwise.
+*/
 static bool is_update_complete(server_t *server)
 {
     if (server->actual_map_inventory.food == server->goal.food &&

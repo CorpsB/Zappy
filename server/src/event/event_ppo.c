@@ -15,7 +15,7 @@ void event_ppo(server_t *server, player_t *player)
 
     if (!server || !player || player->is_dead)
         return;
-    if (asprintf(&buffer, "ppo #%u %u %u %u\n",
+    if (asprintf(&buffer, "ppo #%u %u %u %u",
         player->id, player->position[0],
         player->position[1], player->direction) == -1)
         logger(server, "PPO", ERROR, true);

@@ -16,7 +16,7 @@ void event_pin(server_t *server, player_t *player)
     if (!server || !player || player->is_dead)
         return;
     if (asprintf(&buffer,
-        "pin #%u %u %u %u %u %u %u %u %u %u\n",
+        "pin #%u %u %u %u %u %u %u %u %u %u",
         player->id, player->position[0], player->position[1],
         player->inventory.food, player->inventory.linemate,
         player->inventory.deraumere, player->inventory.sibur,

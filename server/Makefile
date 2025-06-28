@@ -83,6 +83,13 @@ SRC	=	src/main.c								\
 		src/event/event_sbp.c					\
 		src/event/event_suc.c					\
 		src/cmd/cmd_IA/cmd_look.c				\
+		src/cmd/cmd_IA/cmd_look_next.c			\
+		src/cmd/cmd_IA/cmd_broadcast_text.c		\
+		src/clock.c								\
+		src/utils/map/del_map.c					\
+		src/player_cmd_execution.c				\
+		src/cmd/cmd_IA/cmd_incantation.c		\
+		src/cmd/cmd_IA/incantation_table.c		\
 
 OBJ	=	$(SRC:.c=.o)
 

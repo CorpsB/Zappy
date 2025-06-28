@@ -18,7 +18,7 @@ void event_tna(server_t *server)
         return;
     team = server->teams;
     while (team) {
-        if (asprintf(&buffer, "tna %s\n", team->name) == -1)
+        if (asprintf(&buffer, "tna %s", team->name) == -1)
             logger(server, "TNA", ERROR, true);
         send_to_all_gui(server, buffer);
         if (buffer)

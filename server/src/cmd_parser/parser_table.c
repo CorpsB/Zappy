@@ -5,6 +5,19 @@
 ** parser_table
 */
 
+/**
+ * @file parser_table.c
+ * @brief Defines the command tables for players and graphical clients in
+ * Zappy.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * This file provides the concrete mapping between command strings and
+ * their respective handler functions, along with argument count and timing
+ * information as specified by the Zappy protocol.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
@@ -12,19 +25,18 @@
 #include "include/cmd_parser_table.h"
 
 const player_command_t player_command_table[] = {
-    {"test", cmd_test, 1, 0},
     {"Forward", cmd_forward, 1, 7},
     {"Right", cmd_right, 1, 7},
     {"Left", cmd_left, 1, 7},
     {"Look", cmd_look, 1, 7},
     {"Inventory", cmd_inventory, 1, 1},
-    {"Broadcast", cmd_test, -1, 0},
+    {"Broadcast", cmd_broadcast_text, -1, 0},
     {"Connect_nbr", cmd_connect_nbr, 1, 0},
     {"Fork", cmd_fork, 1, 42},
     {"Eject", cmd_eject, 1, 7},
     {"Take", cmd_take_object, 2, 7},
     {"Set", cmd_set_object, 2, 7},
-    {"Incantation", cmd_test, 1, 0},
+    {"Incantation", cmd_incantation, 1, 300},
     {NULL, NULL, 0, 0}
 };
 

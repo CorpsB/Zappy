@@ -9,16 +9,11 @@
 #include "include/function.h"
 #include "include/structure.h"
 
-/**
- * @brief Notify all GUI clients with the map size.
- *
- * @param server The main server structure containing map and clients.
- */
 void event_msz(server_t *server)
 {
     char *buffer = NULL;
 
-    if (asprintf(&buffer, "msz %u %u\n", server->width, server->height) == -1)
+    if (asprintf(&buffer, "msz %u %u", server->width, server->height) == -1)
         logger(server, "MSZ", ERROR, true);
     send_to_all_gui(server, buffer);
     if (buffer)

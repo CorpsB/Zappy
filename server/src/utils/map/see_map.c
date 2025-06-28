@@ -5,12 +5,17 @@
 ** Helpers to display the resources present on every map tile.
 */
 
-#include <stdio.h>
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
 #include "include/density_table.h"
 
+/**
+ * @brief Get the quantity of a specific resource on a tile.
+ * @param tile The resources structure representing a single map tile.
+ * @param type The type of resource to query (enum r_ressource_t).
+ * @return unsigned int The quantity of the specified resource on the tile.
+*/
 static unsigned int get_resource_quantity(const resources_t tile,
     const r_ressource_t type)
 {
@@ -34,6 +39,14 @@ static unsigned int get_resource_quantity(const resources_t tile,
     }
 }
 
+/**
+ * @brief Print the quantity of a specific resource on each tile of the map.
+ * This function iterates through the entire server map and prints
+ * the quantity
+ * of the specified resource for each tile in a formatted grid.
+ * @param server Pointer to the server structure containing the map.
+ * @param res_type The resource type to print (enum r_ressource_t).
+*/
 static void print_tile_quantity(const server_t *server,
     const r_ressource_t res_type)
 {
@@ -48,6 +61,17 @@ static void print_tile_quantity(const server_t *server,
     }
 }
 
+/**
+ * @brief Print the repartition map values of a specific resource
+ * across the server map.
+ * The repartition map holds influence or weight values indicating
+ * resource distribution.
+ * This function prints these integer values in a grid format for
+ * debugging purposes.
+ * @param server Pointer to the server structure containing the map.
+ * @param res_type The resource type to print from the repartition
+ * map (enum r_ressource_t).
+*/
 static void print_repartition_map(const server_t *server,
     const r_ressource_t res_type)
 {

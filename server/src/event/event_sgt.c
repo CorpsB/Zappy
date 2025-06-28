@@ -15,7 +15,7 @@ void event_sgt(server_t *server)
 
     if (!server)
         return;
-    if (asprintf(&buffer, "sgt %u\n", server->frequency) == -1)
+    if (asprintf(&buffer, "sgt %u", server->frequency) == -1)
         logger(server, "SGT", ERROR, true);
     send_to_all_gui(server, buffer);
     if (buffer)

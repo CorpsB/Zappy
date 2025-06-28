@@ -115,6 +115,12 @@ struct poll {
     client_t *client_list;
 };
 
+typedef struct clock_s {
+    struct timespec last_tick;
+    size_t freq; // fréquence du serveur (f)
+    double accumulator; // TU accumulées mais non encore consommées
+} zappy_clock_t;
+
 /**
  * @struct resources_t
  * @brief Represents a collection of resources on a map tile or in a
@@ -254,6 +260,11 @@ struct player {
     resources_t inventory;
 
     bool is_dead;
+    bool is_freeze;
+    bool is_waiting;
+
+    char *cmd[11];
+    unsigned int time;
 
     /// Pointer to the next player in the linked list (same team).
     struct player *next;

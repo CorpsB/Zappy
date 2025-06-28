@@ -9,6 +9,15 @@
 #include "include/function.h"
 #include "include/structure.h"
 
+/**
+ * @brief Move the player one tile forward according to their
+ * current direction.
+ * This function handles map wrapping: if the player reaches the
+ * edge of the map,
+ * they reappear on the opposite side.
+ * @param server Pointer to the global server structure.
+ * @param player Pointer to the player structure to update.
+*/
 static void move_player_forward(server_t *server, player_t *player)
 {
     if (player->direction == NORTH)

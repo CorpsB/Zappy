@@ -9,6 +9,12 @@
 #include "include/function.h"
 #include "include/structure.h"
 
+/**
+ * @brief Rotate the player 90 degrees to the left (counterclockwise).
+ * Updates the player's direction according to the standard rotation:
+ * NORTH → WEST → SOUTH → EAST → NORTH.
+ * @param p Pointer to the player structure to update.
+*/
 static void rotate_left(player_t *p)
 {
     switch (p->direction) {

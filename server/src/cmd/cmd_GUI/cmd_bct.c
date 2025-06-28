@@ -8,6 +8,8 @@
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
+#include "include/cmd.h"
+#include "include/cmd_parser_table.h"
 #include <ctype.h>
 
 /**
@@ -37,6 +39,15 @@ static int parse_coord(const char *token, long max, long *out)
     return 0;
 }
 
+static int find_gui_command_index(const char *name)
+{
+    for (int i = 0; gui_command_table[i].name; i++) {
+        if (strcmp(gui_command_table[i].name, name) == 0)
+            return i;
+    }
+    return -1;
+}
+
 /**
  * @brief Extract X and Y from the "bct" argument list and verify they
  *        lie inside the current map.
@@ -47,21 +58,24 @@ static int parse_coord(const char *token, long max, long *out)
  * @retval 0 Success – coordinates copied to @p x_out / @p y_out.
  * @retval 1 Failure – missing token or invalid/out-of-range value.
 */
-static int parse_bct_coords(char **args,
-    const server_t *server, int *x_out, int *y_out)
+static int parse_bct_coords(char **args, const server_t *server,
+    int *x_out, int *y_out)
 {
     long x;
     long y;
+    int x_valid = 0;
+    int y_valid = 0;
 
     if (!args || !args[1] || !args[2])
         return 1;
-    if (parse_coord(args[1], (long)server->width, &x))
-        return 1;
-    if (parse_coord(args[2], (long)server->height, &y))
-        return 1;
-    *x_out = (int)x;
-    *y_out = (int)y;
-    return 0;
+    x_valid = (parse_coord(args[1], (long)server->width, &x) == 0);
+    y_valid = (parse_coord(args[2], (long)server->height, &y) == 0);
+    if (x_valid && y_valid) {
+        *x_out = (int)x;
+        *y_out = (int)y;
+        return 0;
+    }
+    return 1;
 }
 
 /**
@@ -88,16 +102,16 @@ static void send_bct_line(int fd, int x, int y, const resources_t *t)
 
 void cmd_bct(server_t *server, int index, char **args)
 {
-    int x;
-    int y;
+    int x = 0;
+    int y = 0;
     int fd;
+    int i = find_gui_command_index("bct");
 
-    if (!server || !server->poll.client_list ||
-        index < 0 || index >= server->poll.client_index)
-        return;
+    if (!server || !args || !args[1] || !args[2])
+        return event_sbp(server, index, args, i);
     fd = server->poll.pollfds[index].fd;
     if (parse_bct_coords(args, server, &x, &y) != 0) {
-        dprintf(fd, "ko\n");
+        send_bct_line(fd, 0, 0, &server->map[0][0]);
         return;
     }
     send_bct_line(fd, x, y, &server->map[y][x]);

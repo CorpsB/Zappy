@@ -9,29 +9,21 @@
 #include "include/function.h"
 #include "include/structure.h"
 
-/**
- * @brief Notify the GUI and the player that a player has died.
- *
- * GUI clients receive: pdi <id>
- * The player receives: dead
- *
- * @param server Pointer to the game server.
- * @param player Pointer to the player who has died.
- */
-
-void event_pdi(server_t *server, player_t *player)
+void event_pdi(server_t *server, player_t *player, bool is_open)
 {
     char *buffer = NULL;
 
-    if (asprintf(&buffer, "pdi %d\n", player->id) == -1)
+    if (asprintf(&buffer, "pdi %d", player->id) == -1)
         logger(server, "PDI", ERROR, true);
     send_to_all_gui(server, buffer);
+    if (is_open)
+        dprintf(player->socket_fd, "dead\n");
     if (buffer)
         free(buffer);
 }
 
-void event_pdi_by_index(void)
+void event_pdi_by_index(server_t *server, int index)
 {
-    //TO DO
-    return;
+    if (server->poll.client_list[index].whoAmI == PLAYER)
+        event_pdi(server, server->poll.client_list[index].player, false);
 }

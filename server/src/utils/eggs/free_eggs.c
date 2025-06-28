@@ -9,6 +9,10 @@
 #include "include/function.h"
 #include "include/structure.h"
 
+/**
+ * @brief Free a single egg structure.
+ * @param egg Pointer to the egg to free.
+*/
 void free_a_egg(eggs_t *egg)
 {
     if (egg)

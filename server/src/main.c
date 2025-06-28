@@ -93,7 +93,7 @@ int main(int ac, char **av)
     complete_team_data(server);
     srand(time(NULL));
     map_generator(server);
-    debug_print_resource_map(server);
+    // debug_print_resource_map(server);
     run_server(server);
     free_server(server);
     return 0;

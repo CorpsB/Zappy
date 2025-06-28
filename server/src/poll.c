@@ -33,19 +33,19 @@ static void add_client(server_t *server, int socket, whoAmI_t state)
 {
     server->poll.pollfds = realloc(
         server->poll.pollfds,
-        sizeof(struct pollfd) * (server->poll.client_index + 1));
+        sizeof(struct pollfd) * (server->poll.connected_client + 1));
     server->poll.client_list = realloc(
         server->poll.client_list,
-        sizeof(client_t) * (server->poll.client_index + 1));
+        sizeof(client_t) * (server->poll.connected_client + 1));
     if (!server->poll.pollfds || !server->poll.client_list)
         logger(server, "REALLOC", PERROR, true);
-    server->poll.pollfds[server->poll.client_index].fd = socket;
-    server->poll.pollfds[server->poll.client_index].events = POLLIN;
-    server->poll.pollfds[server->poll.client_index].revents = 0;
-    server->poll.client_list[server->poll.client_index].whoAmI = state;
-    server->poll.client_list[server->poll.client_index].player = NULL;
+    server->poll.pollfds[server->poll.connected_client].fd = socket;
+    server->poll.pollfds[server->poll.connected_client].events = POLLIN;
+    server->poll.pollfds[server->poll.connected_client].revents = 0;
+    server->poll.client_list[server->poll.connected_client].whoAmI = state;
+    server->poll.client_list[server->poll.connected_client].player = NULL;
     if (state == UNKNOWN)
-        dprintf(server->poll.pollfds[server->poll.client_index].fd,
+        dprintf(server->poll.pollfds[server->poll.connected_client].fd,
             "WELCOME\n");
     server->poll.client_index++;
     server->poll.connected_client++;
@@ -67,6 +67,7 @@ static bool is_game_over(server_t *server)
 static bool del_client(server_t *server, int index)
 {
     close(server->poll.pollfds[index].fd);
+    event_pdi_by_index(server, index);
     for (int i = 0; i < server->poll.connected_client; i++) {
         if (i > index) {
             server->poll.client_list[i - 1] = server->poll.client_list[i];
@@ -74,15 +75,37 @@ static bool del_client(server_t *server, int index)
         }
     }
     server->poll.connected_client--;
-    server->poll.client_index--;
     server->poll.client_list = realloc(server->poll.client_list,
         sizeof(client_t) * server->poll.connected_client);
     server->poll.pollfds = realloc(server->poll.pollfds,
         sizeof(struct pollfd) * server->poll.connected_client);
     if (!server->poll.pollfds || !server->poll.client_list)
         logger(server, "REALLOC", PERROR, true);
-    event_pdi_by_index();
     return true;
+}
+
+static void add_cmd(server_t *server, char *cmd, int index)
+{
+    /* commandes GUI ou LISTEN – inchangé */
+    if (server->poll.client_list[index].whoAmI != PLAYER) {
+        cmd_parser(server, index, cmd);
+        return;
+    }
+
+    player_t *pl = server->poll.client_list[index].player;
+
+    /* file pleine → on ignore ou on répond "suc" */
+    if (pl->cmd[9] != NULL) {
+        dprintf(pl->socket_fd, "suc\n");
+        return;
+    }
+
+    for (int k = 0; k < 10; k++) {
+        if (!pl->cmd[k]) {
+            pl->cmd[k] = strdup(cmd);   /* <<< COPIE SÛRE */
+            return;
+        }
+    }
 }
 
 static bool event_detector(server_t *server, int i)
@@ -101,46 +124,76 @@ static bool event_detector(server_t *server, int i)
         if (bytes <= 0)
             return del_client(server, i);
         cmd[bytes] = '\0';
-        cmd_parser(server, i, cmd);
+        add_cmd(server, cmd, i);
         return true;
     }
     return false;
 }
 
-static void poll_func(server_t *server)
+static void poll_func(server_t *server, zappy_clock_t *clock)
 {
-    if (poll(server->poll.pollfds, server->poll.client_index, -1) == -1)
+    int event;
+    int t = (unsigned int)
+    ((1.0 - clock->accumulator) * 1000.0 / clock->freq);
+
+    event = poll(server->poll.pollfds, server->poll.connected_client, (int)t);
+    if (event == -1)
         logger(server, "POLL", PERROR, true);
-    for (int i = 0; i < server->poll.client_index; i++) {
+    if (event == 0)
+        return;
+    for (int i = 0; i < server->poll.connected_client; i++) {
         if (event_detector(server, i))
             return;
     }
 }
 
-static void check_player_is_alive(server_t *server, teams_t *teams)
+static void eat_per_teams(server_t *server, teams_t *teams)
 {
     for (player_t *tmp = teams->player; tmp != NULL; tmp = tmp->next) {
-        if (!tmp->is_dead && tmp->cycle_before_death <= 0) {
+        if (tmp->is_dead)
+            continue;
+        if ((int)tmp->cycle_before_death - 1 <= 0 &&
+        tmp->inventory.food == 0) {
             tmp->is_dead = true;
-            event_pdi(server, tmp);
+            event_pdi(server, tmp, true);
+            continue;
         }
+        if ((int)tmp->cycle_before_death - 1 <= 0) {
+            tmp->inventory.food--;
+            tmp->cycle_before_death = 120;
+            event_pin(server, tmp);
+            continue;
+        }
+        tmp->cycle_before_death--;
     }
 }
 
-static void check_each_teams(server_t *server)
+static void eat(server_t *server)
 {
-    for (teams_t *teams = server->teams; teams != NULL; teams = teams->next)
-        check_player_is_alive(server, teams);
+    for (teams_t *tmp = server->teams; tmp != NULL; tmp = tmp->next)
+        eat_per_teams(server, tmp);
 }
 
 void run_server(server_t *server)
 {
+    zappy_clock_t *clock = init_clock(server, server->frequency);
+
+
     init_server(server);
     add_client(server, server->poll.socket, LISTEN);
-    for (; !is_game_over(server);) {
-        poll_func(server);
-        check_each_teams(server);
-        // debug_server(server);
-        //=> Consomation de nourriture => Appel à pin
+    for (int count = 0; !is_game_over(server); count++) {
+        update_clock(clock);
+        if (clock->accumulator < 1.0) {
+            poll_func(server, clock);
+            continue;
+        }
+        eat(server);
+        player_cmd_execution(server);
+        if (count % 20 == 0)
+            map_update(server);
+        while (clock->accumulator >= 1.0)
+            clock->accumulator -= 1.0;
     }
+    if (clock)
+        free(clock);
 }

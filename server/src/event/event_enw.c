@@ -11,11 +11,19 @@
 
 void send_enw(int fd, eggs_t *egg)
 {
-    dprintf(fd, "enw #%u #%u %u %u\n", egg->id, egg->creator_id,
+    dprintf(fd, "enw #%u #%d %u %u\n", egg->id, egg->creator_id,
         egg->position[0], egg->position[1]
     );
 }
 
+/**
+ * @brief Send an "enw" message for every egg in the game to a graphical
+ * client.
+ * Typically called when a new graphical client connects, so they
+ * can get information about all existing eggs.
+ * @param fd File descriptor of the graphical client.
+ * @param server Pointer to the global server structure.
+*/
 static void send_all_eggs(int fd, server_t *server)
 {
     teams_t *team;
@@ -36,12 +44,12 @@ static void send_all_eggs(int fd, server_t *server)
 void event_enw(server_t *server, player_t *player, eggs_t *egg)
 {
     char *buffer = NULL;
-    unsigned int id;
+    int id;
 
     if (!server || !egg)
         return;
-    id = player ? player->id : (unsigned int)egg->creator_id;
-    if (asprintf(&buffer, "enw #%u #%u %u %u",
+    id = player ? (int)player->id : egg->creator_id;
+    if (asprintf(&buffer, "enw #%u #%d %u %u",
         egg->id, id, egg->position[0], egg->position[1]) == -1)
         logger(server, "ENW", ERROR, true);
     send_to_all_gui(server, buffer);
