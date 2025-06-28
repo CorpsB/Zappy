@@ -79,6 +79,15 @@ void see_server(server_t *server, int fd);
  * @param server Pointer to the server to free.
 */
 void free_server(server_t *server);
+
+/**
+ * @brief Print detailed information about the poll structure.
+ * Prints socket info, client counts, pointers and detailed
+ * pollfd and client lists.
+ * @param poll poll_t struct (by value).
+ * @param fd File descriptor for output.
+ * @param size Number of connected clients.
+*/
 void see_poll(poll_t poll, int fd, int size);
 
 /**
@@ -88,6 +97,13 @@ void see_poll(poll_t poll, int fd, int size);
  * @param server Pointer to the server structure.
 */
 void debug_server(server_t *server);
+
+/**
+ * @brief Free all resources related to poll structure in the server.
+ * Closes all client sockets and frees allocated arrays for client
+ * list and pollfds.
+ * @param server Pointer to the server structure.
+*/
 void free_poll(server_t *server);
 //teams
 
@@ -150,8 +166,22 @@ void add_player(server_t *server, int socket, teams_t *teams);
 */
 void free_all_player(player_t *player);
 //cmd parser
+
+/**
+ * @brief Split a string into an array of strings based on a separator.
+ * The returned array is NULL-terminated and must be freed with free_table().
+ * @param str The string to split.
+ * @param separator The string containing separator characters.
+ * @return The array of tokens, or NULL on failure.
+*/
 char **str_to_array(char *str, char *separator);
 
+/**
+ * @brief Main server loop.
+ * Initializes the server, accepts new clients, processes events, manages
+ * player commands, handles food consumption, and checks game state.
+ * @param server Pointer to the server structure.
+*/
 void run_server(server_t *server);
 void cmd_parser(server_t *server, int index, char *cmd);
 
@@ -284,7 +314,7 @@ void logger(server_t *server, char *message, logs_t log, bool is_end);
 
 /**
  * @brief Debug function to print quantities and repartition maps of all
- * resources. 
+ * resources.
  * Iterates through all resource types and prints both the tile quantities
  * and repartition map values for each resource in a readable format.
  * Useful for visualizing resource distribution and debugging the map state.
@@ -558,6 +588,10 @@ void event_ppo(server_t *server, player_t *player);
 */
 void event_edi(server_t *server, unsigned int egg_id);
 
+/**
+ * @brief Free a NULL-terminated array of strings.
+ * @param table The array to free.
+*/
 void free_table(char **table);
 
 /**
@@ -692,6 +726,12 @@ void event_suc(server_t *server, int index, char **args);
  * @param i Index of the command in the gui_command_table.
 */
 void event_sbp(server_t *server, int index, char **args, int i);
+
+/**
+ * @brief Get the size of a NULL-terminated array of strings.
+ * @param table The array to measure.
+ * @return The number of elements in the array.
+*/
 int table_size(char **table);
 void cmd_look(server_t *server, int index, char **);
 
@@ -709,9 +749,34 @@ unsigned int players_at(server_t *srv, int y, int x);
  * @param map Pointer to the 2D integer array to free.
 */
 void free_int_map(int y, int **map);
+
+/**
+ * @brief Update the clock accumulator and last_tick.
+ * Adds elapsed time units to accumulator and updates last_tick.
+ * @param clock Pointer to zappy_clock_t struct.
+*/
 void update_clock(zappy_clock_t *clock);
+
+/**
+ * @brief Initialize and start a new clock.
+ * Allocates a new clock structure, sets its frequency, and starts
+ * tracking time.
+ * @param server Pointer to the server structure for logging in case
+ * of failure.
+ * @param freq Frequency of the clock in server units.
+ * @return zappy_clock_t* Pointer to the initialized clock structure.
+*/
 zappy_clock_t *init_clock(server_t *server, size_t freq);
+
+/**
+ * @brief Execute pending player commands based on their timers.
+ * This function iterates over all connected clients, checks if
+ * they are players,
+ * and executes commands if timers allow it.
+ * @param server Pointer to the server structure.
+*/
 void player_cmd_execution(server_t *server);
 void cmd_incantation(server_t *server, int index, char **args);
 bool start_incantation(server_t *server, player_t *pl);
+
 #endif /* !FUCNTION_H_ */

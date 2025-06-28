@@ -11,6 +11,11 @@
 #include "include/cmd.h"
 #include "include/cmd_parser_table.h"
 
+/**
+ * @brief Remove the first command from the player's command queue.
+ * @param server Pointer to the server structure.
+ * @param pl Pointer to the player structure.
+*/
 static void delete_cmd(server_t *, player_t *pl)
 {
     for (int i = 0; i < 10; i++)
@@ -18,6 +23,12 @@ static void delete_cmd(server_t *, player_t *pl)
     pl->cmd[10] = NULL;
 }
 
+/**
+ * @brief Load the time required to execute the next player command.
+ * @param server Pointer to the server structure.
+ * @param pl Pointer to the player structure.
+ * @return Time in ticks required for the command, or 0 if no valid command.
+*/
 int load_next_time(server_t *server, player_t *pl)
 {
     printf("Coucou1 : %s\n", pl->cmd[0]);

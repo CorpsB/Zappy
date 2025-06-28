@@ -9,6 +9,12 @@
 #include "include/function.h"
 #include "include/structure.h"
 
+/**
+ * @brief Print the contents of a single pollfd structure.
+ * @param pollfd Pointer to the pollfd struct.
+ * @param index Index number for display.
+ * @param fd File descriptor where output is written.
+*/
 void see_a_pollfd(struct pollfd *pollfd, int index, int fd)
 {
     if (!pollfd) {
@@ -21,6 +27,12 @@ void see_a_pollfd(struct pollfd *pollfd, int index, int fd)
     dprintf(fd, "  revents : %d\n", pollfd->revents);
 }
 
+/**
+ * @brief Print all pollfd entries from an array.
+ * @param pollfds Pointer to the pollfd array.
+ * @param fd File descriptor to print output.
+ * @param size Number of pollfd entries.
+*/
 void see_pollfds(struct pollfd *pollfds, int fd, int size)
 {
     dprintf(fd, "====== POLLFD TABLE ======\n");
@@ -30,6 +42,12 @@ void see_pollfds(struct pollfd *pollfds, int fd, int size)
     dprintf(fd, "==========================\n\n");
 }
 
+/**
+ * @brief Print information about a client struct.
+ * Identifies the type of client and prints relevant info.
+ * @param client Pointer to client struct.
+ * @param fd File descriptor to print output.
+*/
 void see_a_client(client_t *client, int fd)
 {
     if (!client) {
@@ -51,6 +69,13 @@ void see_a_client(client_t *client, int fd)
     }
 }
 
+/**
+ * @brief Print the list of clients.
+ * Iterates through the array of clients and prints each.
+ * @param list Pointer to client array.
+ * @param fd File descriptor for output.
+ * @param size Number of clients.
+*/
 void see_client_list(client_t *list, int fd, int size)
 {
     int i = 0;
