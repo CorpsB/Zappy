@@ -47,7 +47,8 @@ void event_enw(server_t *server, player_t *player)
     char *buffer = NULL;
 
     if (asprintf(&buffer, "enw #%u #%d %u %u",
-        server->eggs_count - 1, player->id, player->position[0], player->position[1]) == -1)
+        server->eggs_count - 1, player->id, player->position[0],
+        player->position[1]) == -1)
         logger(server, "ENW", ERROR, true);
     send_to_all_gui(server, buffer);
 }
