@@ -71,26 +71,26 @@ static void map_add_ressource(server_t *server, int *pos,
     r_ressource_t type, int quanity)
 {
     if (type == FOOD)
-        server->map[pos[0]][pos[1]].food += quanity;
+        server->map[pos[1]][pos[0]].food += quanity;
     if (type == LINEMATE)
-        server->map[pos[0]][pos[1]].linemate += quanity;
+        server->map[pos[1]][pos[0]].linemate += quanity;
     if (type == DERAUMERE)
-        server->map[pos[0]][pos[1]].deraumere += quanity;
+        server->map[pos[1]][pos[0]].deraumere += quanity;
     if (type == SIBUR)
-        server->map[pos[0]][pos[1]].sibur += quanity;
+        server->map[pos[1]][pos[0]].sibur += quanity;
     if (type == MENDIANE)
-        server->map[pos[0]][pos[1]].mendiane += quanity;
+        server->map[pos[1]][pos[0]].mendiane += quanity;
     if (type == PHIRAS)
-        server->map[pos[0]][pos[1]].phiras += quanity;
+        server->map[pos[1]][pos[0]].phiras += quanity;
     if (type == THYSTAME)
-        server->map[pos[0]][pos[1]].thystame += quanity;
+        server->map[pos[1]][pos[0]].thystame += quanity;
 }
 
 static void event(server_t *server, player_t *pl, r_ressource_t obj)
 {
     event_pdr(server, pl->id, obj);
     event_pin(server, pl);
-    event_bct_per_tile(server, pl->position[0], pl->position[1]);
+    event_bct_per_tile(server, pl->position[1], pl->position[0]);
 }
 
 static void set_obj(server_t *server, r_ressource_t obj, int index)

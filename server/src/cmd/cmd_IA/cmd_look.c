@@ -36,7 +36,7 @@ static unsigned int player_on_team(teams_t *t, int y, int x)
     unsigned int nb = 0;
 
     for (player_t *p = t->player; p; p = p->next)
-        if ((int)p->position[1] == x && (int)p->position[0] == y)
+        if ((int)p->position[0] == x && (int)p->position[1] == y)
             nb++;
     return nb;
 }
@@ -62,7 +62,7 @@ static unsigned int egg_on_team(teams_t *t, int y, int x)
     unsigned int nb = 0;
 
     for (eggs_t *e = t->egg; e; e = e->next)
-        if ((int)e->position[1] == x && (int)e->position[0] == y)
+        if ((int)e->position[0] == x && (int)e->position[1] == y)
             nb++;
     return nb;
 }

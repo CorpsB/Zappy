@@ -11,6 +11,8 @@
 
 static bool is_char_inside(char *str, char sp)
 {
+    if (!str)
+        return false;
     for (int i = 0; str[i] != '\0'; i++) {
         if (str[i] == sp)
             return true;
@@ -47,7 +49,7 @@ static bool player_cmd(server_t *server, char *cmd, player_t *pl, int k)
 {
     char *new_cmd = NULL;
 
-    if (!is_char_inside(pl->cmd[k], '\n')) {
+    if (pl->cmd[k] && !is_char_inside(pl->cmd[k], '\n')) {
         if (asprintf(&new_cmd, "%s%s", pl->cmd[k], cmd))
             logger(server, "NEW CMD", PERROR, true);
         if (pl->cmd[k])

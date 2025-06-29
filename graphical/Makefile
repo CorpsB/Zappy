@@ -29,7 +29,7 @@ CXXFLAGS = -std=c++20 -Wall -Wextra -Werror -g -I3DRenderer/include \
 
 LDFLAGS = -lsfml-graphics -lsfml-window -lsfml-system
 
-NAME = ../zappy_gui
+NAME = zappy_gui
 
 all: $(NAME)
 

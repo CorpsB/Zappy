@@ -93,8 +93,8 @@ static void complete_table(server_t *server, r_ressource_t type, int min,
 */
 static void draw_circle(int *pos, r_ressource_t type, server_t *server, int *d)
 {
-    int x = pos[1] + d[0];
-    int y = pos[0] + d[1];
+    int x = pos[0] + d[0];
+    int y = pos[1] + d[1];
     int dist;
     int influence;
 
@@ -124,8 +124,8 @@ void change_arround(server_t *srv, int *pos, r_ressource_t type, int weight)
         }
         if (dy > r)
             break;
-        d[0] = dy;
-        d[1] = dx;
+        d[0] = dx;
+        d[1] = dy;
         draw_circle(pos, type, srv, d);
     }
 }
@@ -134,19 +134,19 @@ static void add_ressources_on_map(server_t *server, r_ressource_t type,
     int *pos)
 {
     if (type == FOOD)
-    server->map[pos[0]][pos[1]].food++;
+    server->map[pos[1]][pos[0]].food++;
     if (type == LINEMATE)
-        server->map[pos[0]][pos[1]].linemate++;
+        server->map[pos[1]][pos[0]].linemate++;
     if (type == DERAUMERE)
-        server->map[pos[0]][pos[1]].deraumere++;
+        server->map[pos[1]][pos[0]].deraumere++;
     if (type == SIBUR)
-        server->map[pos[0]][pos[1]].sibur++;
+        server->map[pos[1]][pos[0]].sibur++;
     if (type == MENDIANE)
-        server->map[pos[0]][pos[1]].mendiane++;
+        server->map[pos[1]][pos[0]].mendiane++;
     if (type == PHIRAS)
-        server->map[pos[0]][pos[1]].phiras++;
+        server->map[pos[1]][pos[0]].phiras++;
     if (type == THYSTAME)
-        server->map[pos[0]][pos[1]].thystame++;
+        server->map[pos[1]][pos[0]].thystame++;
 }
 
 /**
@@ -164,13 +164,13 @@ static void spawn_ressource(server_t *server, r_ressource_t type,
     int *table, int size)
 {
     int r = rand() % size;
-    int pos[2] = {table[r * 2], table[r * 2 + 1]};
+    int pos[2] = {table[r * 2 + 1], table[r * 2]};
     int weight = density_table[type].repartition_value;
 
-    server->map[pos[0]][pos[1]].repartition_map[type] += weight;
+    server->map[pos[1]][pos[0]].repartition_map[type] += weight;
     change_arround(server, pos, type, weight - 1);
     add_ressources_on_map(server, type, pos);
-    event_bct_per_tile(server, pos[0], pos[1]);
+    event_bct_per_tile(server, pos[1], pos[0]);
 }
 
 /**

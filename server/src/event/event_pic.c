@@ -27,8 +27,8 @@ void event_pic(server_t *server, player_t *player)
     char *message = NULL;
     player_t *tmp;
 
-    if (asprintf(&message, "pic %u %u %u #%u", player->position[1],
-        player->position[0], player->lvl, player->id) == -1)
+    if (asprintf(&message, "pic %u %u %u #%u", player->position[0],
+        player->position[1], player->lvl, player->id) == -1)
         logger(server, "ASPRINTF : PIC", PERROR, true);
     for (int i = 0; i < server->poll.connected_client; i++) {
         if (server->poll.client_list[i].whoAmI != PLAYER)

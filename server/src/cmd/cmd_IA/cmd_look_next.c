@@ -12,40 +12,39 @@
 static char *append_n_times(char *dst, const char *tok,
     unsigned int n, server_t *srv)
 {
-    for (unsigned int i = 0; i < n; ++i)
+    if (dst && dst[0] != '\0' && dst[strlen(dst) - 1] != ' ')
+        dst = append_token(dst, " ", srv);
+    for (unsigned int i = 0; i < n; ++i) {
         dst = append_token(dst, tok, srv);
+        if (i < n - 1)
+            dst = append_token(dst, " ", srv);
+    }
     return dst;
 }
 
 static char *tile_to_str(server_t *srv, int y, int x)
 {
     char *str = NULL;
-    size_t len;
 
-    str = append_n_times(str, "player ", players_at(srv, y, x), srv);
-    str = append_n_times(str, "egg ", eggs_at(srv, y, x), srv);
-    str = append_n_times(str, "food ", srv->map[y][x].food, srv);
-    str = append_n_times(str, "linemate ", srv->map[y][x].linemate, srv);
-    str = append_n_times(str, "deraumere ", srv->map[y][x].deraumere, srv);
-    str = append_n_times(str, "sibur ", srv->map[y][x].sibur, srv);
-    str = append_n_times(str, "mendiane ", srv->map[y][x].mendiane, srv);
-    str = append_n_times(str, "phiras ", srv->map[y][x].phiras, srv);
-    str = append_n_times(str, "thystame ", srv->map[y][x].thystame, srv);
+    str = append_n_times(str, "player", players_at(srv, y, x), srv);
+    str = append_n_times(str, "egg", eggs_at(srv, y, x), srv);
+    str = append_n_times(str, "food", srv->map[y][x].food, srv);
+    str = append_n_times(str, "linemate", srv->map[y][x].linemate, srv);
+    str = append_n_times(str, "deraumere", srv->map[y][x].deraumere, srv);
+    str = append_n_times(str, "sibur", srv->map[y][x].sibur, srv);
+    str = append_n_times(str, "mendiane", srv->map[y][x].mendiane, srv);
+    str = append_n_times(str, "phiras", srv->map[y][x].phiras, srv);
+    str = append_n_times(str, "thystame", srv->map[y][x].thystame, srv);
     if (!str)
         str = strdup("");
-    else {
-        len = strlen(str);
-        if (len && str[len - 1] == ' ')
-            str[len - 1] = '\0';
-    }
     return str;
 }
 
 static void wrap_coordinates(server_t *server, int *x, int *y)
 {
-    if (*x < 0)
+    while (*x < 0)
         *x += (int)server->width;
-    if (*y < 0)
+    while (*y < 0)
         *y += (int)server->height;
     if (*x >= (int)server->width)
         *x %= (int)server->width;
@@ -53,88 +52,43 @@ static void wrap_coordinates(server_t *server, int *x, int *y)
         *y %= (int)server->height;
 }
 
-static char *line_top(server_t *srv, int y, int x, int lvl)
+static char *look_line(server_t *srv, unsigned int *pos, int *offset, int lvl)
 {
-    char *ln = NULL;
-    int cx;
-    int cy;
+    char *line = NULL;
+    char *tile_tmp;
+    int line_size = lvl * 2;
+    int coord[2] = {pos[0], pos[1]};
 
-    y -= lvl;
-    x -= lvl;
-    for (int i = 0; i < (lvl * 2 + 1); ++i) {
-        cx = x + i;
-        cy = y;
-        wrap_coordinates(srv, &cx, &cy);
-        ln = append_token(ln, tile_to_str(srv, cy, cx), srv);
-        if (i < (lvl * 2))
-            ln = append_token(ln, ", ", srv);
+    coord[0] += (lvl * offset[0]);
+    coord[1] += (lvl * offset[1]);
+    for (int i = 0; i < line_size + 1; ++i) {
+        wrap_coordinates(srv, &coord[0], &coord[1]);
+        tile_tmp = tile_to_str(srv, coord[1], coord[0]);
+        line = append_token(line, tile_tmp, srv);
+        if (i < line_size)
+            line = append_token(line, ", ", srv);
+        free(tile_tmp);
+        coord[0] += offset[2];
+        coord[1] += offset[3];
     }
-    return ln;
-}
-
-static char *line_bottom(server_t *srv, int y, int x, int lvl)
-{
-    char *ln = NULL;
-    int cx;
-    int cy;
-
-    y += lvl;
-    x += lvl;
-    for (int i = 0; i < (lvl * 2 + 1); ++i) {
-        cx = x - i;
-        cy = y;
-        wrap_coordinates(srv, &cx, &cy);
-        ln = append_token(ln, tile_to_str(srv, cy, cx), srv);
-        if (i < (lvl * 2))
-            ln = append_token(ln, ", ", srv);
-    }
-    return ln;
-}
-
-static char *line_left(server_t *srv, int y, int x, int lvl)
-{
-    char *ln = NULL;
-    int cx;
-    int cy;
-
-    x -= lvl;
-    y += lvl;
-    for (int i = 0; i < (lvl * 2 + 1); ++i) {
-        cx = x;
-        cy = y - i;
-        wrap_coordinates(srv, &cx, &cy);
-        ln = append_token(ln, tile_to_str(srv, cy, cx), srv);
-        if (i < (lvl * 2))
-            ln = append_token(ln, ", ", srv);
-    }
-    return ln;
-}
-
-static char *line_right(server_t *srv, int y, int x, int lvl)
-{
-    char *ln = NULL;
-    int cx;
-    int cy;
-
-    x += lvl;
-    y -= lvl;
-    for (int i = 0; i < (lvl * 2 + 1); ++i) {
-        cx = x;
-        cy = y + i;
-        wrap_coordinates(srv, &cx, &cy);
-        ln = append_token(ln, tile_to_str(srv, cy, cx), srv);
-        if (i < (lvl * 2))
-            ln = append_token(ln, ", ", srv);
-    }
-    return ln;
+    return line;
 }
 
 char *build_line(server_t *srv, player_t *pl, int lvl)
 {
-    static line_builder_t builders[4] = {
-        line_top, line_right, line_bottom, line_left
-    };
+    int offset_n[4] = {-1, -1, 1, 0};
+    int offset_e[4] = {1, -1, 0, 1};
+    int offset_s[4] = {1, 1, -1, 0};
+    int offset_w[4] = {-1, 1, 0, -1};
 
-    return builders[pl->direction - 1](srv,
-        (int)pl->position[0], (int)pl->position[1], lvl);
+    switch (pl->direction) {
+        case NORTH:
+            return look_line(srv, pl->position, offset_n, lvl);
+        case EAST:
+            return look_line(srv, pl->position, offset_e, lvl);
+        case SOUTH:
+            return look_line(srv, pl->position, offset_s, lvl);
+        default:
+            return look_line(srv, pl->position, offset_w, lvl);
+    }
 }

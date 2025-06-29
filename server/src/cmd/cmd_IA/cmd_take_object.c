@@ -88,13 +88,13 @@ static void event(server_t *srv, player_t *pl, r_ressource_t obj)
 {
     event_pgt(srv, pl->id, obj);
     event_pin(srv, pl);
-    event_bct_per_tile(srv, pl->position[0], pl->position[1]);
+    event_bct_per_tile(srv, pl->position[1], pl->position[0]);
 }
 
 static void take_obj(server_t *srv, r_ressource_t obj, int index)
 {
     player_t *pl = srv->poll.client_list[index].player;
-    int nbr = get_ressource(srv, pl->position[0], pl->position[1], obj);
+    int nbr = get_ressource(srv, pl->position[1], pl->position[0], obj);
     int *pos = malloc(sizeof(int) * 2);
 
     if (!pos)

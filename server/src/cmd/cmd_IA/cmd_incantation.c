@@ -58,7 +58,7 @@ static unsigned int found_player_on_tile(server_t *server, player_t *pl)
 */
 static bool check_condition(server_t *server, player_t *pl)
 {
-    resources_t map = server->map[pl->position[0]][pl->position[1]];
+    resources_t map = server->map[pl->position[1]][pl->position[0]];
 
     if (pl->lvl >= 8)
         return false;
@@ -126,7 +126,7 @@ static void elevation_failed(server_t *server, int index)
 static void delete_stuff(server_t *server, int index)
 {
     player_t *pl = server->poll.client_list[index].player;
-    resources_t map = server->map[pl->position[0]][pl->position[1]];
+    resources_t map = server->map[pl->position[1]][pl->position[0]];
 
     map.deraumere -= requirement[pl->lvl - 1].deraumere;
     map.linemate -= requirement[pl->lvl - 1].linemate;

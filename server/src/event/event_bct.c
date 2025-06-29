@@ -24,7 +24,7 @@
 static void send_bct_tile(int fd, int x, int y, resources_t *tile)
 {
     dprintf(fd,
-        "bct %d %d %u %u %u %u %u %u %u\n", y, x, tile->food, tile->linemate,
+        "bct %d %d %u %u %u %u %u %u %u\n", x, y, tile->food, tile->linemate,
         tile->deraumere, tile->sibur, tile->mendiane, tile->phiras,
         tile->thystame
     );
@@ -69,7 +69,7 @@ void event_bct_per_tile(server_t *server, int y, int x)
     resources_t tile = server->map[y][x];
 
     if (asprintf(&buffer, "bct %u %u %u %u %u %u %u %u %u",
-        y, x, tile.food, tile.linemate,
+        x, y, tile.food, tile.linemate,
         tile.deraumere, tile.sibur, tile.mendiane, tile.phiras,
         tile.thystame) == -1)
         logger(server, "BCT PER TILE", ERROR, true);

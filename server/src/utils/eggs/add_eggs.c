@@ -16,8 +16,8 @@ void generate_starter_eggs(server_t *server, teams_t *teams)
     if (!node)
         logger(server, "MALLOC", PERROR, true);
     node->id = server->eggs_count;
-    node->position[0] = rand() % server->height;
-    node->position[1] = rand() % server->width;
+    node->position[0] = rand() % server->width;
+    node->position[1] = rand() % server->height;
     node->creator_id = -1;
     node->next = teams->egg;
     teams->egg = node;

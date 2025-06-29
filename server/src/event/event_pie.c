@@ -15,13 +15,13 @@ void event_pie(server_t *server, player_t *player, bool succes)
     char *message = NULL;
 
     if (!succes) {
-        if (asprintf(&message, "pie %u %u %u", player->position[1],
-            player->position[0], 0) == -1) {
+        if (asprintf(&message, "pie %u %u %u", player->position[0],
+            player->position[1], 0) == -1) {
             logger(server, "ASPRINTF : PIE", PERROR, true);
         }
     } else {
-        if (asprintf(&message, "pie %u %u %u", player->position[1],
-            player->position[0], 1) == -1) {
+        if (asprintf(&message, "pie %u %u %u", player->position[0],
+            player->position[1], 1) == -1) {
             logger(server, "ASPRINTF : PIE", PERROR, true);
         }
     }
