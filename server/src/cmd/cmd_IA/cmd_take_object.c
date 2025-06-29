@@ -106,7 +106,7 @@ static void take_obj(server_t *srv, r_ressource_t obj, int index)
     pos[0] = pl->position[0];
     pos[1] = pl->position[1];
     player_add_ressource(srv, pl, obj);
-    del_ressource(srv, pl->position[0], pl->position[1], obj);
+    del_ressource(srv, pl->position[1], pl->position[0], obj);
     change_arround(srv, pos, obj, density_table[obj].repartition_value * -1);
     del_map_inventory(srv, obj);
     event(srv, pl, obj);

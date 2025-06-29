@@ -96,37 +96,32 @@ static void draw_circle(int *pos, r_ressource_t type, server_t *server, int *d)
     int x = pos[0] + d[0];
     int y = pos[1] + d[1];
     int dist;
-    int influence;
+    int influ;
 
     if (x < 0 || y < 0 || x >= (int)server->width || y >= (int)server->height)
         return;
     dist = abs(d[0]) + abs(d[1]);
-    influence = d[2] - dist;
-    if (influence <= 0)
+    influ = abs(d[2]) - dist;
+    if (influ <= 0)
         return;
-    server->map[y][x].repartition_map[type] += influence;
+    server->map[y][x].repartition_map[type] += (d[2] < 0 ? -influ : influ);
 }
 
-//C'est un grand pas pour le coding-style, mais un petit pas pour continue;
 void change_arround(server_t *srv, int *pos, r_ressource_t type, int weight)
 {
-    int r = weight;
-    int dx = -r;
+    int r;
     int d[3];
 
-    if (weight <= 0)
+    if (weight == 0)
         return;
+    r = abs(weight);
     d[2] = weight;
-    for (int dy = -r; dy <= r; dx++) {
-        if (dx > r) {
-            dx = -r;
-            dy++;
+    for (int dy = -r; dy <= r; ++dy) {
+        for (int dx = -r; dx <= r; ++dx) {
+            d[0] = dx;
+            d[1] = dy;
+            draw_circle(pos, type, srv, d);
         }
-        if (dy > r)
-            break;
-        d[0] = dx;
-        d[1] = dy;
-        draw_circle(pos, type, srv, d);
     }
 }
 
