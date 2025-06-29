@@ -5,12 +5,29 @@
 ** Game
 */
 
-#include "Game.hpp"
+/**
+ * @file Game.cpp
+ * @brief Implementation of the Game class, the main runtime loop for the Zappy graphical client.
+ *
+ * This file defines the methods of the `Game` class, which acts as the central controller
+ * for the client-side runtime. It manages the game window, the 3D renderer, and the event
+ * processing loop using SFML.
+ *
+ * The `run()` method handles the main frame loop, rendering logic, event polling, and update
+ * ticks. It ensures proper coordination between the `Renderer`, `Event`, and `Interpreter`
+ * components of the application.
+ *
+ * The class follows the singleton pattern and provides global access to its instance
+ * through `Game::GetInstance()`. It also relays server messages to the `Interpreter`
+ * for real-time in-game updates.
+ *
+ * @author Thomas Camuset
+ * @date 2025
+ * @version 1.0
+ * @see Game.hpp, Renderer, Interpreter, Event, Window
+ */
 
-Game::Game(std::shared_ptr<Renderer::Renderer> renderer)
-    : _interpreter(renderer), _renderer(renderer)
-{
-}
+#include "Game.hpp"
 
 Game &Game::GetInstance(std::shared_ptr<Renderer::Renderer> renderer)
 {

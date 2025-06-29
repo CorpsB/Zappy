@@ -5,6 +5,33 @@
 ** Interpreter
 */
 
+/**
+ * @file Interpreter.cpp
+ * @brief Implementation of the Interpreter class for handling server commands in the Zappy client.
+ *
+ * This file implements the logic of the `Interpreter` class, which is responsible for parsing,
+ * matching, and executing commands sent by the Zappy server using regular expressions.
+ * Each recognized instruction is associated with a handler function that applies changes
+ * to the in-game 3D world using the `Renderer` system.
+ *
+ * Commands such as map updates (`msz`, `bct`), player actions (`pnw`, `ppo`, `pdi`, etc.),
+ * and global events (`seg`, `smg`) are all processed dynamically through a dispatch table
+ * built with regex-function pairs.
+ *
+ * The interpreter updates the 3D scene by spawning or removing entities (players, eggs, items),
+ * adjusting player orientation or movement, managing team colors, and displaying broadcast messages.
+ * It also ensures buffered input is correctly reprocessed in case of partial data.
+ *
+ * Constants like `TILE_SIZE`, `OFFSET_FROM_GROUND`, and `OFFSET_EYES_Y` control
+ * visual placement and animation behavior.
+ *
+ * @author Thomas Camuset
+ * @date 2025
+ * @version 1.0
+ * @see Interpreter.hpp, Renderer, sf::Color
+ * @note This interpreter is designed to be easily extended with new command patterns.
+ */
+
 #include "Interpreter.hpp"
 
 Interpreter::Interpreter(std::shared_ptr<Renderer::Renderer> renderer)

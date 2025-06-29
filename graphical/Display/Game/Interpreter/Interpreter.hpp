@@ -5,6 +5,34 @@
 ** Interpreter
 */
 
+/**
+ * @file Interpreter.hpp
+ * @brief Declaration of the Interpreter class used to parse and handle server instructions for the Zappy client.
+ *
+ * The Interpreter class is responsible for decoding and executing textual commands sent
+ * by the Zappy server. It maps regex-based patterns to dedicated handler methods, each one
+ * implementing a specific server-side instruction (such as spawning players, updating tiles,
+ * displaying broadcasts, etc.).
+ *
+ * This class interacts directly with the 3D `Renderer` module to trigger visual updates in the
+ * graphical client, such as entity animations, color updates, or tile content rendering.
+ *
+ * It uses a shared `Renderer` instance to manipulate 3D elements and maintains internal data
+ * like resources, team colors, and an input buffer. The matching system is extensible, using
+ * an unordered map of regex patterns and corresponding lambdas or bound methods.
+ *
+ * Constants:
+ * - `TILE_SIZE`: Size of each tile on the map in 3D units.
+ * - `OFFSET_FROM_GROUND`: Y-axis offset for ground positioning.
+ * - `OFFSET_EYES_Y`: Camera/player viewpoint vertical offset.
+ *
+ * @author Thomas Camuset
+ * @date 2025
+ * @version 1.0
+ * @see Renderer, sf::Color, std::regex
+ * @note This system can be extended by adding new regex-command pairs to `_instructions`.
+ */
+
 #pragma once
 
 #include <iostream>

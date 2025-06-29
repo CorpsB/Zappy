@@ -18,7 +18,7 @@
 
 class Game {
     public:
-        Game(std::shared_ptr<Renderer::Renderer> renderer);
+        Game(std::shared_ptr<Renderer::Renderer> renderer) : _interpreter(renderer), _renderer(renderer) {};
         ~Game() = default;
 
        static Game &GetInstance(std::shared_ptr<Renderer::Renderer> renderer);
