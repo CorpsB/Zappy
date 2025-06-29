@@ -57,12 +57,25 @@ struct ResourceData {
 
 class Interpreter {
     public:
+        /**
+         * @brief Constructs the Interpreter object with a shared renderer.
+         *
+         * Initializes the instruction dispatch table (`_instructions`) with regex patterns
+         * and their corresponding handler functions. Also sets up resource definitions.
+         *
+         * @param renderer Shared pointer to the 3D renderer used for updating the scene.
+         */
         Interpreter(std::shared_ptr<Renderer::Renderer> renderer);
         ~Interpreter() = default;
 
         /**
-         * @brief Interprets the command received by the Client
-         * @param data Command
+         * @brief Interprets and dispatches server commands from a raw input string.
+         *
+         * Parses the buffer line by line, matches each line against known regex instructions,
+         * and invokes the corresponding handler. Unrecognized or incomplete data is preserved
+         * in the buffer for later reprocessing.
+         *
+         * @param data A string containing raw server commands (may contain multiple lines).
          */
         void interpret(const std::string &data);
     private:
@@ -74,23 +87,33 @@ class Interpreter {
 
         std::shared_ptr<Renderer::Renderer> _renderer;
 
-        /**
-         * @brief Determine the teams' color
-         * @param teamColor Contains the color of each team
-         * @param allTeamNames Contains the list of all team names
-         * @param bigEnoughdiffColor If the color randomly generated is different enough from existing colors, return true
-         */
         std::unordered_map<std::string, sf::Color> _teamColor;
+
+        /**
+         * @brief Checks if the given color is sufficiently different from existing team colors.
+         *
+         * Uses Euclidean RGB distance to ensure distinctiveness.
+         *
+         * @param newColor The new team color to evaluate.
+         * @return true if the color is sufficiently different, false otherwise.
+         */
         bool _bigEnoughDiffColor(sf::Color newColor);
 
         /**
-         * @brief Set the map size
-         * @param m Must contain : x (int), y (int)
+         * @brief Handles the `msz` command to set the map size.
+         *
+         * Spawns ground tiles and initializes the renderer's map dimensions.
+         *
+         * @param m Match object containing x and y map size.
          */
         void _msz(const std::smatch &m);
         /**
-         * @brief Display the content of a tile
-         * @param m Must contain : x (int), y (int), q0 (int), q1 (int), q2 (int), q3 (int), q4 (int), q5 (int), q6 (int)
+         * @brief Handles the `bct` command to update tile resources.
+         *
+         * Updates the resource quantities on a given tile and spawns or removes
+         * resource models in the scene accordingly.
+         *
+         * @param m Match object containing tile coordinates and quantities for 7 resource types.
          */
         void _bct(const std::smatch &m);
         /**
@@ -99,78 +122,125 @@ class Interpreter {
          */
         void _tna(const std::smatch &m);
         /**
-         * @brief Spawn a new player
-         * @param m Must contain : playerId (int), x (int), y (int), orientation (Renderer::Compass), level (int), teamName (int)
+         * @brief Handles the `pnw` command to spawn a new player.
+         *
+         * Spawns a body and eyes model for the player with the appropriate team color,
+         * position, orientation, and level.
+         *
+         * @param m Match object containing player ID, position, orientation, level, and team name.
          */
         void _pnw(const std::smatch &m);
         /**
-         * @brief Set the position of a player
-         * @param m Must contain : playerId (int), x (int), y (int), orientation (Renderer::Compass)
+         * @brief Handles the `ppo` command to update a player's position and orientation.
+         *
+         * Updates position and schedules movement and rotation animations if necessary.
+         * Performs recalibration if the reported position doesn't match expectations.
+         *
+         * @param m Match object containing player ID, position, and orientation.
          */
         void _ppo(const std::smatch &m);
         /**
-         * @brief Kicks a player from the server
-         * @param m Must contain : playerId (int)
+         * @brief Handles the `plv` command to update a player's level.
+         *
+         * Removes the old eyes model and spawns a new one matching the updated level.
+         *
+         * @param m Match object containing player ID and new level.
          */
         void _plv(const std::smatch &m);
         /**
-         * @brief Display player's inventory
-         * @param m Must contain : playerId (int), x (int), y (int), q0 (int), q1 (int), q2 (int), q3 (int), q4 (int), q5 (int), q6 (int)
+         * @brief Handles the `pin` command to update a player's inventory.
+         *
+         * Sets the inventory for the matching player entity.
+         *
+         * @param m Match object containing player ID and quantities of all resources.
          */
         void _pin(const std::smatch &m);
         /**
-         * @brief Explusion
-         * @param m Must contain : playerId (int)
+         * @brief Handles the `pex` command to trigger an expulsion effect.
+         *
+         * Spawns a temporary visual effect at the player's position to indicate expulsion.
+         *
+         * @param m Match object containing the player ID.
          */
         void _pex(const std::smatch &m);
         /**
-         * @brief Broadcast
-         * @param m Must contain : playerId (int), message (std::string)
+         * @brief Handles the `pbc` command to display a broadcast message.
+         *
+         * Logs the message in the interface with the player's team color.
+         *
+         * @param m Match object containing player ID and the broadcast message.
          */
         void _pbc(const std::smatch &m);
         /**
-         * @brief Starts an incantation (by the first player)
-         * @param m Must contain : x (int), y (int), level (int), playersId... (multiple int)
+         * @brief Handles the `pic` command to indicate the start of an incantation.
+         *
+         * Spawns an incantation ring and logs the event for the first player involved.
+         *
+         * @param m Match object containing tile position and list of player IDs.
          */
         void _pic(const std::smatch &m);
         /**
-         * @brief Stops an incantation
-         * @param m Must contain : x (in), y (int), result (std::string)
+         * @brief Handles the `pie` command to end an incantation.
+         *
+         * Removes the incantation ring from the tile and logs the outcome.
+         *
+         * @param m Match object containing tile coordinates and the result status.
          */
         void _pie(const std::smatch &m);
         /**
-         * @brief Egg laying by the player
-         * @param m Must contain : playerId (int)
+         * @brief Handles the `pfk` command to indicate a player has laid an egg.
+         *
+         * Logs the event in the instruction history.
+         *
+         * @param m Match object containing the player ID.
          */
         void _pfk(const std::smatch &m);
         /**
-         * @brief Drops resources
-         * @param m Must contain : playerId (int), resourceNumber (int)
+         * @brief Handles the `pdr` command for dropping a resource.
+         *
+         * Logs the action in the instruction history.
+         *
+         * @param m Match object containing player ID and resource number.
          */
         void _pdr(const std::smatch &m);
         /**
-         * @brief Takes resources
-         * @param m Must contain : playerId (int), resourceNumber (int)
+         * @brief Handles the `pgt` command for picking up a resource.
+         *
+         * Logs the action in the instruction history.
+         *
+         * @param m Match object containing player ID and resource number.
          */
         void _pgt(const std::smatch &m);
         /**
-         * @brief Despawn a player (death)
-         * @param m Must contain : playerId (int)
+         * @brief Handles the `pdi` command to remove a player (death).
+         *
+         * Removes all parts associated with the player and related incantation rings.
+         *
+         * @param m Match object containing the player ID.
          */
         void _pdi(const std::smatch &m);
         /**
-         * @brief Lay an egg by a player
-         * @param m Must contain : eggId (int), playerId (int), x (int), y (int)
+         * @brief Handles the `enw` command to spawn an egg.
+         *
+         * Places the egg entity at a slightly offset position from the player.
+         *
+         * @param m Match object containing egg ID, parent player ID, and coordinates.
          */
         void _enw(const std::smatch &m);
         /**
-         * @brief Player connection for an egg
-         * @param m Must contain : eggId (int)
+         * @brief Handles the `ebo` command when an egg hatches.
+         *
+         * Removes the egg from the scene and logs the event.
+         *
+         * @param m Match object containing the egg ID.
          */
         void _ebo(const std::smatch &m);
         /**
-         * @brief Despawn an egg (death)
-         * @param m Must contain : eggId (int)
+         * @brief Handles the `edi` command when an egg dies.
+         *
+         * Removes the egg from the scene and logs the event.
+         *
+         * @param m Match object containing the egg ID.
          */
         void _edi(const std::smatch &m);
         /**
