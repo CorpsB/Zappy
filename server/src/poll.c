@@ -9,6 +9,16 @@
 #include "include/function.h"
 #include "include/structure.h"
 
+static void complete_client_data(server_t *serv, int socket, whoAmI_t state)
+{
+    serv->poll.pollfds[serv->poll.connected_client].fd = socket;
+    serv->poll.pollfds[serv->poll.connected_client].events = POLLIN;
+    serv->poll.pollfds[serv->poll.connected_client].revents = 0;
+    serv->poll.client_list[serv->poll.connected_client].whoAmI = state;
+    serv->poll.client_list[serv->poll.connected_client].player = NULL;
+    serv->poll.client_list[serv->poll.connected_client].cmd = NULL;
+}
+
 /**
  * @brief Add a new client to the server's poll and client list.
  * @param server Pointer to the server structure.
@@ -25,12 +35,7 @@ static void add_client(server_t *serv, int socket, whoAmI_t state)
         sizeof(client_t) * (serv->poll.connected_client + 1));
     if (!serv->poll.pollfds || !serv->poll.client_list)
         logger(serv, "REALLOC", PERROR, true);
-    serv->poll.pollfds[serv->poll.connected_client].fd = socket;
-    serv->poll.pollfds[serv->poll.connected_client].events = POLLIN;
-    serv->poll.pollfds[serv->poll.connected_client].revents = 0;
-    serv->poll.client_list[serv->poll.connected_client].whoAmI = state;
-    serv->poll.client_list[serv->poll.connected_client].player = NULL;
-    serv->poll.client_list[serv->poll.connected_client].cmd = NULL;
+    complete_client_data(serv, socket, state);
     if (state == UNKNOWN)
         send_str(serv, serv->poll.pollfds[serv->poll.connected_client].fd,
             "WELCOME\n", false);

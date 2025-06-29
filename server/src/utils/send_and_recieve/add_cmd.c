@@ -20,20 +20,8 @@ static bool is_char_inside(char *str, char sp)
     return false;
 }
 
-static void no_player_cmd(server_t *server, char *cmd, int index)
+static void call_to_parser(server_t *server, char *, int index)
 {
-    char *new_cmd = NULL;
-
-    if (server->poll.client_list[index].cmd &&
-        !is_char_inside(server->poll.client_list[index].cmd, '\n')) {
-            if (asprintf(&new_cmd, "%s%s", server->poll.client_list[index].cmd, cmd) == -1)
-                logger(server, "ASPRINTF : ADD CMD", PERROR, true);
-            if (server->poll.client_list[index].cmd)
-                free(server->poll.client_list[index].cmd);
-        server->poll.client_list[index].cmd = new_cmd;
-    }
-    if (!server->poll.client_list[index].cmd)
-        server->poll.client_list[index].cmd = strdup(cmd);
     if (server->poll.client_list[index].cmd &&
         is_char_inside(server->poll.client_list[index].cmd, '\n')) {
         cmd_parser(server, index, server->poll.client_list[index].cmd);
@@ -43,6 +31,24 @@ static void no_player_cmd(server_t *server, char *cmd, int index)
         }
         return;
     }
+}
+
+static void no_player_cmd(server_t *server, char *cmd, int index)
+{
+    char *new_cmd = NULL;
+
+    if (server->poll.client_list[index].cmd &&
+        !is_char_inside(server->poll.client_list[index].cmd, '\n')) {
+            if (asprintf(&new_cmd, "%s%s",
+                server->poll.client_list[index].cmd, cmd) == -1)
+                logger(server, "ASPRINTF : ADD CMD", PERROR, true);
+            if (server->poll.client_list[index].cmd)
+                free(server->poll.client_list[index].cmd);
+        server->poll.client_list[index].cmd = new_cmd;
+    }
+    if (!server->poll.client_list[index].cmd)
+        server->poll.client_list[index].cmd = strdup(cmd);
+    call_to_parser(server, cmd, index);
 }
 
 static bool player_cmd(server_t *server, char *cmd, player_t *pl, int k)
