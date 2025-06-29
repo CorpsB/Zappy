@@ -156,8 +156,14 @@ static void send_broadcast_to_all(server_t *srv, player_t *snd,
 
     for (int i = 0; i < srv->poll.connected_client; ++i) {
         rcv = srv->poll.client_list[i].player;
-        if (is_valid_rcv(srv, rcv, snd, i))
-            send_dir_message(srv, rcv, msg, map);
+        if (!is_valid_rcv(srv, rcv, snd, i))
+            continue;
+        if (rcv->position[0] == snd->position[0] && rcv->position[1] ==
+        snd->position[1]) {
+            send_same_tile_message(srv, rcv, msg);
+            continue;
+        }
+        send_dir_message(srv, rcv, msg, map);
     }
 }
 
