@@ -6,6 +6,7 @@
 #include "Math.hpp"
 #include <unordered_map>
 #include <array>
+#include "STLLoader.hpp"
 
 namespace Renderer {
     enum class EntityType { CUBE, SPHERE, STL };
@@ -42,15 +43,27 @@ namespace Renderer {
         std::array<int, 7> inventory;
     };
 
-    extern std::vector<Entity> sceneEntities;
-    extern int nextEntityID;
-    extern int rotatingEntityId;
-    extern std::array<std::string, 8> pathEyes;
-    extern std::array<float, 8> offsetEyesZ;
 
-    // Création d'entités
-    int spawn(EntityType type, PartType partType, int clientId, const Vec3& pos,
-              const sf::Color& c, const std::string& filepath = "", Compass orientation = Compass::NORTH,
-              const Vec3& rotation = {0.f, 0.f, 0.f}, int level = -1, std::string teamName = "");
-    float compassToAngle(Renderer::Compass c);
+    class EntityClass {
+        public:
+            EntityClass();
+            ~EntityClass() = default;
+            // Entity creation
+            int spawn(EntityType type, PartType partType, int clientId, const Vec3& pos,
+                    const sf::Color& c, const std::string& filepath = "", Compass orientation = Compass::NORTH,
+                    const Vec3& rotation = {0.f, 0.f, 0.f}, int level = -1, std::string teamName = "");
+            float compassToAngle(Renderer::Compass c);
+
+            std::vector<Entity> &getSceneEntities();
+            int getNextEntityID() const;
+            std::array<std::string, 8> getPathEyes() const;
+            std::array<float, 8> getOffsetEyesZ() const;
+        private:
+            std::vector<Entity> sceneEntities;
+            int nextEntityID;
+            std::array<std::string, 8> pathEyes;
+            std::array<float, 8> offsetEyesZ;
+            STLLoader stlloader;
+            Geometry geometry;
+    };
 }

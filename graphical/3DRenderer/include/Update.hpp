@@ -31,5 +31,15 @@ namespace Renderer {
             void changeSelectedTile(bool &zToggle, bool &sToggle, bool &qToggle, bool &dToggle,
                 std::pair<int, int> &currentTile, int map_size_x, int map_size_y);
         private:
+             std::array<float, 8> offsetEyesZ = {
+                -8.8f,
+                -7.8f,
+                -8.2f,
+                -5.5f,
+                -7.5f,
+                -6.5f,
+                -7.2f,
+                -6.4f
+            };
     };
 }

@@ -12,7 +12,8 @@
 
 namespace Renderer {
 
-    bool Renderer::initRenderer(sf::RenderWindow &window) {
+    bool Renderer::initRenderer(sf::RenderWindow &window, std::shared_ptr<EntityClass> entity) {
+        this->_entity = entity;
         if (!window.isOpen())
             return false;
 
@@ -128,7 +129,7 @@ namespace Renderer {
         }
         std::vector<std::tuple<int, Vec3, Vec3>> valuesForSynchro;
 
-        for (auto& e : sceneEntities) {
+        for (auto& e : _entity.get()->getSceneEntities()) {
             _update.moveTrantorian(dt, e, activeMovements, map_size_x, map_size_y);
             _update.rotateTrantorian(dt, e, activeRotations);
             _update.startMoveAfterRotate(activeMovements, activeRotations, pendingMovementsAfterRotation);
@@ -141,12 +142,12 @@ namespace Renderer {
                     e.rotation.z += 60.0f * dt;
             }
         }
-        for (auto it = sceneEntities.begin(); it != sceneEntities.end(); ) {
+        for (auto it = _entity.get()->getSceneEntities().begin(); it != _entity.get()->getSceneEntities().end(); ) {
             Entity &e = *it;
             if (e.type == PartType::EXPULSION && e.rotation.x > static_cast<float>(360 * 5)) {
-                it = sceneEntities.erase(it);
+                it = _entity.get()->getSceneEntities().erase(it);
             } else if (e.type == PartType::EXPULSION && e.rotation.z > static_cast<float>(360 * 5)) {
-                it = sceneEntities.erase(it);
+                it = _entity.get()->getSceneEntities().erase(it);
             } else {
                 ++it;
             }
@@ -207,7 +208,7 @@ namespace Renderer {
         float l = std::sqrt(lightDir.x*lightDir.x + lightDir.y*lightDir.y + lightDir.z*lightDir.z);
         if (l > 0) lightDir = { lightDir.x/l, lightDir.y/l, lightDir.z/l };
 
-        for (const auto& e : sceneEntities) {
+        for (const auto& e : _entity.get()->getSceneEntities()) {
             Mat4x4 matScale = Mat4x4::makeScale(e.scale.x, e.scale.y, e.scale.z);
             Mat4x4 matRotX  = Mat4x4::makeRotationX(e.rotation.x * M_PI / 180.0f);
             Mat4x4 matRotY  = Mat4x4::makeRotationY(e.rotation.y * M_PI / 180.0f);
@@ -327,7 +328,7 @@ namespace Renderer {
             _hud.displayTotalResources(totalResources, window);
             _hud.displayHistInstruc(histInstruc, window);
             if (currentTrantorian.clientId == -1) {
-                for (auto &e : sceneEntities) {
+                for (auto &e : _entity.get()->getSceneEntities()) {
                     if (e.type == PartType::BODY) {
                         currentTrantorian = e;
                         break;
@@ -335,7 +336,7 @@ namespace Renderer {
                 }
             } else if (buttonToggle) {
                 bool wasItTheTrantorian = false;
-                for (auto &e : sceneEntities) {
+                for (auto &e : _entity.get()->getSceneEntities()) {
                     if (e.clientId == currentTrantorian.clientId)
                         wasItTheTrantorian = true;
                     if (e.type == PartType::BODY && wasItTheTrantorian && e.clientId != currentTrantorian.clientId) {
@@ -346,7 +347,7 @@ namespace Renderer {
                 }
                 // if we arrive at the end, take the first entity (with BODY)
                 if (wasItTheTrantorian) {
-                    for (auto &e : sceneEntities) {
+                    for (auto &e : _entity.get()->getSceneEntities()) {
                         if (e.type == PartType::BODY) {
                             currentTrantorian = e;
                             break;
@@ -355,7 +356,7 @@ namespace Renderer {
                 }
             }
             // Actualizes informations
-            for (auto &e : sceneEntities) {
+            for (auto &e : _entity.get()->getSceneEntities()) {
                 if (e.clientId == currentTrantorian.clientId) {
                     currentTrantorian = e;
                     break;

@@ -25,7 +25,7 @@
  */
 void runDisplay(Game &game)
 {
-    game.init(game.getRenderer());
+    game.init(game.getRenderer(), game.getEntity());
     game.run();
     game.stop();
 }
@@ -66,7 +66,8 @@ void runNetwork(Game &game)
 int main(int ac, char **av)
 {
     Client &client = Client::GetInstance();
-    Game &game = Game::GetInstance(std::make_shared<Renderer::Renderer>());
+    Game &game = Game::GetInstance(std::make_shared<Renderer::Renderer>(),
+                                    std::make_shared<Renderer::EntityClass>());
 
     if (client.getConfig().parseArgs(ac - 1, av + 1))
         return 84;

@@ -34,9 +34,10 @@
 
 #include "Interpreter.hpp"
 
-Interpreter::Interpreter(std::shared_ptr<Renderer::Renderer> renderer)
+Interpreter::Interpreter(std::shared_ptr<Renderer::Renderer> renderer, std::shared_ptr<Renderer::EntityClass> entity)
 {
     this->_renderer = renderer;
+    this->_entity = entity;
     _instructions = {{ "msz", std::make_pair(std::regex(R"(msz\s+(\d+)\s+(\d+))"), [&](const std::smatch &m) { _msz(m); }) },
         { "bct", std::make_pair(std::regex(R"(bct\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+))"), [&](const std::smatch &m) { _bct(m); }) },
         { "tna", std::make_pair(std::regex(R"(tna\s+(\S+))"), [&](const std::smatch &m) { _tna(m); }) },
@@ -116,10 +117,10 @@ void Interpreter::_msz(const std::smatch &m)
     for (int i = 0; i < x; i++)
         for (int j = 0; j < y; j++) {
             if (j == 0 && i == 0) {
-                Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::GROUND, -1,
+                _entity.get()->spawn(Renderer::EntityType::STL, Renderer::PartType::GROUND, -1,
                 {0.0f + (i * TILE_SIZE), 0.0f, 0.0f + (j * TILE_SIZE)}, sf::Color::Red, "./bonus/Assets/ground.stl");
             } else
-                Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::GROUND, -1,
+                _entity.get()->spawn(Renderer::EntityType::STL, Renderer::PartType::GROUND, -1,
                 {0.0f + (i * TILE_SIZE), 0.0f, 0.0f + (j * TILE_SIZE)}, sf::Color {65, 65, 65}, "./bonus/Assets/ground.stl");
             _renderer.get()->addToResourcesOnTiles(i * y + j, {0, 0, 0, 0, 0, 0, 0});
         }
@@ -148,7 +149,7 @@ void Interpreter::_bct(const std::smatch &m)
 
     std::array<bool, 7> exists = { false, false, false, false, false, false, false };
 
-    for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
+    for (auto it = _entity.get()->getSceneEntities().begin(); it != _entity.get()->getSceneEntities().end(); ) {
         Renderer::Entity &e = *it;
         bool erased = false;
 
@@ -162,7 +163,7 @@ void Interpreter::_bct(const std::smatch &m)
 
             if (e.type == r.type && e.position.x == expectedPos.x && e.position.z == expectedPos.z) {
                 if (quantities[i] == 0) {
-                    it = Renderer::sceneEntities.erase(it);
+                    it = _entity.get()->getSceneEntities().erase(it);
                     erased = true;
                 } else {
                     exists[i] = true;
@@ -182,7 +183,7 @@ void Interpreter::_bct(const std::smatch &m)
                 r.offset.z + y * TILE_SIZE
             };
 
-            Renderer::spawn(Renderer::EntityType::STL, r.type, -1, { pos.x, pos.y, pos.z }, r.color, r.assetPath, Renderer::Compass::NORTH, { 0.f, Renderer::getRandomAngle(), 0.f });
+            _entity.get()->spawn(Renderer::EntityType::STL, r.type, -1, { pos.x, pos.y, pos.z }, r.color, r.assetPath, Renderer::Compass::NORTH, { 0.f, Renderer::getRandomAngle(), 0.f });
         }
     }
 }
@@ -218,12 +219,12 @@ void Interpreter::_pnw(const std::smatch &m)
     const float posX = x * TILE_SIZE;
     const float posY = y * TILE_SIZE;
 
-    Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::BODY, playerId,
+    _entity.get()->spawn(Renderer::EntityType::STL, Renderer::PartType::BODY, playerId,
         {posX, OFFSET_FROM_GROUND, posY}, colorIt->second, "./bonus/Assets/body_golem.stl",
         orientation, {0.f, static_cast<float>(90 * static_cast<int>(orientation)), 0.f}, level, teamName);
-    Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::EYES, playerId,
-        {posX, OFFSET_FROM_GROUND + OFFSET_EYES_Y, posY + Renderer::offsetEyesZ[level - 1]},
-        sf::Color::Black, Renderer::pathEyes[level - 1], orientation, {0.f, 0.f, 0.f}, level);
+    _entity.get()->spawn(Renderer::EntityType::STL, Renderer::PartType::EYES, playerId,
+        {posX, OFFSET_FROM_GROUND + OFFSET_EYES_Y, posY + _entity.get()->getOffsetEyesZ()[level - 1]},
+        sf::Color::Black, _entity.get()->getPathEyes()[level - 1], orientation, {0.f, 0.f, 0.f}, level);
 
     static constexpr std::array<std::string_view, 4> orienToStr = { "NORTH", "WEST", "SOUTH", "EAST" };
 
@@ -246,7 +247,7 @@ void Interpreter::_ppo(const std::smatch &m)
     Renderer::Vec3 currentPos{};
     sf::Color color = sf::Color::White;
 
-    for (auto &e : Renderer::sceneEntities) {
+    for (auto &e : _entity.get()->getSceneEntities()) {
         if (e.clientId == playerId && e.type == Renderer::PartType::BODY) {
             currentAngle = e.rotation.y;
             currentPos = e.position;
@@ -269,7 +270,7 @@ void Interpreter::_ppo(const std::smatch &m)
         << ", o: " << orienToStr[static_cast<int>(orientation)] << "}";
     _renderer.get()->addToHistInstruc(oss.str(), color);
 
-    float targetAngle = Renderer::compassToAngle(orientation);
+    float targetAngle = _entity.get()->compassToAngle(orientation);
 
     float delta = targetAngle - currentAngle;
     if (delta > 180.f)
@@ -299,7 +300,7 @@ void Interpreter::_ppo(const std::smatch &m)
     const int wrapY = _renderer.get()->getMapSizeY() - 1;
 
     if ((dx + dy > 1) && std::abs(cx % wrapX - x) != wrapX && std::abs(cy % wrapY - y) != wrapY) {
-        for (auto &e : Renderer::sceneEntities) {
+        for (auto &e : _entity.get()->getSceneEntities()) {
             if (e.clientId == playerId && e.type == Renderer::PartType::BODY) {
                 e.position.x = x * tileSize;
                 e.position.z = y * tileSize;
@@ -332,11 +333,11 @@ void Interpreter::_plv(const std::smatch &m)
     const int level = std::stoi(m[2]);
     const int levelIndex = level - 1;
 
-    auto it = std::find_if(Renderer::sceneEntities.begin(), Renderer::sceneEntities.end(),
+    auto it = std::find_if(_entity.get()->getSceneEntities().begin(), _entity.get()->getSceneEntities().end(),
         [playerId](const Renderer::Entity &e) {
             return e.clientId == playerId && e.type == Renderer::PartType::BODY;
     });
-    if (it == Renderer::sceneEntities.end()) {
+    if (it == _entity.get()->getSceneEntities().end()) {
         std::cerr << "Somehow, the player " << playerId << " doesn't exist..." << std::endl;
         return;
     }
@@ -344,12 +345,12 @@ void Interpreter::_plv(const std::smatch &m)
     const float z = it->position.z;
     const sf::Color &color = it->color;
 
-    for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
+    for (auto it = _entity.get()->getSceneEntities().begin(); it != _entity.get()->getSceneEntities().end(); ) {
         if (it->clientId == playerId && it->type == Renderer::PartType::EYES && it->level != level) {
-            it = Renderer::sceneEntities.erase(it);
-            Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::EYES, playerId,
-                {x, OFFSET_FROM_GROUND + OFFSET_EYES_Y, z + Renderer::offsetEyesZ[levelIndex]},
-                sf::Color::Black, Renderer::pathEyes[levelIndex],
+            it = _entity.get()->getSceneEntities().erase(it);
+            _entity.get()->spawn(Renderer::EntityType::STL, Renderer::PartType::EYES, playerId,
+                {x, OFFSET_FROM_GROUND + OFFSET_EYES_Y, z + _entity.get()->getOffsetEyesZ()[levelIndex]},
+                sf::Color::Black, _entity.get()->getPathEyes()[levelIndex],
                 Renderer::Compass::NORTH, {0.f, 0.f, 0.f}, level);
             std::ostringstream oss;
 
@@ -373,7 +374,7 @@ void Interpreter::_pin(const std::smatch &m)
         std::stoi(m[10])
     };
 
-    for (auto &e : Renderer::sceneEntities) {
+    for (auto &e : _entity.get()->getSceneEntities()) {
         if (e.clientId == playerId && e.type == Renderer::PartType::BODY) {
             e.inventory = quantities;
             break;
@@ -385,9 +386,9 @@ void Interpreter::_pex(const std::smatch &m)
 {
     int playerId = std::stoi(m[1]);
 
-    for (auto &e : Renderer::sceneEntities) {
+    for (auto &e : _entity.get()->getSceneEntities()) {
         if (e.clientId == playerId && e.type == Renderer::PartType::BODY) {
-            Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::BODY, playerId,
+            _entity.get()->spawn(Renderer::EntityType::STL, Renderer::PartType::BODY, playerId,
             {e.position.x, e.position.y, e.position.z}, e.color, "./bonus/Assets/Expulsion.stl",
             e.orientation);
             _renderer.get()->addToHistInstruc("T" + std::to_string(playerId) + " is launching EXPULSION", e.color);
@@ -402,7 +403,7 @@ void Interpreter::_pbc(const std::smatch &m)
     std::string data = m[2].str();
     sf::Color color = sf::Color::White;
 
-    for (auto &e : Renderer::sceneEntities) {
+    for (auto &e : _entity.get()->getSceneEntities()) {
         if (e.clientId == playerId && e.type == Renderer::PartType::BODY) {
             color = e.color;
             break;
@@ -428,7 +429,7 @@ void Interpreter::_pic(const std::smatch &m)
     for (std::sregex_iterator it(full.begin(), full.end(), idRegex), end; it != end; ++it)
         playersId.push_back(std::stoi((*it)[1].str()));
 
-    Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::RING, -1,
+    _entity.get()->spawn(Renderer::EntityType::STL, Renderer::PartType::RING, -1,
         {0.0f + x * TILE_SIZE, -10.0f, 0.0f + y * TILE_SIZE}, sf::Color{127, 0, 255}, "./bonus/Assets/IncantationRing.stl");
 
     if (playersId.empty())
@@ -437,7 +438,7 @@ void Interpreter::_pic(const std::smatch &m)
     sf::Color color = sf::Color::White;
     const int firstPlayerId = playersId.front();
 
-    for (const auto &e : Renderer::sceneEntities) {
+    for (const auto &e : _entity.get()->getSceneEntities()) {
         if (e.clientId == firstPlayerId && e.type == Renderer::PartType::BODY) {
             color = e.color;
             break;
@@ -458,9 +459,9 @@ void Interpreter::_pie(const std::smatch &m)
     const float posX = x * TILE_SIZE;
     const float posZ = y * TILE_SIZE;
 
-    for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
+    for (auto it = _entity.get()->getSceneEntities().begin(); it != _entity.get()->getSceneEntities().end(); ) {
         if (it->position.x == posX && it->position.z == posZ && it->type == Renderer::PartType::RING) {
-            it = Renderer::sceneEntities.erase(it);
+            it = _entity.get()->getSceneEntities().erase(it);
         } else {
             ++it;
         }
@@ -475,7 +476,7 @@ void Interpreter::_pfk(const std::smatch &m)
 {
     const int playerId = std::stoi(m[1]);
 
-    for (const auto &e : Renderer::sceneEntities) {
+    for (const auto &e : _entity.get()->getSceneEntities()) {
         if (e.clientId == playerId && e.type == Renderer::PartType::BODY) {
             std::ostringstream oss;
 
@@ -499,7 +500,7 @@ void Interpreter::_pdr(const std::smatch &m)
     }
     sf::Color color = sf::Color::White;
 
-    for (const auto &e : Renderer::sceneEntities) {
+    for (const auto &e : _entity.get()->getSceneEntities()) {
         if (e.clientId == playerId && e.type == Renderer::PartType::BODY) {
             color = e.color;
             break;
@@ -524,7 +525,7 @@ void Interpreter::_pgt(const std::smatch &m)
     }
     sf::Color color = sf::Color::White;
 
-    for (const auto &e : Renderer::sceneEntities) {
+    for (const auto &e : _entity.get()->getSceneEntities()) {
         if (e.clientId == playerId && e.type == Renderer::PartType::BODY) {
             color = e.color;
             break;
@@ -544,7 +545,7 @@ void Interpreter::_pdi(const std::smatch &m)
     float x = 0.f;
     float z = 0.f;
 
-    for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
+    for (auto it = _entity.get()->getSceneEntities().begin(); it != _entity.get()->getSceneEntities().end(); ) {
         if (it->clientId == playerId) {
             if (static_cast<int>(it->position.x) % TILE_SIZE != 0)
                 it->position.x = std::round(it->position.x / TILE_SIZE) * TILE_SIZE;
@@ -554,14 +555,14 @@ void Interpreter::_pdi(const std::smatch &m)
                 color = it->color;
             x = it->position.x;
             z = it->position.z;
-            it = Renderer::sceneEntities.erase(it);
+            it = _entity.get()->getSceneEntities().erase(it);
         } else {
             ++it;
         }
     }
-    for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
+    for (auto it = _entity.get()->getSceneEntities().begin(); it != _entity.get()->getSceneEntities().end(); ) {
         if (it->type == Renderer::PartType::RING && x == it->position.x && z == it->position.z) {
-            it = Renderer::sceneEntities.erase(it);
+            it = _entity.get()->getSceneEntities().erase(it);
         } else
             ++it;
     }
@@ -581,9 +582,9 @@ void Interpreter::_enw(const std::smatch &m)
     const float posX = x * TILE_SIZE + 15.f;
     const float posZ = y * TILE_SIZE + 25.f;
 
-    for (const auto &e : Renderer::sceneEntities) {
+    for (const auto &e : _entity.get()->getSceneEntities()) {
         if (e.clientId == playerId && e.type == Renderer::PartType::BODY) {
-            Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::EGG, eggId, {posX, OFFSET_FROM_GROUND, posZ}, e.color,
+            _entity.get()->spawn(Renderer::EntityType::STL, Renderer::PartType::EGG, eggId, {posX, OFFSET_FROM_GROUND, posZ}, e.color,
                 "./bonus/Assets/Egg.stl", Renderer::Compass::NORTH, {0.f, 0.f, 0.f}, -1, e.teamName);
             return;
         }
@@ -594,13 +595,13 @@ void Interpreter::_ebo(const std::smatch &m)
 {
     const int eggId = std::stoi(m[1]);
 
-    for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
+    for (auto it = _entity.get()->getSceneEntities().begin(); it != _entity.get()->getSceneEntities().end(); ) {
         if (it->clientId == eggId && it->type == Renderer::PartType::EGG) {
             std::ostringstream oss;
 
             oss << "Egg #" << eggId << " hatched !";
             _renderer.get()->addToHistInstruc(oss.str(), it->color);
-            it = Renderer::sceneEntities.erase(it);
+            it = _entity.get()->getSceneEntities().erase(it);
             return;
         } else {
             ++it;
@@ -612,13 +613,13 @@ void Interpreter::_edi(const std::smatch &m)
 {
     const int eggId = std::stoi(m[1]);
 
-    for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
+    for (auto it = _entity.get()->getSceneEntities().begin(); it != _entity.get()->getSceneEntities().end(); ) {
         if (it->clientId == eggId && it->type == Renderer::PartType::EGG) {
             std::ostringstream oss;
 
             oss << "Egg #" << eggId << " died...";
             _renderer.get()->addToHistInstruc(oss.str(), it->color);
-            it = Renderer::sceneEntities.erase(it);
+            it = _entity.get()->getSceneEntities().erase(it);
             return;
         } else {
             ++it;
@@ -657,7 +658,7 @@ bool Interpreter::_bigEnoughDiffColor(sf::Color newColor)
 {
     if (_teamColor.empty())
         return true;
-    for (auto &e : Renderer::sceneEntities) {
+    for (auto &e : _entity.get()->getSceneEntities()) {
         sf::Color color = _teamColor[e.teamName];
         // minimum euclidian distance > 100 --> about 15-25 teams
         int dr = static_cast<int>(color.r) - static_cast<int>(newColor.r);

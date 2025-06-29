@@ -10,6 +10,7 @@
 #include "HUD.hpp"
 #include "Math.hpp"
 #include "Update.hpp"
+#include <memory>
 
 #define TILE_SIZE 70
 #define OFFSET_EYES_Y -1.5f
@@ -18,7 +19,7 @@ namespace Renderer {
     // Initialisation et boucle
     class Renderer {
         public:
-            bool initRenderer(sf::RenderWindow &window);
+            bool initRenderer(sf::RenderWindow &window, std::shared_ptr<EntityClass> entity);
             void update(float dt, sf::RenderWindow &window);
             void render(float dt, sf::RenderWindow &window);
 
@@ -100,13 +101,6 @@ namespace Renderer {
             Camera _camera;
             Clipper _clipper;
             Hud _hud;
+            std::shared_ptr<EntityClass> _entity;
     };
-
-    // extern std::unordered_map<int, MovementState> activeMovements;
-    // extern std::unordered_map<int, RotationState> activeRotations;
-    // extern std::unordered_map<int, MovementState> pendingMovementsAfterRotation;
-    // extern std::unordered_map<int, std::array<int, 7>> _resourcesOnTiles;
-    // extern bool resourcesChange;
-    // extern int map_size_x;
-    // extern int map_size_y;
 }

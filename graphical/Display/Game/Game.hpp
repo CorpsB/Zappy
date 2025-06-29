@@ -18,7 +18,8 @@
 
 class Game {
     public:
-        Game(std::shared_ptr<Renderer::Renderer> renderer) : _interpreter(renderer), _renderer(renderer) {};
+        Game(std::shared_ptr<Renderer::Renderer> renderer, std::shared_ptr<Renderer::EntityClass> entity)
+            : _interpreter(renderer, entity), _renderer(renderer), _entity(entity) {};
         ~Game() = default;
 
         /**
@@ -29,7 +30,7 @@ class Game {
          * @param renderer Shared pointer to the Renderer instance.
          * @return Reference to the unique Game instance.
          */
-        static Game &GetInstance(std::shared_ptr<Renderer::Renderer> renderer);
+        static Game &GetInstance(std::shared_ptr<Renderer::Renderer> renderer, std::shared_ptr<Renderer::EntityClass> entity);
 
         /**
          * @brief Initializes the game window and the 3D renderer.
@@ -39,7 +40,7 @@ class Game {
          *
          * @param renderer Shared pointer to the renderer instance to use.
          */
-        void init(std::shared_ptr<Renderer::Renderer> renderer);
+        void init(std::shared_ptr<Renderer::Renderer> renderer, std::shared_ptr<Renderer::EntityClass> entity);
         /**
          * @brief Starts the main game loop.
          *
@@ -67,6 +68,7 @@ class Game {
          * @return Shared pointer to the Renderer.
          */
         std::shared_ptr<Renderer::Renderer> getRenderer() const;
+        std::shared_ptr<Renderer::EntityClass> getEntity() const;
 
     private:
         Window _window;
@@ -75,4 +77,5 @@ class Game {
 
         Interpreter _interpreter;
         std::shared_ptr<Renderer::Renderer> _renderer;
+        std::shared_ptr<Renderer::EntityClass> _entity;
 };

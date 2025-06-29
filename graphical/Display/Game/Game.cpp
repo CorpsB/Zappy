@@ -29,18 +29,18 @@
 
 #include "Game.hpp"
 
-Game &Game::GetInstance(std::shared_ptr<Renderer::Renderer> renderer)
+Game &Game::GetInstance(std::shared_ptr<Renderer::Renderer> renderer, std::shared_ptr<Renderer::EntityClass> entity)
 {
-    static Game _game(renderer);
+    static Game _game(renderer, entity);
 
     return _game;
 }
 
-void Game::init(std::shared_ptr<Renderer::Renderer> renderer)
+void Game::init(std::shared_ptr<Renderer::Renderer> renderer, std::shared_ptr<Renderer::EntityClass> entity)
 {
     this->_renderer = renderer;
     _window.init(1280, 720);
-    if (!_renderer.get()->initRenderer(_window.getWindow())) {
+    if (!_renderer.get()->initRenderer(_window.getWindow(), entity)) {
         std::cerr << "Failed to initialize renderer" << std::endl;
         return;
     }
@@ -72,4 +72,10 @@ void Game::processData(const std::string &data)
 std::shared_ptr<Renderer::Renderer> Game::getRenderer() const
 {
     return this->_renderer;
+}
+
+std::shared_ptr<Renderer::EntityClass> Game::getEntity() const
+{
+    return this->_entity;
+
 }

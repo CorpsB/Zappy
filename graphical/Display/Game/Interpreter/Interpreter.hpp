@@ -65,7 +65,7 @@ class Interpreter {
          *
          * @param renderer Shared pointer to the 3D renderer used for updating the scene.
          */
-        Interpreter(std::shared_ptr<Renderer::Renderer> renderer);
+        Interpreter(std::shared_ptr<Renderer::Renderer> renderer, std::shared_ptr<Renderer::EntityClass> entity);
         ~Interpreter() = default;
 
         /**
@@ -86,6 +86,7 @@ class Interpreter {
         std::string _buffer;
 
         std::shared_ptr<Renderer::Renderer> _renderer;
+        std::shared_ptr<Renderer::EntityClass> _entity;
 
         std::unordered_map<std::string, sf::Color> _teamColor;
 
