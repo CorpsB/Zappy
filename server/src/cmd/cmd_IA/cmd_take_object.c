@@ -32,19 +32,19 @@ static int get_ressource(server_t *server, int y, int x, r_ressource_t type)
 static void del_ressource(server_t *server, int y, int x, r_ressource_t type)
 {
     if (type == FOOD)
-        server->map[y][x].food = 0;
+        server->map[y][x].food -= 1;
     if (type == LINEMATE)
-        server->map[y][x].linemate = 0;
+        server->map[y][x].linemate -= 1;
     if (type == DERAUMERE)
-        server->map[y][x].deraumere = 0;
+        server->map[y][x].deraumere -= 1;
     if (type == SIBUR)
-        server->map[y][x].sibur = 0;
+        server->map[y][x].sibur -= 1;
     if (type == MENDIANE)
-        server->map[y][x].mendiane = 0;
+        server->map[y][x].mendiane -= 1;
     if (type == PHIRAS)
-        server->map[y][x].phiras = 0;
+        server->map[y][x].phiras -= 1;
     if (type == THYSTAME)
-        server->map[y][x].thystame = 0;
+        server->map[y][x].thystame -= 1;
 }
 
 static void del_map_inventory(server_t *server, r_ressource_t type)
