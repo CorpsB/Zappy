@@ -5,6 +5,16 @@
 ** capitalize
 */
 
+/**
+ * @file capitalize.cpp
+ * @brief Capitalizes first letter of a string.  
+ * @author Jason KOENIG  
+ * @version 1.0  
+ * @date 29/06/2025
+ *
+ * @see ai::utils::string::capitalize
+ */
+
 #include "../utils.hpp"
 
 std::string ai::utils::string::capitalize(const std::string &str)

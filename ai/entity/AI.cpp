@@ -5,6 +5,16 @@
 ** AI
 */
 
+/**
+ * @file AI.cpp
+ * @brief Implements connection and action loop for AI bots.  
+ * @author Jason KOENIG
+ * @version 1.0
+ * @date 29/06/2025
+ *
+ * @see AI.hpp
+ */
+
 #include "../worker/WorkerManager.hpp"
 #include "AI.hpp"
 #include "../network/Socket.hpp"

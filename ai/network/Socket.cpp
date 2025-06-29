@@ -5,6 +5,14 @@
 ** Socket
 */
 
+/**
+ * @file Socket.cpp
+ * @brief Implements Socket methods for server communication.  
+ * @author Jason KOENIG
+ * @version 1.0
+ * @date 29/06/2025
+ */
+
 #include "Socket.hpp"
 #include "../utils/utils.hpp"
 #include <iostream>

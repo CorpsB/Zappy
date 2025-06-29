@@ -5,6 +5,16 @@
 ** moves
 */
 
+/**
+ * @file moves.cpp
+ * @brief Implements movement helper functions for AI navigation.  
+ * @author Jason KOENIG
+ * @version 1.0
+ * @date 29/06/2025
+ *
+ * @see AI.hpp
+ */
+
 #include "../AI.hpp"
 
 std::string ai::entity::AI::getDirectionName(Direction dir)

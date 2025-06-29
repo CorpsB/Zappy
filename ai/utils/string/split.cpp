@@ -5,6 +5,16 @@
 ** split
 */
 
+/**
+ * @file split.cpp
+ * @brief Splits strings by delimiter.  
+ * @author Jason KOENIG  
+ * @version 1.0  
+ * @date 29/06/2025
+ *
+ * @see ai::utils::string::split
+ */
+
 #include "../utils.hpp"
 #include <sstream>
 

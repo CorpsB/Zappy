@@ -5,6 +5,15 @@
 ** count_player
 */
 
+/**
+ * @file count_player.cpp
+ * @brief Implementation of element counting functions in vision.
+ * @date 29/06/2025
+ * @author Jason KOENIG
+ *
+ * @see AI.hpp
+ */
+
 #include "../../AI.hpp"
 #include "../../../utils/utils.hpp"
 #include <algorithm>

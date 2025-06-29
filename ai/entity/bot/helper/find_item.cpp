@@ -5,6 +5,15 @@
 ** find_item
 */
 
+/**
+ * @file find_item.cpp
+ * @brief Implementation of feature search functions in the vision.
+ * @date 29/06/2025
+ * @author Jason KOENIG
+ *
+ * @see AI.hpp
+ */
+
 #include "../../AI.hpp"
 #include "../../../utils/utils.hpp"
 #include <algorithm>

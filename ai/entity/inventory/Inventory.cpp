@@ -5,6 +5,16 @@
 ** Inventory
 */
 
+/**
+ * @file Inventory.cpp
+ * @brief Implements Inventory parsing and accessors.  
+ * @author Jason KOENIG
+ * @version 1.0
+ * @date 29/06/2025
+ *
+ * @see Inventory.hpp
+ */
+
 #include "Inventory.hpp"
 #include "../../utils/utils.hpp"
 #include <stdexcept>

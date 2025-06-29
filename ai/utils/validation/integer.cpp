@@ -5,6 +5,16 @@
 ** int
 */
 
+/**
+ * @file integer.cpp
+ * @brief Integer validation implementation.  
+ * @author Jason KOENIG  
+ * @version 1.0  
+ * @date 29/06/2025
+ *
+ * @see ai::utils::validation::integer
+ */
+
 #include "../utils.hpp"
 
 bool ai::utils::validation::integer(int val, const std::string &str_val)

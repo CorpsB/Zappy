@@ -5,10 +5,27 @@
 ** parser
 */
 
+/**
+ * @file parser.cpp
+ * @brief Implementation of command‑line argument parsing helpers.
+ *
+ * @date 29/06/2025
+ * @author Jason KOENIG
+ */
+
 #include "parser.hpp"
 #include "../utils/utils.hpp"
 #include <iostream>
 
+/**
+ * @brief Parses the port option and updates config.
+ * @param config    Config to update.
+ * @param arg       Flag name ("-p" or "--port").
+ * @param ac        Argument count.
+ * @param av        Argument vector.
+ * @param i         Current index (will be incremented to consume value).
+ * @return true on successful parsing, false on error.
+ */
 static bool parse_port(ai::parser::Config &config, const std::string &arg, int ac,
     char **av, int &i)
 {
@@ -27,6 +44,15 @@ static bool parse_port(ai::parser::Config &config, const std::string &arg, int a
     return true;
 }
 
+/**
+ * @brief Parses the name option and updates config.
+ * @param config    Config to update.
+ * @param arg       Flag name ("-n" or "--name").
+ * @param ac        Argument count.
+ * @param av        Argument vector.
+ * @param i         Current index (will be incremented to consume value).
+ * @return true on success, false on error.
+ */
 static bool parse_name(ai::parser::Config &config, const std::string &arg, int ac,
     char **av, int &i)
 {
@@ -43,6 +69,15 @@ static bool parse_name(ai::parser::Config &config, const std::string &arg, int a
     return true;
 }
 
+/**
+ * @brief Parses the host option and updates config.
+ * @param config    Config to update.
+ * @param arg       Flag name ("-h" or "--host").
+ * @param ac        Argument count.
+ * @param av        Argument vector.
+ * @param i         Current index (will be incremented to consume value).
+ * @return true on success, false on error.
+ */
 static bool parse_host(ai::parser::Config &config, const std::string &arg, int ac,
     char **av, int &i)
 {
@@ -57,6 +92,15 @@ static bool parse_host(ai::parser::Config &config, const std::string &arg, int a
     return true;
 }
 
+/**
+ * @brief Parses the count option and updates config.
+ * @param config    Config to update.
+ * @param arg       Flag name ("-c" or "--count").
+ * @param ac        Argument count.
+ * @param av        Argument vector.
+ * @param i         Current index (will be incremented to consume value).
+ * @return true on success, false on error.
+ */
 static bool parse_count(ai::parser::Config &config, const std::string &arg, int ac,
     char **av, int &i)
 {

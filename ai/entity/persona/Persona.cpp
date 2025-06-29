@@ -5,6 +5,16 @@
 ** Persona
 */
 
+/**
+ * @file Persona.cpp
+ * @brief Implements Persona methods for generating and exposing trait values.  
+ * @author Jason KOENIG
+ * @version 1.0
+ * @date 29/06/2025
+ *
+ * @see Persona.hpp
+ */
+
 #include "Persona.hpp"
 #include "../../utils/utils.hpp"
 

@@ -5,6 +5,15 @@
 ** collect_item
 */
 
+/**
+ * @file collect_item.cpp
+ * @brief Implementation of item collection functions.
+ * @date 29/06/2025
+ * @author Jason KOENIG
+ *
+ * @see AI.hpp
+ */
+
 #include "../../AI.hpp"
 #include "../../../utils/utils.hpp"
 
