@@ -7,8 +7,9 @@
 
 #include "Interpreter.hpp"
 
-Interpreter::Interpreter()
+Interpreter::Interpreter(std::shared_ptr<Renderer::Renderer> renderer)
 {
+    this->_renderer = renderer;
     _instructions = {{ "msz", std::make_pair(std::regex(R"(msz\s+(\d+)\s+(\d+))"), [&](const std::smatch &m) { _msz(m); }) },
         { "bct", std::make_pair(std::regex(R"(bct\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+))"), [&](const std::smatch &m) { _bct(m); }) },
         { "tna", std::make_pair(std::regex(R"(tna\s+(\S+))"), [&](const std::smatch &m) { _tna(m); }) },
@@ -93,10 +94,12 @@ void Interpreter::_msz(const std::smatch &m)
             } else
                 Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::GROUND, -1,
                 {0.0f + (i * TILE_SIZE), 0.0f, 0.0f + (j * TILE_SIZE)}, sf::Color {65, 65, 65}, "./bonus/Assets/ground.stl");
-            Renderer::_resourcesOnTiles[i * y + j] = {0, 0, 0, 0, 0, 0, 0};
+            _renderer.get()->addToResourcesOnTiles(i * y + j, {0, 0, 0, 0, 0, 0, 0});
         }
-    Renderer::map_size_x = x;
-    Renderer::map_size_y = y;
+    _renderer.get()->setMapSizeX(x);
+    _renderer.get()->setMapSizeY(y);
+    // Renderer::map_size_x = x;
+    // Renderer::map_size_y = y;
 }
 
 void Interpreter::_bct(const std::smatch &m)
@@ -110,8 +113,11 @@ void Interpreter::_bct(const std::smatch &m)
         std::stoi(m[9])
     };
 
-    Renderer::resourcesChange = true;
-    Renderer::_resourcesOnTiles[x * Renderer::map_size_y + y] = quantities;
+    _renderer.get()->setResourcesChange(true);
+    _renderer.get()->addToResourcesOnTiles(x * _renderer.get()->getMapSizeY() + y, quantities);
+
+    // Renderer::resourcesChange = true;
+    // Renderer::_resourcesOnTiles[x * Renderer::map_size_y + y] = quantities;
 
     std::array<bool, 7> exists = { false, false, false, false, false, false, false };
 
@@ -248,13 +254,13 @@ void Interpreter::_ppo(const std::smatch &m)
     const int stepsNeeded = static_cast<int>(std::round(std::abs(delta) / 4.5f));
 
     if (stepsNeeded > 0) {
-        Renderer::activeRotations[playerId] = Renderer::RotationState{
+        _renderer.get()->addToActiveRotations(playerId, Renderer::RotationState{
             .totalRotated = 0.f,
             .timeElapsed = 0.f,
             .stepsRemaining = stepsNeeded,
             .active = true,
             .goingRight = goingRight
-        };
+        });
     }
 
     const int cx = static_cast<int>(currentPos.x / tileSize);
@@ -262,8 +268,8 @@ void Interpreter::_ppo(const std::smatch &m)
     const int dx = std::abs(cx - x);
     const int dy = std::abs(cy - y);
 
-    const int wrapX = Renderer::map_size_x - 1;
-    const int wrapY = Renderer::map_size_y - 1;
+    const int wrapX = _renderer.get()->getMapSizeX() - 1;
+    const int wrapY = _renderer.get()->getMapSizeY() - 1;
 
     if ((dx + dy > 1) && std::abs(cx % wrapX - x) != wrapX && std::abs(cy % wrapY - y) != wrapY) {
         for (auto &e : Renderer::sceneEntities) {
@@ -288,9 +294,9 @@ void Interpreter::_ppo(const std::smatch &m)
     };
 
     if (stepsNeeded == 0)
-        Renderer::activeMovements[playerId] = movementState;
+        _renderer.get()->addToActiveMovements(playerId, movementState);
     else
-        Renderer::pendingMovementsAfterRotation[playerId] = movementState;
+        _renderer.get()->addToPendingMovements(playerId, movementState);
 }
 
 void Interpreter::_plv(const std::smatch &m)
@@ -380,7 +386,7 @@ void Interpreter::_pbc(const std::smatch &m)
     oss << "T" << playerId << ": broadcast \"" << data << "\"";
     Renderer::histInstruc.emplace_back(oss.str(), color);
 
-    Renderer::histInstruc.push_back(std::make_tuple("T" + std::to_string(playerId) + ": broadcast \"" + data + "\"", color));
+    // Renderer::histInstruc.push_back(std::make_tuple("T" + std::to_string(playerId) + ": broadcast \"" + data + "\"", color));
 }
 
 void Interpreter::_pic(const std::smatch &m)

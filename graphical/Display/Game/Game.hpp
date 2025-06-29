@@ -8,6 +8,7 @@
 #pragma once
 
 #include <iostream>
+#include <memory>
 
 #include "../Window/Window.hpp"
 #include "../Event/Event.hpp"
@@ -17,15 +18,15 @@
 
 class Game {
     public:
-        Game() {}
+        Game(std::shared_ptr<Renderer::Renderer> renderer);
         ~Game() = default;
 
-        static Game &GetInstance();
+       static Game &GetInstance(std::shared_ptr<Renderer::Renderer> renderer);
 
         /**
          * @brief Initialize the game window
          */
-        void init();
+        void init(std::shared_ptr<Renderer::Renderer> renderer);
         /**
          * @brief Starts the game loop
          */
@@ -40,10 +41,14 @@ class Game {
          * @param data Command send by the server
          */
         void processData(const std::string &data);
+
+        std::shared_ptr<Renderer::Renderer> getRenderer() const;
+
     private:
         Window _window;
         Event _event;
         sf::Clock _clock;
 
         Interpreter _interpreter;
+        std::shared_ptr<Renderer::Renderer> _renderer;
 };

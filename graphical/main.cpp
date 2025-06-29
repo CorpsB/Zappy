@@ -18,7 +18,7 @@
 
 void runDisplay(Game &game)
 {
-    game.init();
+    game.init(game.getRenderer());
     game.run();
     game.stop();
 }
@@ -37,7 +37,7 @@ void runNetwork(Game &game)
 int main(int ac, char **av)
 {
     Client &client = Client::GetInstance();
-    Game &game = Game::GetInstance();
+    Game &game = Game::GetInstance(std::make_shared<Renderer::Renderer>());
 
     if (client.getConfig().parseArgs(ac - 1, av + 1))
         return 84;

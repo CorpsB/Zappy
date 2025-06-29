@@ -7,17 +7,23 @@
 
 #include "Game.hpp"
 
-Game &Game::GetInstance()
+Game::Game(std::shared_ptr<Renderer::Renderer> renderer)
+    : _interpreter(renderer), _renderer(renderer)
 {
-    static Game _game;
+}
+
+Game &Game::GetInstance(std::shared_ptr<Renderer::Renderer> renderer)
+{
+    static Game _game(renderer);
 
     return _game;
 }
 
-void Game::init()
+void Game::init(std::shared_ptr<Renderer::Renderer> renderer)
 {
+    this->_renderer = renderer;
     _window.init(1280, 720);
-    if (!Renderer::initRenderer(_window.getWindow())) {
+    if (!_renderer.get()->initRenderer(_window.getWindow())) {
         std::cerr << "Failed to initialize renderer" << std::endl;
         return;
     }
@@ -30,8 +36,8 @@ void Game::run()
         float dt = clock.restart().asSeconds();
         if (dt <= 0) continue;
         _window.clear();
-        Renderer::update(dt);
-        Renderer::render(dt, _window.getWindow());
+        _renderer.get()->update(dt);
+        _renderer.get()->render(dt, _window.getWindow());
         _window.display();
     }
 }
@@ -44,4 +50,9 @@ void Game::stop()
 void Game::processData(const std::string &data)
 {
     _interpreter.interpret(data);
+}
+
+std::shared_ptr<Renderer::Renderer> Game::getRenderer() const
+{
+    return this->_renderer;
 }

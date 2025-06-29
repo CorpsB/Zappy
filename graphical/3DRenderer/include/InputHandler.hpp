@@ -9,8 +9,8 @@
 
 #include <string>
 #include <SFML/Graphics.hpp>
-#include "Camera.hpp"
-#include "Renderer.hpp"
+// #include "Camera.hpp"
+// #include "Renderer.hpp"
 
 
 namespace Renderer {

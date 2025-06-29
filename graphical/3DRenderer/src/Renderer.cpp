@@ -12,58 +12,7 @@
 
 namespace Renderer {
 
-    // static sf::RenderWindow window;
-    static sf::Image backBuffer;
-    static sf::Texture backBufferTexture;
-    static sf::Sprite backBufferSprite;
-    static std::vector<float> depthBuffer;
-    static sf::Font hudFont;
-    static sf::Text hudText;
-    static float fpsTimer = 0.0f;
-    static int frameCount = 0;
-    static int lastFps = 0;
-    static float cooldownAction = 0.f;
-    std::unordered_map<int, MovementState> activeMovements;
-    std::unordered_map<int, RotationState> activeRotations;
-    std::unordered_map<int, Renderer::MovementState> pendingMovementsAfterRotation;
-    int map_size_x = 0;
-    int map_size_y = 0;
-    static sf::RectangleShape bgMenu;
-    // We need it to display it even though it's not really supposed to be here
-    std::unordered_map<int, std::array<int, 7>> _resourcesOnTiles;
-    static std::array<int, 7> totalResources;
-    static std::array<sf::Color, 7> colorResources;
-    static std::array<std::string, 7> nameResources;
-    bool resourcesChange;
-    static sf::RectangleShape buttonNextTrantorian;
-    static sf::Color buttonIdleColor = sf::Color(100, 100, 100);
-    static sf::Color buttonHoverColor = sf::Color(150, 150, 150);
-    static Entity currentTrantorian;
-    static std::array<std::string, 4> orientation = {"NORTH", "WEST", "SOUTH", "EAST"};
-    static sf::RectangleShape escapeMenuBg;
-    static std::pair<int, int> currentTile;
-
-    bool buttonToggle = false;
-    bool buttonIsPressed = false;
-    bool escapeMenuToggle = false;
-    bool escapeWasPressed = false;
-    bool zToggle = false;
-    bool zWasPressed = false;
-    bool sToggle = false;
-    bool sWasPressed = false;
-    bool qToggle = false;
-    bool qWasPressed = false;
-    bool dToggle = false;
-    bool dWasPressed = false;
-    bool tabToggle = false;
-    bool tabWasPressed = false;
-
-    Update _update;
-    InputHandler _inputhandler;
-    Camera _camera;
-    Clipper _clipper;
-
-    bool initRenderer(sf::RenderWindow &window) {
+    bool Renderer::initRenderer(sf::RenderWindow &window) {
         // window = new sf::RenderWindow(sf::VideoMode(width, height), title);
         if (!window.isOpen()) return false;
 
@@ -126,7 +75,7 @@ namespace Renderer {
         return true;
     }
 
-    inline void drawTriangle(const Vec4& p1, const Vec4& p2, const Vec4& p3, const sf::Color& color) {
+    inline void Renderer::drawTriangle(const Vec4& p1, const Vec4& p2, const Vec4& p3, const sf::Color& color) {
         const unsigned int screenW = backBuffer.getSize().x;
         const unsigned int screenH = backBuffer.getSize().y;
 
@@ -164,7 +113,7 @@ namespace Renderer {
         }
     }
 
-    void update(float dt) {
+    void Renderer::update(float dt) {
         _camera.cameraMovement(dt);
         cooldownAction -= dt;
         _inputhandler.switchInput(tabToggle, tabWasPressed, sf::Keyboard::Tab);
@@ -181,12 +130,12 @@ namespace Renderer {
         std::vector<std::tuple<int, Vec3, Vec3>> valuesForSynchro;
 
         for (auto& e : sceneEntities) {
-            _update.moveTrantorian(dt, e, activeMovements);
+            _update.moveTrantorian(dt, e, activeMovements, map_size_x, map_size_y);
             _update.rotateTrantorian(dt, e, activeRotations);
             _update.startMoveAfterRotate(activeMovements, activeRotations, pendingMovementsAfterRotation);
             _update.sychroEyes(e, valuesForSynchro);
             _update.incantationRing(dt, e);
-            if (e.type == Renderer::PartType::EXPULSION) {
+            if (e.type == PartType::EXPULSION) {
                 if (e.orientation == Compass::EAST || e.orientation == Compass::WEST)
                     e.rotation.x += 60.0f * dt;
                 else if (e.orientation == Compass::NORTH || e.orientation == Compass::SOUTH)
@@ -202,12 +151,12 @@ namespace Renderer {
             // }
         }
         // erase expulsion after 5 rotations
-        for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
-            Renderer::Entity &e = *it;
-            if (e.type == Renderer::PartType::EXPULSION && e.rotation.x > static_cast<float>(360 * 5)) {
-                it = Renderer::sceneEntities.erase(it);
-            } else if (e.type == Renderer::PartType::EXPULSION && e.rotation.z > static_cast<float>(360 * 5)) {
-                it = Renderer::sceneEntities.erase(it);
+        for (auto it = sceneEntities.begin(); it != sceneEntities.end(); ) {
+            Entity &e = *it;
+            if (e.type == PartType::EXPULSION && e.rotation.x > static_cast<float>(360 * 5)) {
+                it = sceneEntities.erase(it);
+            } else if (e.type == PartType::EXPULSION && e.rotation.z > static_cast<float>(360 * 5)) {
+                it = sceneEntities.erase(it);
             } else {
                 ++it;
             }
@@ -225,7 +174,7 @@ namespace Renderer {
             histInstruc.pop_front();
     }
 
-    void render(float dt, sf::RenderWindow &window) {
+    void Renderer::render(float dt, sf::RenderWindow &window) {
         int w = window.getSize().x;
         int h = window.getSize().y;
         sf::Vector2i mousePos = sf::Mouse::getPosition(window);
@@ -590,6 +539,96 @@ namespace Renderer {
             // reset the size of the text
             hudText.setCharacterSize(16);
         }
+    }
+
+    std::unordered_map<int, MovementState> Renderer::getActiveMovements() const
+    {
+        return this->activeMovements;
+    }
+
+    std::unordered_map<int, RotationState> Renderer::getActiveRotations() const
+    {
+        return this->activeRotations;
+    }
+
+    std::unordered_map<int, MovementState> Renderer::getPendingMovements() const
+    {
+        return this->pendingMovementsAfterRotation;
+    }
+
+    int Renderer::getMapSizeX() const
+    {
+        return this->map_size_x;
+    }
+
+    int Renderer::getMapSizeY() const
+    {
+        return this->map_size_y;
+    }
+
+    std::unordered_map<int, std::array<int, 7>> Renderer::getResourcesOnTiles() const
+    {
+        return this->_resourcesOnTiles;
+    }
+
+    bool Renderer::getResourcesChange() const
+    {
+        return this->resourcesChange;
+    }
+
+    void Renderer::setActiveMovements(std::unordered_map<int, MovementState> activemovements)
+    {
+        this->activeMovements = activemovements;
+    }
+
+    void Renderer::setActiveRotations(std::unordered_map<int, RotationState> activerotations)
+    {
+        this->activeRotations = activerotations;
+    }
+
+    void Renderer::setPendingMovements(std::unordered_map<int, MovementState> pendingmovements)
+    {
+        this->pendingMovementsAfterRotation = pendingmovements;
+    }
+
+    void Renderer::setMapSizeX(int mapsizex)
+    {
+        this->map_size_x = mapsizex;
+    }
+
+    void Renderer::setMapSizeY(int mapsizey)
+    {
+        this->map_size_y = mapsizey;
+    }
+
+    void Renderer::setResourcesOnTiles(std::unordered_map<int, std::array<int, 7>> resourcesontiles)
+    {
+        this->_resourcesOnTiles = resourcesontiles;
+    }
+
+    void Renderer::setResourcesChange(bool resourceschange)
+    {
+        this->resourcesChange = resourceschange;
+    }
+
+    void Renderer::addToActiveMovements(int index, MovementState move)
+    {
+        this->activeMovements[index] = move;
+    }
+
+    void Renderer::addToActiveRotations(int index, RotationState rotation)
+    {
+        this->activeRotations[index] = rotation;
+    }
+
+    void Renderer::addToPendingMovements(int index, MovementState move)
+    {
+        this->pendingMovementsAfterRotation[index] = move;
+    }
+
+    void Renderer::addToResourcesOnTiles(int index, std::array<int, 7> resources)
+    {
+        this->_resourcesOnTiles[index] = resources;
     }
 
 } // namespace Renderer

@@ -23,7 +23,8 @@ namespace Renderer
         };
     }
 
-    void Update::moveTrantorian(float dt, Entity &e, std::unordered_map<int, MovementState> &activeMovements)
+    void Update::moveTrantorian(float dt, Entity &e, std::unordered_map<int, MovementState> &activeMovements,
+        int map_size_x, int map_size_y)
     {
         auto itMove = activeMovements.find(e.clientId);
         if (itMove != activeMovements.end() && itMove->second.active) {
@@ -101,8 +102,8 @@ namespace Renderer
 
     void Update::sychroEyes(Entity &e, std::vector<std::tuple<int, Vec3, Vec3>> &valuesForSynchro)
     {
-        Vec3 offset = {0.f, OFFSET_EYES_Y, Renderer::offsetEyesZ[e.level - 1]};
-        if (e.type == Renderer::PartType::BODY) {
+        Vec3 offset = {0.f, OFFSET_EYES_Y, offsetEyesZ[e.level - 1]};
+        if (e.type == PartType::BODY) {
             valuesForSynchro.emplace_back(e.clientId, e.position, Vec3{0.f, e.rotation.y, 0.f});
         }
         if (e.type == Renderer::PartType::EYES) {
@@ -129,7 +130,7 @@ namespace Renderer
 
     void Update::incantationRing(float dt, Entity &e)
     {
-        if (e.type == Renderer::PartType::RING) {
+        if (e.type == PartType::RING) {
             e.rotation.y += 20.0f * dt;
             if (e.rotation.y >= 360.f)
                 e.rotation.y -= 360.f;

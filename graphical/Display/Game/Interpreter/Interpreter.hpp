@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <regex>
 #include <random>
+#include <memory>
 
 #include "../../../3DRenderer/include/Renderer.hpp"
 
@@ -28,8 +29,8 @@ struct ResourceData {
 
 class Interpreter {
     public:
-        Interpreter();
-        ~Interpreter() {}
+        Interpreter(std::shared_ptr<Renderer::Renderer> renderer);
+        ~Interpreter() = default;
 
         /**
          * @brief Interprets the command received by the Client
@@ -42,6 +43,8 @@ class Interpreter {
         std::array<ResourceData, 7> _resources;
 
         std::string _buffer;
+
+        std::shared_ptr<Renderer::Renderer> _renderer;
 
         /**
          * @brief Determine the teams' color
