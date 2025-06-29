@@ -13,7 +13,7 @@ void event_pdi(server_t *server, player_t *player, bool is_open)
 {
     char *buffer = NULL;
 
-    if (asprintf(&buffer, "pdi %d", player->id) == -1)
+    if (asprintf(&buffer, "pdi #%d", player->id) == -1)
         logger(server, "PDI", ERROR, true);
     send_to_all_gui(server, buffer);
     if (is_open)
