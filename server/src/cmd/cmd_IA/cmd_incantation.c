@@ -32,25 +32,23 @@ static bool is_same_pos(player_t *first, player_t *second)
  * @param pl The reference player.
  * @return The number of matching players, or -1 if an incantation is active.
 */
-static unsigned int found_player_on_tile(server_t *server, player_t *pl)
+static int found_player_on_tile(server_t *server, player_t *pl)
 {
     unsigned int count = 0;
     player_t *tmp;
 
-    for (int i = 0; i < server->poll.connected_client; ++i) {
+    for (int i = 0; i < server->poll.connected_client; i++) {
         if (server->poll.client_list[i].whoAmI != PLAYER)
             continue;
         tmp = server->poll.client_list[i].player;
-
-        if (tmp->is_dead || !is_same_pos(pl, tmp))
-            continue;
-
-        /* On NE saute PAS les is_freeze ici */
-        if (tmp->lvl == pl->lvl)
-            ++count;
+        if (!tmp->is_dead && tmp->is_freeze && is_same_pos(pl, tmp))
+            return -1;
+        if (tmp->lvl == pl->lvl && !tmp->is_dead && is_same_pos(pl, tmp))
+            count++;
     }
     return count;
 }
+
 
 /**
  * @brief Check if all conditions for an incantation are met.
@@ -62,10 +60,13 @@ static unsigned int found_player_on_tile(server_t *server, player_t *pl)
 static bool check_condition(server_t *server, player_t *pl)
 {
     resources_t map = server->map[pl->position[1]][pl->position[0]];
+    int nbr = found_player_on_tile(server, pl);
 
     if (pl->lvl >= 8)
         return false;
-    if (found_player_on_tile(server, pl) < requirement[pl->lvl -1].lvl ||
+    if (nbr < 0)
+        return false;
+    if (nbr < (int) requirement[pl->lvl -1].lvl ||
         map.linemate < requirement[pl->lvl -1].linemate ||
         map.deraumere < requirement[pl->lvl -1].deraumere ||
         map.sibur < requirement[pl->lvl -1].sibur ||
@@ -91,8 +92,8 @@ bool start_incantation(server_t *server, player_t *pl)
         tmp = server->poll.client_list[i].player;
         if (!tmp->is_dead && tmp->lvl == pl->lvl && is_same_pos(tmp, pl)) {
             tmp->is_freeze = true;
-            tmp->time = 300;               /* ← nouveau */
-            tmp->is_waiting = (tmp == pl); /* seul le lanceur attend vraiment */
+            tmp->time = 300;
+            tmp->is_waiting = (tmp == pl);
             send_str(server, tmp->socket_fd, "Elevation underway\n", false);
         }
     }
