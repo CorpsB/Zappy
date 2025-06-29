@@ -957,5 +957,6 @@ void free_broadcast_map(server_t *srv, int **map);
 */
 int **create_broadcast_map(server_t *srv);
 void send_str(server_t *server, int fd, char *message, bool need_free);
+void complete_client_data(server_t *serv, int socket, whoAmI_t state);
 
 #endif /* !FUCNTION_H_ */

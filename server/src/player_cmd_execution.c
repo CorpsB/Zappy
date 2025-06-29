@@ -47,31 +47,39 @@ int load_next_time(server_t *server, player_t *pl)
     return 0;
 }
 
+static bool loop(server_t *server, player_t **pl, int i)
+{
+    if (server->poll.client_list[i].whoAmI != PLAYER)
+        return true;
+    *pl = server->poll.client_list[i].player;
+    if ((*pl)->is_dead)
+        return true;
+    (*pl)->time = (*pl)->time > 0 ? (*pl)->time - 1 : (*pl)->time;
+    if ((*pl)->is_freeze) {
+        if ((*pl)->is_waiting && (*pl)->time == 0) {
+            cmd_parser(server, i, (*pl)->cmd[0]);
+            delete_cmd(server, (*pl));
+            (*pl)->is_waiting = false;
+        }
+        return true;
+    }
+    if ((*pl)->time == 0 && (*pl)->is_waiting && (*pl)->cmd[0] != NULL) {
+        cmd_parser(server, i, (*pl)->cmd[0]);
+        delete_cmd(server, (*pl));
+        (*pl)->is_waiting = false;
+    }
+    return false;
+}
+
 void player_cmd_execution(server_t *server)
 {
-    player_t *pl;
+    player_t *pl = NULL;
 
     for (int i = 0; i < server->poll.connected_client; i++) {
-        if (server->poll.client_list[i].whoAmI != PLAYER)
+        pl = NULL;
+        if (loop(server, &pl, i))
             continue;
-        pl = server->poll.client_list[i].player;
-        if (pl->is_dead)
-            continue;
-        pl->time = pl->time > 0 ? pl->time - 1 : pl->time;
-        if (pl->is_freeze) {
-            if (pl->is_waiting && pl->time == 0) { 
-                cmd_parser(server, i, pl->cmd[0]);
-                delete_cmd(server, pl);
-                pl->is_waiting = false;
-            }
-            continue;
-        }
-        if (pl->time == 0 && pl->is_waiting && pl->cmd[0] != NULL) {
-            cmd_parser(server, i, pl->cmd[0]);
-            delete_cmd(server, pl);
-            pl->is_waiting = false;
-        }
-        if (pl->time == 0 && !pl->is_waiting && pl->cmd[0] != NULL) {
+        if (pl && pl->time == 0 && !pl->is_waiting && pl->cmd[0] != NULL) {
             pl->time = load_next_time(server, pl);
             pl->is_waiting = true;
             continue;

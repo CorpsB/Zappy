@@ -11,8 +11,11 @@
 
 void free_poll(server_t *server)
 {
-    for (int i = 0; i < server->poll.connected_client; i++)
+    for (int i = 0; i < server->poll.connected_client; i++) {
         close(server->poll.pollfds[i].fd);
+        if (server->poll.client_list[i].cmd)
+            free(server->poll.client_list[i].cmd);
+    }
     if (server->poll.client_list)
         free(server->poll.client_list);
     if (server->poll.pollfds)
