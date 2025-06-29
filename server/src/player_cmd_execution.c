@@ -16,7 +16,7 @@
  * @param server Pointer to the server structure.
  * @param pl Pointer to the player structure.
 */
-static void delete_cmd(server_t *server, player_t *pl)
+static void delete_cmd(server_t *, player_t *pl)
 {
     for (int i = 0; i < 10; i++) {
         pl->cmd[i] = pl->cmd[i + 1];
