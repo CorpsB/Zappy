@@ -7,18 +7,18 @@
 
 /**
  * @file Client.cpp
- * @brief Implémentation de la classe Client du projet Zappy.
+ * @brief Implementation of the Client class for the Zappy project.
  *
- * Ce fichier contient les définitions des méthodes de la classe `Client`
- * chargée de gérer la communication réseau avec le serveur dans le cadre
- * du client graphique du jeu Zappy.
+ * This file contains the definitions of the `Client` class methods,
+ * responsible for managing network communication with the server
+ * in the context of the Zappy graphical client.
  *
- * Le client établit une connexion TCP via une socket, envoie des commandes,
- * lit les réponses via `poll()` et traite les données reçues via l’interface
- * `Game`. Ce fichier gère aussi la destruction automatique du client
- * (pattern singleton) et la fermeture propre des sockets.
+ * The client establishes a TCP connection via a socket, sends commands,
+ * reads server responses using `poll()`, and processes the received data
+ * through the `Game` interface. This file also handles automatic destruction
+ * of the client (singleton pattern) and proper socket closure.
  *
- * @author toma.2k5 (Thomas Camuset)
+ * @author Thomas Camuset
  * @date 2025
  * @version 1.0
  * @see Client.hpp, Game, NetConfig

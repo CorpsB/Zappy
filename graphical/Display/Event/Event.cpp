@@ -5,15 +5,22 @@
 ** Event
 */
 
+/**
+ * @file Event.cpp
+ * @brief Implementation of the Event class (SFML event handling).
+ *
+ * This file implements the `getEvent()` method, which retrieves events
+ * from an SFML window passed as a parameter. Currently, only the window
+ * close event (`sf::Event::Closed`) is intercepted, which returns `-1`
+ * to signal a shutdown request to the main engine.
+ *
+ * @see Event.hpp, sf::RenderWindow
+ * @date 2025
+ * @version 1.0
+ * @note This system can be extended to handle other events (keyboard, mouse, etc.).
+ */
+
 #include "Event.hpp"
-
-Event::Event()
-{
-}
-
-Event::~Event()
-{
-}
 
 int Event::getEvent(sf::RenderWindow &window)
 {

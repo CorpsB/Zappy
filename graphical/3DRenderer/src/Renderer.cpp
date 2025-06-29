@@ -12,60 +12,10 @@
 
 namespace Renderer {
 
-    // static sf::RenderWindow window;
-    static sf::Image backBuffer;
-    static sf::Texture backBufferTexture;
-    static sf::Sprite backBufferSprite;
-    static std::vector<float> depthBuffer;
-    static sf::Font hudFont;
-    static sf::Text hudText;
-    static float fpsTimer = 0.0f;
-    static int frameCount = 0;
-    static int lastFps = 0;
-    static float cooldownAction = 0.f;
-    std::unordered_map<int, MovementState> activeMovements;
-    std::unordered_map<int, RotationState> activeRotations;
-    std::unordered_map<int, Renderer::MovementState> pendingMovementsAfterRotation;
-    int map_size_x = 0;
-    int map_size_y = 0;
-    static sf::RectangleShape bgMenu;
-    // We need it to display it even though it's not really supposed to be here
-    std::unordered_map<int, std::array<int, 7>> _resourcesOnTiles;
-    static std::array<int, 7> totalResources;
-    static std::array<sf::Color, 7> colorResources;
-    static std::array<std::string, 7> nameResources;
-    bool resourcesChange;
-    static sf::RectangleShape buttonNextTrantorian;
-    static sf::Color buttonIdleColor = sf::Color(100, 100, 100);
-    static sf::Color buttonHoverColor = sf::Color(150, 150, 150);
-    static Entity currentTrantorian;
-    static std::array<std::string, 4> orientation = {"NORTH", "WEST", "SOUTH", "EAST"};
-    static sf::RectangleShape escapeMenuBg;
-    static std::pair<int, int> currentTile;
-
-    bool buttonToggle = false;
-    bool buttonIsPressed = false;
-    bool escapeMenuToggle = false;
-    bool escapeWasPressed = false;
-    bool zToggle = false;
-    bool zWasPressed = false;
-    bool sToggle = false;
-    bool sWasPressed = false;
-    bool qToggle = false;
-    bool qWasPressed = false;
-    bool dToggle = false;
-    bool dWasPressed = false;
-    bool tabToggle = false;
-    bool tabWasPressed = false;
-
-    Update _update;
-    InputHandler _inputhandler;
-    Camera _camera;
-    Clipper _clipper;
-
-    bool initRenderer(sf::RenderWindow &window) {
-        // window = new sf::RenderWindow(sf::VideoMode(width, height), title);
-        if (!window.isOpen()) return false;
+    bool Renderer::initRenderer(sf::RenderWindow &window, std::shared_ptr<EntityClass> entity) {
+        this->_entity = entity;
+        if (!window.isOpen())
+            return false;
 
         window.setVerticalSyncEnabled(true);
         backBuffer.create(window.getSize().x, window.getSize().y);
@@ -84,6 +34,7 @@ namespace Renderer {
             std::cerr << "Failed to load font\n";
             return false;
         }
+        _hud.init(hudFont);
         hudText.setFont(hudFont);
         hudText.setCharacterSize(16);
         hudText.setFillColor(sf::Color::White);
@@ -126,7 +77,7 @@ namespace Renderer {
         return true;
     }
 
-    inline void drawTriangle(const Vec4& p1, const Vec4& p2, const Vec4& p3, const sf::Color& color) {
+    inline void Renderer::drawTriangle(const Vec4& p1, const Vec4& p2, const Vec4& p3, const sf::Color& color) {
         const unsigned int screenW = backBuffer.getSize().x;
         const unsigned int screenH = backBuffer.getSize().y;
 
@@ -164,68 +115,48 @@ namespace Renderer {
         }
     }
 
-    void update(float dt) {
-        _camera.cameraMovement(dt);
-        cooldownAction -= dt;
-        _inputhandler.switchInput(tabToggle, tabWasPressed, sf::Keyboard::Tab);
-        _inputhandler.switchInput(escapeMenuToggle, escapeWasPressed, sf::Keyboard::Escape);
-        _inputhandler.switchInput(zToggle, zWasPressed, sf::Keyboard::Z);
-        _inputhandler.switchInput(sToggle, sWasPressed, sf::Keyboard::S);
-        _inputhandler.switchInput(qToggle, qWasPressed, sf::Keyboard::Q);
-        _inputhandler.switchInput(dToggle, dWasPressed, sf::Keyboard::D);
-        _update.changeSelectedTile(zToggle, sToggle, qToggle, dToggle, currentTile, map_size_x, map_size_y);
-        // Values in valuesForSynchro :
-        // int -> client id
-        // Vec3 -> body position
-        // Vec3 -> body rotation on the y axis
+    void Renderer::update(float dt, sf::RenderWindow &window) {
+        if (window.hasFocus()) {
+            _camera.cameraMovement(dt);
+            cooldownAction -= dt;
+            _inputhandler.switchInput(tabToggle, tabWasPressed, sf::Keyboard::Tab);
+            _inputhandler.switchInput(escapeMenuToggle, escapeWasPressed, sf::Keyboard::Escape);
+            _inputhandler.switchInput(zToggle, zWasPressed, sf::Keyboard::Z);
+            _inputhandler.switchInput(sToggle, sWasPressed, sf::Keyboard::S);
+            _inputhandler.switchInput(qToggle, qWasPressed, sf::Keyboard::Q);
+            _inputhandler.switchInput(dToggle, dWasPressed, sf::Keyboard::D);
+            _update.changeSelectedTile(zToggle, sToggle, qToggle, dToggle, currentTile, map_size_x, map_size_y);
+        }
         std::vector<std::tuple<int, Vec3, Vec3>> valuesForSynchro;
 
-        for (auto& e : sceneEntities) {
-            _update.moveTrantorian(dt, e, activeMovements);
+        for (auto& e : _entity.get()->getSceneEntities()) {
+            _update.moveTrantorian(dt, e, activeMovements, map_size_x, map_size_y);
             _update.rotateTrantorian(dt, e, activeRotations);
             _update.startMoveAfterRotate(activeMovements, activeRotations, pendingMovementsAfterRotation);
             _update.sychroEyes(e, valuesForSynchro);
             _update.incantationRing(dt, e);
-            if (e.type == Renderer::PartType::EXPULSION) {
+            if (e.type == PartType::EXPULSION) {
                 if (e.orientation == Compass::EAST || e.orientation == Compass::WEST)
                     e.rotation.x += 60.0f * dt;
                 else if (e.orientation == Compass::NORTH || e.orientation == Compass::SOUTH)
                     e.rotation.z += 60.0f * dt;
             }
-
-            // if (e.type == PartType::GROUND) {
-            //     if (static_cast<int>(e.position.x) == currentTile.first * TILE_SIZE
-            //         && static_cast<int>(e.position.z) == currentTile.second * TILE_SIZE) {
-            //         e.color = sf::Color::Red;
-            //     } else
-            //         e.color = sf::Color {65, 65, 65};
-            // }
         }
-        // erase expulsion after 5 rotations
-        for (auto it = Renderer::sceneEntities.begin(); it != Renderer::sceneEntities.end(); ) {
-            Renderer::Entity &e = *it;
-            if (e.type == Renderer::PartType::EXPULSION && e.rotation.x > static_cast<float>(360 * 5)) {
-                it = Renderer::sceneEntities.erase(it);
-            } else if (e.type == Renderer::PartType::EXPULSION && e.rotation.z > static_cast<float>(360 * 5)) {
-                it = Renderer::sceneEntities.erase(it);
+        for (auto it = _entity.get()->getSceneEntities().begin(); it != _entity.get()->getSceneEntities().end(); ) {
+            Entity &e = *it;
+            if (e.type == PartType::EXPULSION && e.rotation.x > static_cast<float>(360 * 5)) {
+                it = _entity.get()->getSceneEntities().erase(it);
+            } else if (e.type == PartType::EXPULSION && e.rotation.z > static_cast<float>(360 * 5)) {
+                it = _entity.get()->getSceneEntities().erase(it);
             } else {
                 ++it;
             }
         }
-        // HUD message à timer
-        for (auto it = hudMessages.begin(); it != hudMessages.end();) {
-            it->remainingTime -= dt;
-            if (it->remainingTime <= 0.0f)
-                it = hudMessages.erase(it);
-            else
-                ++it;
-        }
-        // Remove old messages
         while (histInstruc.size() > 21)
             histInstruc.pop_front();
     }
 
-    void render(float dt, sf::RenderWindow &window) {
+    void Renderer::render(float dt, sf::RenderWindow &window) {
         int w = window.getSize().x;
         int h = window.getSize().y;
         sf::Vector2i mousePos = sf::Mouse::getPosition(window);
@@ -277,7 +208,7 @@ namespace Renderer {
         float l = std::sqrt(lightDir.x*lightDir.x + lightDir.y*lightDir.y + lightDir.z*lightDir.z);
         if (l > 0) lightDir = { lightDir.x/l, lightDir.y/l, lightDir.z/l };
 
-        for (const auto& e : sceneEntities) {
+        for (const auto& e : _entity.get()->getSceneEntities()) {
             Mat4x4 matScale = Mat4x4::makeScale(e.scale.x, e.scale.y, e.scale.z);
             Mat4x4 matRotX  = Mat4x4::makeRotationX(e.rotation.x * M_PI / 180.0f);
             Mat4x4 matRotY  = Mat4x4::makeRotationY(e.rotation.y * M_PI / 180.0f);
@@ -370,18 +301,7 @@ namespace Renderer {
             frameCount = 0;
             fpsTimer = 0.0f;
         }
-        hudText.setFillColor(sf::Color {255, 255, 255});
-        hudText.setString("FPS: " + std::to_string(lastFps));
-        hudText.setPosition(5.f, 5.f);
-
-
-        float y = 30.f;
-        for (const auto& m : hudMessages) {
-            hudText.setString(m.text);
-            hudText.setPosition(5.f, y);
-            window.draw(hudText);
-            y += 20.f;
-        }
+        _hud.displayFps(lastFps, window);
 
         // display menu
         if (tabToggle) {
@@ -405,27 +325,10 @@ namespace Renderer {
                 }
             }
             resourcesChange = false;
-            float y = 10.f;
-            for (int i = 0; i < 7; i++) {
-                hudText.setString(nameResources[i] + std::to_string(totalResources[i]));
-                hudText.setFillColor(colorResources[i]);
-                hudText.setPosition(window.getSize().x - 300, y);
-                window.draw(hudText);
-                y += 25.f;
-            }
-            y = 200.f;
-            for (auto it = histInstruc.rbegin(); it != histInstruc.rend(); ++it) {
-                const std::string& text = std::get<0>(*it);
-                const sf::Color& color = std::get<1>(*it);
-
-                hudText.setString(text);
-                hudText.setFillColor(color);
-                hudText.setPosition(window.getSize().x - 300, y);
-                window.draw(hudText);
-                y += 25.f;
-            }
+            _hud.displayTotalResources(totalResources, window);
+            _hud.displayHistInstruc(histInstruc, window);
             if (currentTrantorian.clientId == -1) {
-                for (auto &e : sceneEntities) {
+                for (auto &e : _entity.get()->getSceneEntities()) {
                     if (e.type == PartType::BODY) {
                         currentTrantorian = e;
                         break;
@@ -433,7 +336,7 @@ namespace Renderer {
                 }
             } else if (buttonToggle) {
                 bool wasItTheTrantorian = false;
-                for (auto &e : sceneEntities) {
+                for (auto &e : _entity.get()->getSceneEntities()) {
                     if (e.clientId == currentTrantorian.clientId)
                         wasItTheTrantorian = true;
                     if (e.type == PartType::BODY && wasItTheTrantorian && e.clientId != currentTrantorian.clientId) {
@@ -444,7 +347,7 @@ namespace Renderer {
                 }
                 // if we arrive at the end, take the first entity (with BODY)
                 if (wasItTheTrantorian) {
-                    for (auto &e : sceneEntities) {
+                    for (auto &e : _entity.get()->getSceneEntities()) {
                         if (e.type == PartType::BODY) {
                             currentTrantorian = e;
                             break;
@@ -453,143 +356,115 @@ namespace Renderer {
                 }
             }
             // Actualizes informations
-            for (auto &e : sceneEntities) {
+            for (auto &e : _entity.get()->getSceneEntities()) {
                 if (e.clientId == currentTrantorian.clientId) {
                     currentTrantorian = e;
                     break;
                 }
             }
             // condition just in case there is no Trantorian yet
-            if (currentTrantorian.clientId != -1) {
-                float y = 100.f;
-                hudText.setFillColor(currentTrantorian.color);
-                // id trantorian
-                hudText.setString("Id Trantorian: " + std::to_string(currentTrantorian.clientId));
-                hudText.setPosition(50.f, y);
-                window.draw(hudText);
-                // team name
-                hudText.setString("Team: " + currentTrantorian.teamName);
-                hudText.setPosition(50.f, y + 25.f);
-                window.draw(hudText);
-                // level
-                hudText.setString("Level: " + std::to_string(currentTrantorian.level));
-                hudText.setPosition(50.f, y + 50.f);
-                window.draw(hudText);
-                // position
-                hudText.setString("Position:");
-                hudText.setPosition(50.f, y + 75.f);
-                window.draw(hudText);
-                hudText.setString("x: " + std::to_string(static_cast<int>(currentTrantorian.position.x) / 70) +
-                                  "(real value: " + std::to_string(static_cast<int>(currentTrantorian.position.x)) + ")");
-                hudText.setPosition(75.f, y + 100.f);
-                window.draw(hudText);
-                hudText.setString("y: " + std::to_string(static_cast<int>(currentTrantorian.position.z) / 70) +
-                                  "(real value: " + std::to_string(static_cast<int>(currentTrantorian.position.z)) + ")");
-                hudText.setPosition(75.f, y + 125.f);
-                window.draw(hudText);
-                // orientation
-                hudText.setString("Orientation: " + orientation[static_cast<int>(currentTrantorian.orientation)]);
-                hudText.setPosition(50.f, y + 150.f);
-                window.draw(hudText);
-                // inventory
-                hudText.setString("Inventory:");
-                hudText.setPosition(50.f, y + 175.f);
-                window.draw(hudText);
-                y += 200.f;
-                for (int i = 0; i < 7; i++) {
-                    hudText.setString(nameResources[i] + std::to_string(currentTrantorian.inventory[i]));
-                    hudText.setFillColor(colorResources[i]);
-                    hudText.setPosition(75.f, y);
-                    window.draw(hudText);
-                    y += 25.f;
-                }
-            }
-            if (_resourcesOnTiles.find(currentTile.first * map_size_y + currentTile.second) != _resourcesOnTiles.end()) {
-                hudText.setFillColor(sf::Color {255, 255, 255});
-                float x = window.getSize().x / 2 - 75;
-                hudText.setString("Content of the selected tile:");
-                hudText.setPosition(x, 100);
-                window.draw(hudText);
-                hudText.setString("x: " + std::to_string(currentTile.first));
-                hudText.setPosition(x + 25, 125);
-                window.draw(hudText);
-                hudText.setString("y: " + std::to_string(currentTile.second));
-                hudText.setPosition(x + 25, 150);
-                window.draw(hudText);
-                float y = 175.f;
-                for (int i = 0; i < 7; i++) {
-                    hudText.setString(nameResources[i] + std::to_string(_resourcesOnTiles[currentTile.first * map_size_y + currentTile.second][i]));
-                    hudText.setFillColor(colorResources[i]);
-                    hudText.setPosition(x + 25, y);
-                    window.draw(hudText);
-                    y += 25.f;
-                }
-            }
+            _hud.displayInfoTrantorian(currentTrantorian, window);
+            _hud.displayInfoTile(_resourcesOnTiles, currentTile, map_size_y, window);
         }
 
         if (escapeMenuToggle) {
-            window.draw(escapeMenuBg);
-    
-            sf::Vector2f menuPos = escapeMenuBg.getPosition();
-            
-            hudText.setString("PAUSE");
-            hudText.setFillColor(sf::Color::White);
-            hudText.setCharacterSize(30);
-            hudText.setPosition(menuPos.x + 250.f, menuPos.y + 20.f);
-            window.draw(hudText);
-            hudText.setCharacterSize(20);
-
-            hudText.setString("CAMERA :");
-            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 100.f);
-            window.draw(hudText);
-            hudText.setString("A : horizontal rotation - left");
-            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 150.f);
-            window.draw(hudText);
-            hudText.setString("E : horizontal rotation - right");
-            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 170.f);
-            window.draw(hudText);
-            hudText.setString("R : vertical rotation - down");
-            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 190.f);
-            window.draw(hudText);
-            hudText.setString("F : vertical rotation - up");
-            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 210.f);
-            window.draw(hudText);
-            hudText.setString("LSHIFT : vertical translation - down");
-            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 230.f);
-            window.draw(hudText);
-            hudText.setString("SPACE : vertical translation - up");
-            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 250.f);
-            window.draw(hudText);
-            hudText.setString("Arrow up : horizontal translation - forward");
-            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 270.f);
-            window.draw(hudText);
-            hudText.setString("Arrow down : horizontal translation - rearward");
-            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 290.f);
-            window.draw(hudText);
-            hudText.setString("Arrow left : horizontal translation - left");
-            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 310.f);
-            window.draw(hudText);
-            hudText.setString("Arrow right : horizontal translation - right");
-            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 330.f);
-            window.draw(hudText);
-            hudText.setString("GAME");
-            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 370.f);
-            window.draw(hudText);
-            hudText.setString("Tab : informations");
-            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 400.f);
-            window.draw(hudText);
-            hudText.setString("ZQSD : select a tile to see what it contains");
-            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 420.f);
-            window.draw(hudText);
-            hudText.setString("Note : You can press the grey button in the information menu");
-            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 450.f);
-            window.draw(hudText);
-            hudText.setString("in order to display informations about the next Trantorian");
-            hudText.setPosition(menuPos.x + 50.f, menuPos.y + 470.f);
-            window.draw(hudText);
-            // reset the size of the text
-            hudText.setCharacterSize(16);
+            _hud.displayMenu(escapeMenuBg, window);
         }
+    }
+
+    std::unordered_map<int, MovementState> Renderer::getActiveMovements() const
+    {
+        return this->activeMovements;
+    }
+
+    std::unordered_map<int, RotationState> Renderer::getActiveRotations() const
+    {
+        return this->activeRotations;
+    }
+
+    std::unordered_map<int, MovementState> Renderer::getPendingMovements() const
+    {
+        return this->pendingMovementsAfterRotation;
+    }
+
+    int Renderer::getMapSizeX() const
+    {
+        return this->map_size_x;
+    }
+
+    int Renderer::getMapSizeY() const
+    {
+        return this->map_size_y;
+    }
+
+    std::unordered_map<int, std::array<int, 7>> Renderer::getResourcesOnTiles() const
+    {
+        return this->_resourcesOnTiles;
+    }
+
+    bool Renderer::getResourcesChange() const
+    {
+        return this->resourcesChange;
+    }
+
+    void Renderer::setActiveMovements(std::unordered_map<int, MovementState> activemovements)
+    {
+        this->activeMovements = activemovements;
+    }
+
+    void Renderer::setActiveRotations(std::unordered_map<int, RotationState> activerotations)
+    {
+        this->activeRotations = activerotations;
+    }
+
+    void Renderer::setPendingMovements(std::unordered_map<int, MovementState> pendingmovements)
+    {
+        this->pendingMovementsAfterRotation = pendingmovements;
+    }
+
+    void Renderer::setMapSizeX(int mapsizex)
+    {
+        this->map_size_x = mapsizex;
+    }
+
+    void Renderer::setMapSizeY(int mapsizey)
+    {
+        this->map_size_y = mapsizey;
+    }
+
+    void Renderer::setResourcesOnTiles(std::unordered_map<int, std::array<int, 7>> resourcesontiles)
+    {
+        this->_resourcesOnTiles = resourcesontiles;
+    }
+
+    void Renderer::setResourcesChange(bool resourceschange)
+    {
+        this->resourcesChange = resourceschange;
+    }
+
+    void Renderer::addToActiveMovements(int index, MovementState move)
+    {
+        this->activeMovements[index] = move;
+    }
+
+    void Renderer::addToActiveRotations(int index, RotationState rotation)
+    {
+        this->activeRotations[index] = rotation;
+    }
+
+    void Renderer::addToPendingMovements(int index, MovementState move)
+    {
+        this->pendingMovementsAfterRotation[index] = move;
+    }
+
+    void Renderer::addToResourcesOnTiles(int index, std::array<int, 7> resources)
+    {
+        this->_resourcesOnTiles[index] = resources;
+    }
+
+    void Renderer::addToHistInstruc(std::string instruc, sf::Color color)
+    {
+        this->histInstruc.emplace_back(instruc, color);
     }
 
 } // namespace Renderer

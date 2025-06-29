@@ -9,13 +9,7 @@
 
 #include <string>
 #include <SFML/Graphics.hpp>
-#include "Camera.hpp"
 #include "Entity.hpp"
-#include "Clipper.hpp"
-#include "Geometry.hpp"
-#include "HUD.hpp"
-#include "Math.hpp"
-#include "Renderer.hpp"
 
 #define TILE_SIZE 70
 #define OFFSET_EYES_Y -1.5f
@@ -26,7 +20,8 @@ namespace Renderer {
             Update() = default;
             ~Update() = default;
             Vec3 rotateY(const Vec3& v, float angleDegrees);
-            void moveTrantorian(float dt, Entity &e, std::unordered_map<int, MovementState> &activeMovements);
+            void moveTrantorian(float dt, Entity &e, std::unordered_map<int, MovementState> &activeMovements,
+                int map_size_x, int map_size_y);
             void rotateTrantorian(float dt, Entity &e, std::unordered_map<int, RotationState> &activeRotations);
             void startMoveAfterRotate(std::unordered_map<int, MovementState> &activeMovements,
                 std::unordered_map<int, RotationState> &activeRotations,
@@ -36,5 +31,15 @@ namespace Renderer {
             void changeSelectedTile(bool &zToggle, bool &sToggle, bool &qToggle, bool &dToggle,
                 std::pair<int, int> &currentTile, int map_size_x, int map_size_y);
         private:
+             std::array<float, 8> offsetEyesZ = {
+                -8.8f,
+                -7.8f,
+                -8.2f,
+                -5.5f,
+                -7.5f,
+                -6.5f,
+                -7.2f,
+                -6.4f
+            };
     };
 }

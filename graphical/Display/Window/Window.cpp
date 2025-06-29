@@ -5,6 +5,24 @@
 ** Window
 */
 
+/**
+ * @file Window.cpp
+ * @brief Implementation of the Window class used to manage the main SFML window.
+ *
+ * This file defines the methods of the `Window` class, which wraps around `sf::RenderWindow`
+ * and provides utility functions for initializing, clearing, displaying, and resizing
+ * the game window in the Zappy graphical client.
+ *
+ * The window is initialized with a fixed framerate limit (`FRAMERATE`) and basic window style
+ * (title bar + close button). It is designed to be controlled externally by the `Game` class
+ * and used by the `Renderer` to render game objects.
+ *
+ * @see Window.hpp, Game, sf::RenderWindow
+ * @author Thomas Camuset
+ * @date 2025
+ * @version 1.0
+ */
+
 #include "Window.hpp"
 
 void Window::init(unsigned int width, unsigned int height)
