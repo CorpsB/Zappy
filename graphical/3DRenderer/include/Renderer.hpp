@@ -19,11 +19,11 @@ namespace Renderer {
     class Renderer {
         public:
             bool initRenderer(sf::RenderWindow &window);
-            void update(float dt);
+            void update(float dt, sf::RenderWindow &window);
             void render(float dt, sf::RenderWindow &window);
-            
+
             inline void drawTriangle(const Vec4& p1, const Vec4& p2, const Vec4& p3, const sf::Color& color);
-            
+
             std::unordered_map<int, MovementState> getActiveMovements() const;
             std::unordered_map<int, RotationState> getActiveRotations() const;
             std::unordered_map<int, MovementState> getPendingMovements() const;

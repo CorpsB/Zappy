@@ -13,8 +13,8 @@
 namespace Renderer {
 
     bool Renderer::initRenderer(sf::RenderWindow &window) {
-        // window = new sf::RenderWindow(sf::VideoMode(width, height), title);
-        if (!window.isOpen()) return false;
+        if (!window.isOpen())
+            return false;
 
         window.setVerticalSyncEnabled(true);
         backBuffer.create(window.getSize().x, window.getSize().y);
@@ -113,20 +113,18 @@ namespace Renderer {
         }
     }
 
-    void Renderer::update(float dt) {
-        _camera.cameraMovement(dt);
-        cooldownAction -= dt;
-        _inputhandler.switchInput(tabToggle, tabWasPressed, sf::Keyboard::Tab);
-        _inputhandler.switchInput(escapeMenuToggle, escapeWasPressed, sf::Keyboard::Escape);
-        _inputhandler.switchInput(zToggle, zWasPressed, sf::Keyboard::Z);
-        _inputhandler.switchInput(sToggle, sWasPressed, sf::Keyboard::S);
-        _inputhandler.switchInput(qToggle, qWasPressed, sf::Keyboard::Q);
-        _inputhandler.switchInput(dToggle, dWasPressed, sf::Keyboard::D);
-        _update.changeSelectedTile(zToggle, sToggle, qToggle, dToggle, currentTile, map_size_x, map_size_y);
-        // Values in valuesForSynchro :
-        // int -> client id
-        // Vec3 -> body position
-        // Vec3 -> body rotation on the y axis
+    void Renderer::update(float dt, sf::RenderWindow &window) {
+        if (window.hasFocus()) {
+            _camera.cameraMovement(dt);
+            cooldownAction -= dt;
+            _inputhandler.switchInput(tabToggle, tabWasPressed, sf::Keyboard::Tab);
+            _inputhandler.switchInput(escapeMenuToggle, escapeWasPressed, sf::Keyboard::Escape);
+            _inputhandler.switchInput(zToggle, zWasPressed, sf::Keyboard::Z);
+            _inputhandler.switchInput(sToggle, sWasPressed, sf::Keyboard::S);
+            _inputhandler.switchInput(qToggle, qWasPressed, sf::Keyboard::Q);
+            _inputhandler.switchInput(dToggle, dWasPressed, sf::Keyboard::D);
+            _update.changeSelectedTile(zToggle, sToggle, qToggle, dToggle, currentTile, map_size_x, map_size_y);
+        }
         std::vector<std::tuple<int, Vec3, Vec3>> valuesForSynchro;
 
         for (auto& e : sceneEntities) {
@@ -141,16 +139,7 @@ namespace Renderer {
                 else if (e.orientation == Compass::NORTH || e.orientation == Compass::SOUTH)
                     e.rotation.z += 60.0f * dt;
             }
-
-            // if (e.type == PartType::GROUND) {
-            //     if (static_cast<int>(e.position.x) == currentTile.first * TILE_SIZE
-            //         && static_cast<int>(e.position.z) == currentTile.second * TILE_SIZE) {
-            //         e.color = sf::Color::Red;
-            //     } else
-            //         e.color = sf::Color {65, 65, 65};
-            // }
         }
-        // erase expulsion after 5 rotations
         for (auto it = sceneEntities.begin(); it != sceneEntities.end(); ) {
             Entity &e = *it;
             if (e.type == PartType::EXPULSION && e.rotation.x > static_cast<float>(360 * 5)) {
@@ -161,7 +150,6 @@ namespace Renderer {
                 ++it;
             }
         }
-        // HUD message à timer
         for (auto it = hudMessages.begin(); it != hudMessages.end();) {
             it->remainingTime -= dt;
             if (it->remainingTime <= 0.0f)
@@ -169,7 +157,6 @@ namespace Renderer {
             else
                 ++it;
         }
-        // Remove old messages
         while (histInstruc.size() > 21)
             histInstruc.pop_front();
     }

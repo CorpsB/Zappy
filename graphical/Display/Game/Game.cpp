@@ -53,7 +53,7 @@ void Game::run()
         float dt = clock.restart().asSeconds();
         if (dt <= 0) continue;
         _window.clear();
-        _renderer.get()->update(dt);
+        _renderer.get()->update(dt, _window.getWindow());
         _renderer.get()->render(dt, _window.getWindow());
         _window.display();
     }
