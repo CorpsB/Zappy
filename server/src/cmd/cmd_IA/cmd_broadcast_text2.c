@@ -9,11 +9,6 @@
 #include "include/function.h"
 #include "include/structure.h"
 
-/**
- * @brief Allocates and initializes a broadcast distance map.
- * @param srv Pointer to the server structure.
- * @return A 2D int array representing the broadcast map, or NULL on failure.
-*/
 int **create_broadcast_map(server_t *srv)
 {
     int **map = malloc(sizeof(int *) * srv->height);
@@ -32,11 +27,6 @@ int **create_broadcast_map(server_t *srv)
     return map;
 }
 
-/**
- * @brief Frees the memory of a broadcast map.
- * @param srv Pointer to the server structure.
- * @param map The 2D int array to free.
-*/
 void free_broadcast_map(server_t *srv, int **map)
 {
     (void)srv;

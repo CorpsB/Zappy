@@ -9,12 +9,6 @@
 #include "include/function.h"
 #include "include/structure.h"
 
-/**
- * @brief Initialize the main server socket and bind it.
- * This function creates the listening socket, configures its parameters,
- * binds it to the specified port, and starts listening for connections.
- * @param server Pointer to the server structure.
-*/
 void init_server(server_t *server)
 {
     socklen_t size = sizeof(struct sockaddr_in);

@@ -10,6 +10,16 @@
 #include "include/structure.h"
 #include "include/incantation_table.h"
 
+/**
+ * @brief Adds a player's ID to an existing message.
+ * The function appends " #<player_id>" to the given message and
+ * frees the original message.
+ * @param server Pointer to the server structure.
+ * @param player Pointer to the player whose ID will be added.
+ * @param message The message to modify (will be freed inside this function).
+ * @return A new allocated string with the player ID added, or NULL
+ * on failure.
+*/
 static char *add_id_on_message(server_t *server, player_t *player,
     char *message)
 {

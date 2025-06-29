@@ -841,19 +841,119 @@ void cmd_incantation(server_t *server, int index, char **args);
 */
 bool start_incantation(server_t *server, player_t *pl);
 
+/**
+ * @brief Triggers the "pic" (player incantation start) event for all
+ * GUI clients.
+ * Constructs the "pic" message with the incantation initiator's
+ * position, level, and ID.
+ * Adds the IDs of all other participating players on the same tile
+ * who meet the conditions.
+ * Sends the final message to all graphical clients.
+ * @param server Pointer to the server structure.
+ * @param player Pointer to the player initiating the incantation.
+*/
 void event_pic(server_t *server, player_t *player);
+
+/**
+ * @brief Triggers the "pie" (player incantation end) event
+ * for all GUI clients.
+ * Sends a message to all graphical clients indicating the result
+ * of the incantation
+ * on the specified tile, including the position and success state.
+ * @param server Pointer to the server structure.
+ * @param player Pointer to the player whose tile the event occurred on.
+ * @param succes Boolean indicating if the incantation succeeded (true)
+ * or failed (false).
+*/
 void event_pie(server_t *server, player_t *player, bool succes);
+
+/**
+ * @brief Initialize the main server socket and bind it.
+ * This function creates the listening socket, configures its parameters,
+ * binds it to the specified port, and starts listening for connections.
+ * @param server Pointer to the server structure.
+*/
 void init_server(server_t *server);
+
+/**
+ * @brief Add a command to the player's command queue.
+ * If the command queue is full, the player receives a "suc" response.
+ * Non-player clients have their command handled immediately.
+ * @param server Pointer to the server structure.
+ * @param cmd Command string.
+ * @param index Index of the client in the poll list.
+*/
 void add_cmd(server_t *server, char *cmd, int index);
+
+/**
+ * @brief Sends a broadcast message to a player located on the same
+ * tile as the sender.
+ * The message follows the protocol format: "message 0, <msg>".
+ * @param srv Pointer to the server structure.
+ * @param rcv Pointer to the receiving player.
+ * @param msg The message to send.
+*/
 void send_same_tile_message(server_t *srv, player_t *rcv,
     const char *msg);
+
+/**
+ * @brief Sends a directional broadcast message to a player.
+ * Calculates the direction from the sender to the receiver
+ * based on map topology and player orientation,
+ * then sends a formatted message following the protocol:
+ * "message <direction>, <msg>".
+ * @param srv Pointer to the server structure.
+ * @param snd Pointer to the sending player.
+ * @param rcv Pointer to the receiving player.
+ * @param msg The message to send.
+*/
 void send_directional_message(server_t *srv, player_t *snd,
     player_t *rcv, const char *msg);
+
+/**
+ * @brief Adjusts the raw direction based on the receiver's orientation.
+ * @param raw The raw direction index.
+ * @param pl Pointer to the receiving player.
+ * @return The adjusted direction index (1 to 8).
+*/
 int adjust_to_player_dir(int raw, player_t *pl);
+
+/**
+ * @brief Computes the raw direction index from the sender to the receiver.
+ * @param map The 2D broadcast map.
+ * @param srv Pointer to the server structure.
+ * @param rcv Pointer to the receiving player.
+ * @return The raw direction index (1 to 8).
+*/
 int get_raw_direction(int **map, server_t *srv, player_t *rcv);
+
+/**
+ * @brief Initializes sound propagation from the sender's position.
+ * @param map The 2D broadcast map.
+ * @param srv Pointer to the server structure.
+ * @param sender Pointer to the player sending the broadcast.
+*/
 void propagate_sound_map(int **map, server_t *srv,
     player_t *sender);
+
+/**
+ * @brief Frees the memory of a broadcast map.
+ * @param srv Pointer to the server structure.
+ * @param map The 2D int array to free.
+*/
 void free_broadcast_map(server_t *srv, int **map);
+
+/**
+ * @brief Creates a 2D int map initialized for broadcast propagation.
+ *
+ * The map dimensions correspond to the server's map size, and
+ * all values are initialized to -1.
+ * If allocation fails at any point, previously allocated memory
+ * is freed and NULL is returned.
+ *
+ * @param srv Pointer to the server structure.
+ * @return A pointer to the allocated 2D map, or NULL on failure.
+*/
 int **create_broadcast_map(server_t *srv);
 void send_str(server_t *server, int fd, char *message, bool need_free);
 
