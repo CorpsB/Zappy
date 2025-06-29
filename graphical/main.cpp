@@ -16,6 +16,13 @@
 #include <SFML/System/Clock.hpp>
 #include <iostream>
 
+/**
+ * @brief Starts the graphical display thread.
+ *
+ * Initializes and runs the main game loop (rendering, events, updates).
+ *
+ * @param game Reference to the shared Game instance.
+ */
 void runDisplay(Game &game)
 {
     game.init(game.getRenderer());
@@ -23,6 +30,14 @@ void runDisplay(Game &game)
     game.stop();
 }
 
+/**
+ * @brief Starts the network communication thread.
+ *
+ * Initializes the client socket, attempts to connect to the server (with retry),
+ * and starts listening to server messages to forward them to the game logic.
+ *
+ * @param game Reference to the shared Game instance.
+ */
 void runNetwork(Game &game)
 {
     Client &client = Client::GetInstance();
@@ -34,6 +49,20 @@ void runNetwork(Game &game)
     client.closeSocket();
 }
 
+/**
+ * @brief Entry point of the Zappy graphical client.
+ *
+ * This function initializes the game and network systems using a shared `Game` instance.
+ * It parses command-line arguments, then launches two threads:
+ * - `runDisplay`: manages window rendering and event handling.
+ * - `runNetwork`: manages the connection with the Zappy server.
+ *
+ * Both threads are joined before the application exits.
+ *
+ * @param ac Argument count.
+ * @param av Argument values.
+ * @return 0 on success, 84 if argument parsing fails.
+ */
 int main(int ac, char **av)
 {
     Client &client = Client::GetInstance();
