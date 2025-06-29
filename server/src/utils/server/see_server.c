@@ -5,6 +5,18 @@
 ** see_server
 */
 
+/**
+ * @file see_server.c
+ * @brief Display debug information about the server state.
+ *
+ * This file contains functions to display internal state details of the
+ * server, including its parameters, poll structure, and teams. It is useful
+ * for debugging.
+ *
+ * @author Noé Carabin
+ * @date 2025
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

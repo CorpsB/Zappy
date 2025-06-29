@@ -5,6 +5,24 @@
 ** player_cmd_execution
 */
 
+/**
+ * @file player_cmd_execution.c
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06-29
+ * @brief Handles the execution of player commands in the Zappy server.
+ *
+ * This module manages the command queue of each player. It tracks the time
+ * required to execute commands, handles waiting states, and invokes the
+ * command parser once a command is ready to be executed.
+ *
+ * Key responsibilities:
+ * - Decrement player command timers.
+ * - Detect when a command can be executed and process it.
+ * - Handle special cases like Incantation which needs pre-checks.
+ * - Maintain the FIFO order of the command queue per player.
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

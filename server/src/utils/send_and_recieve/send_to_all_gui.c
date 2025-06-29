@@ -5,6 +5,19 @@
 ** send_to_all_gui
 */
 
+/**
+ * @file send_to_all_gui.c
+ * @brief Sends a message to all connected GUI clients.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+ *
+ * @details
+ * Iterates through all connected clients and sends a formatted message
+ * to those identified as GUI. The message is duplicated with a newline
+ * and sent using `send_str`. The original message is freed at the end.
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

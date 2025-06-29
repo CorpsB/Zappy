@@ -5,6 +5,17 @@
 ** free_server
 */
 
+/**
+ * @file free_server.c
+ * @brief Free memory and resources used by the server.
+ *
+ * This file provides functions to free the allocated memory
+ * for the server, including the map, teams, and poll structures.
+ *
+ * @author Noé Carabin
+ * @date 2025
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

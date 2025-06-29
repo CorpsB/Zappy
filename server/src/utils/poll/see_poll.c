@@ -5,6 +5,24 @@
 ** see_poll
 */
 
+/**
+ * @file see_poll.c
+ * @brief Debug utilities for inspecting the poll system and clients.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+ *
+ * @details
+ * This file provides diagnostic and debugging helper functions to:
+ * - Display the contents of `pollfd` structures (socket state monitoring).
+ * - Display client metadata, including player association and type.
+ * - Print out the entire state of the `poll_t` structure used in the server.
+ *
+ * These functions help visualize and trace the current network state,
+ * client types, player information, and server socket bindings,
+ * aiding significantly in debugging connection and communication issues.
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

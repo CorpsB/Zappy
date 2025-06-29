@@ -5,6 +5,20 @@
 ** see_eggs.c
 */
 
+/**
+ * @file see_eggs.c
+ * @brief Displays all eggs of a team for debugging purposes using formatted
+ * output.
+ * @author Noé Carabin (CorpsB)
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * This module provides helper functions to print detailed information
+ * about all eggs in a team's egg list to a file descriptor.
+ * Used primarily for debugging and logging purposes to track egg data
+ * such as ID, creator, and position.
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

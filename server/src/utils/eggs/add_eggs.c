@@ -5,6 +5,20 @@
 ** add_eggs.c
 */
 
+/**
+ * @file add_eggs.c
+ * @brief Implements egg creation logic for both starter and player-laid eggs.
+ * @author Noé Carabin (CorpsB)
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Provides functions to allocate and initialize egg structures associated
+ * with a team. `generate_starter_eggs` randomly places eggs on the map at
+ * startup with no creator, while `add_eggs` is used during gameplay when
+ * a player lays an egg at a specific position. Eggs are added to the team's
+ * linked list and tracked using a global egg ID counter.
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

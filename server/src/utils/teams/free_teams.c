@@ -5,6 +5,17 @@
 ** free_teams
 */
 
+/**
+ * @file free_teams.c
+ * @brief Functions to free memory used by teams in the server.
+ *
+ * This file defines utilities to release all dynamically allocated memory
+ * associated with teams, including their names, eggs, and players.
+ *
+ * @author Noé Carabin
+ * @date 2025
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

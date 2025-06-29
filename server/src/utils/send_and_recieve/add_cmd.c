@@ -5,6 +5,26 @@
 ** add_cmd
 */
 
+/**
+ * @file add_cmd.c
+ * @brief Handles incoming commands and appends them to player or client
+ * buffers.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+ *
+ * @details
+ * This file provides functions to:
+ * - Detect whether an incoming command contains a newline (`\n`),
+ * - Concatenate multi-part command strings until they are complete,
+ * - Dispatch full commands to the command parser,
+ * - Distinguish between anonymous clients (e.g., GUI) and players,
+ * - Manage command queues for each player (up to 10 commands).
+ *
+ * This logic ensures that commands received over multiple network
+ * chunks are correctly reconstructed before processing.
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

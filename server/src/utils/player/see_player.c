@@ -5,6 +5,26 @@
 ** see_player
 */
 
+/**
+ * @file see_player.c
+ * @brief Functions to inspect and print player information for debugging.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+ *
+ * @details
+ * This file defines helper functions to display details about players,
+ * primarily for debugging or server-side inspection.
+ *
+ * Functions include:
+ * - `see_direction()` – Prints the player's facing direction.
+ * - `see_a_player()` – Prints all details of a single player.
+ * - `see_all_players()` – Iterates through a team and prints each player.
+ *
+ * These outputs are intended for use with file descriptors (e.g., sockets,
+ * logs, or STDOUT), and integrate with the server's logging/debugging system.
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

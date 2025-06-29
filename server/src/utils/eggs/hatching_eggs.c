@@ -5,6 +5,18 @@
 ** hatching_eggs
 */
 
+/**
+ * @file hatching_eggs.c
+ * @brief Handles the logic for selecting and hatching an egg for player spawn.
+ * @author Noé Carabin (CorpsB)
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Selects a random egg from a team's egg list to determine the player's
+ * spawn position. Once selected, the egg is removed from the list and
+ * its position is returned for player initialization.
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

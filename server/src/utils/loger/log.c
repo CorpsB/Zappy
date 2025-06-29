@@ -5,6 +5,20 @@
 ** log
 */
 
+/**
+ * @file log.c
+ * @brief Implements the centralized logging and emergency shutdown system.
+ * @author Noé Carabin (CorpsB)
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Provides logging utilities to handle various message levels
+ * (ERROR, PERROR, DEBUG, INFO), supporting both stderr and a debug log file.
+ * Ensures graceful shutdown in case of fatal errors, with emergency handling
+ * when memory allocation or I/O fails. Central to tracing and debugging
+ * server execution.
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

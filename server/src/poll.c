@@ -5,6 +5,24 @@
 ** poll
 */
 
+/**
+ * @file poll.c
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06-29
+ * @brief Handles polling and client lifecycle in the Zappy server.
+ *
+ * This file implements the core polling loop of the server. It manages:
+ * - Accepting new client connections.
+ * - Reading input from clients.
+ * - Handling disconnections.
+ * - Processing timed events (e.g., food consumption, command execution).
+ * - Determining game-over state.
+ *
+ * It uses the `poll()` system call to efficiently manage multiple clients,
+ * combined with a custom game clock to drive turn-based logic.
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

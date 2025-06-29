@@ -5,6 +5,20 @@
 ** see_inventory
 */
 
+/**
+ * @file see_inventory.c
+ * @brief Displays the contents of a resource inventory to a given file
+ * descriptor (typically for debugging purposes).
+ * @author Noé Carabin (CorpsB)
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Implements the `see_inventory()` function, which prints each type of
+ * resource (food, linemate, deraumere, sibur, mendiane, phiras, thystame)
+ * from a given `resources_t` structure to a specified file descriptor. This
+ * is useful for monitoring players’ or tiles’ inventories during runtime.
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

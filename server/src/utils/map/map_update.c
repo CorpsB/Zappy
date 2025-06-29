@@ -5,6 +5,22 @@
 ** map_update
 */
 
+/**
+ * @file map_update.c
+ * @brief Handles the resource distribution logic on the game map in Zappy.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * This file is responsible for updating the in-game map with resources,
+ * ensuring that the current resource distribution matches the defined
+ * target goals. It works by selecting the cells with the least influence
+ * (repartition value) for each resource type, placing a resource there,
+ * and then propagating influence to surrounding cells using a weighted
+ * diffusion algorithm. This system simulates a natural-like distribution
+ * while preserving control over density and spread.
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

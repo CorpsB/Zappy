@@ -5,6 +5,25 @@
 ** search_player
 */
 
+/**
+ * @file search_player.c
+ * @brief Functions to search for a player by ID in the server's team
+ * structure.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+ *
+ * @details
+ * This file provides utility functions to locate a player using their
+ * unique ID:
+ * - `find_in_team()` checks whether a player is present in a specific team.
+ * - `find_player_by_id()` traverses all teams in the server to find the
+ * player.
+ *
+ * These functions are essential for player management and allow modules
+ * to reference players by ID without storing direct pointers.
+ */
+
 #include "include/include.h"
 #include "include/structure.h"
 #include "include/function.h"

@@ -5,6 +5,18 @@
 ** add_server
 */
 
+/**
+ * @file add_server.c
+ * @brief Functions to initialize and configure the server structure and
+ * socket.
+ *
+ * This file contains functions to allocate, initialize, and configure
+ * the `server_t` structure and set up the listening socket.
+ *
+ * @author Noé Carabin
+ * @date 2025
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

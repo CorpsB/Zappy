@@ -5,6 +5,22 @@
 ** map_generator
 */
 
+/**
+ * @file map_generator.c
+ * @brief Initializes and populates the game map with resources and starter
+ * eggs.
+ * @author Noé Carabin (CorpsB)
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * This file contains the logic responsible for generating the initial state
+ * of the game map in Zappy. It performs memory allocation for the map grid,
+ * initializes each cell with zeroed resource structures, calculates the
+ * desired amount of resources based on a density table, resets the resource
+ * counters, sets up the resource repartition maps, and finally spawns
+ * the appropriate number of starter eggs for each team.
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

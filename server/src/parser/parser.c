@@ -5,6 +5,21 @@
 ** parser
 */
 
+/**
+ * @file parser.c
+ * @brief Implements argument parsing functions for the server configuration.
+ * @author Noé Carabin (CorpsB)
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Contains individual parsing functions for each command-line flag used
+ * to configure the server. These functions validate and convert string
+ * arguments to their corresponding types (e.g. integers), and store the
+ * values in the server structure. On invalid input (non-numeric or negative
+ * values), a log message is issued and parsing fails gracefully
+ * by returning -1.
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

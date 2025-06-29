@@ -5,6 +5,17 @@
 ** see_teams
 */
 
+/**
+ * @file see_teams.c
+ * @brief Debug utilities to display information about teams in the server.
+ *
+ * Provides functions to print the state of all teams, including players
+ * and eggs, to a specified file descriptor for debugging purposes.
+ *
+ * @author Noé Carabin
+ * @date 2025
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

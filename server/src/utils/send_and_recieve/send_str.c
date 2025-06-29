@@ -5,6 +5,21 @@
 ** send_str
 */
 
+/**
+ * @file send_str.c
+ * @brief Sends a complete message to a file descriptor, with optional
+ * memory cleanup.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+ *
+ * @details
+ * This file provides a utility function to send a string over a socket
+ * or any file descriptor using `write`. It ensures the entire string is sent
+ * even if `write` only writes part of it. It also handles optional memory
+ * deallocation after the message is sent.
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

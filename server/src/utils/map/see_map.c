@@ -5,6 +5,26 @@
 ** Helpers to display the resources present on every map tile.
 */
 
+/**
+ * @file debug_print_resource_map.c
+ * @brief Debug utilities to display the resources and their repartition
+ * values on the map.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+ *
+ * @details
+ * This file provides debugging utilities to inspect the in-game map's
+ * resource distribution.
+ * It displays, for each type of resource:
+ * - the amount present on each tile of the map;
+ * - the influence/repartition map used for spawning logic.
+ *
+ * Each resource is printed as a grid matching the map layout,
+ * allowing visual confirmation
+ * of both actual quantities and spread values.
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

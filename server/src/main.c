@@ -5,6 +5,27 @@
 ** main
 */
 
+/**
+ * @file main.c
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06-29
+ * @brief Entry point of the Zappy server.
+ *
+ * This file contains the main function of the Zappy server.
+ * It is responsible for:
+ * - Parsing command-line arguments
+ * - Enabling debug mode if requested
+ * - Initializing the server structure
+ * - Generating the map and setting up the teams
+ * - Handling the SIGINT signal for graceful shutdown
+ * - Launching the main loop of the server
+ *
+ * The program can be launched with the `-h` option to display the help.
+ * This help details all required options like map size, teams, port,
+ * frequency, and number of clients per team.
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
