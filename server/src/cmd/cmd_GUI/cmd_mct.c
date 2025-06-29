@@ -5,6 +5,18 @@
 ** cmd_mct.c
 */
 
+/**
+ * @file cmd_mct.c
+ * @brief Implements the "mct" graphical command for the Zappy server.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * This file handles the "mct" command, which allows a graphical client to
+ * request the state of all tiles on the map. The server replies with a "bct"
+ * message for each tile, listing the resources present.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

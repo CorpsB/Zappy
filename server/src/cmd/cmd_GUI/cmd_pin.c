@@ -5,6 +5,20 @@
 ** cmd_pin.c
 */
 
+/**
+ * @file cmd_pin.c
+ * @brief Implements the "pin" graphical command for the Zappy server.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * This file handles the "pin" command, which allows a graphical client
+ * to request the inventory and position of a specific player.
+ * The server responds with a message formatted according to the protocol:
+ * "pin <player_id> <x> <y> <food> <linemate> <deraumere> <sibur>
+ * <mendiane> <phiras> <thystame>"
+*/
+
 #include "include/include.h"
 #include "include/structure.h"
 #include "include/function.h"

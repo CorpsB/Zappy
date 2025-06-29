@@ -5,6 +5,21 @@
 ** cmd_set_object.c
 */
 
+/**
+ * @file cmd_take_object.c
+ * @brief Implements the command to pick up (take) an object from
+ * the current map tile into a player's inventory.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Enables a player to collect a resource from the tile they stand on,
+ * updating both the tile and the player's inventory.
+ * Adjusts the global map inventory accordingly and triggers relevant
+ * event notifications.
+ * Sends success or failure messages to the player.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

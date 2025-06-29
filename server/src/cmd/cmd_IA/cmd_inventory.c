@@ -5,6 +5,19 @@
 ** cmd_inventory
 */
 
+/**
+ * @file cmd_inventory.c
+ * @brief Implements the "inventory" command to send player's inventory
+ * contents.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Retrieves the quantities of all resource types in the player's inventory,
+ * formats them into a string, and sends this information back to the
+ * player's client.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

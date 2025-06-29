@@ -5,6 +5,18 @@
 ** cmd_plv.c
 */
 
+/**
+ * @file cmd_plv.c
+ * @brief Implements the "plv" graphical command for the Zappy server.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * This file handles the "plv" command, which allows a graphical client
+ * to query the level of a specific player. The server responds with:
+ * "plv <player_id> <level>"
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

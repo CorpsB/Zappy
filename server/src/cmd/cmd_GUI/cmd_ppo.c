@@ -5,6 +5,19 @@
 ** cmd_ppo.c
 */
 
+/**
+ * @file cmd_ppo.c
+ * @brief Implements the "ppo" graphical command for the Zappy server.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * This file handles the "ppo" command, which allows a graphical client
+ * to request the position and orientation of a specific player.
+ * The server responds with:
+ * "ppo <player_id> <x> <y> <direction>"
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

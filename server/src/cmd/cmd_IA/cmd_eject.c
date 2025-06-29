@@ -5,6 +5,21 @@
 ** cmd_eject.c
 */
 
+/**
+ * @file cmd_eject.c
+ * @brief Implements the "eject" command to push players off a tile.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Pushes all players sharing the tile with the aggressor
+ * (except the aggressor),
+ * moving them one tile away in the aggressor's facing direction,
+ * with map edge wrapping.
+ * Also handles notification messages and destruction of eggs
+ * on affected tiles.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

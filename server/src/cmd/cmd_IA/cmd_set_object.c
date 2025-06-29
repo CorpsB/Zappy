@@ -5,6 +5,23 @@
 ** cmd_set_object.c
 */
 
+/**
+ * @file cmd_set_object.c
+ * @brief Implements the command to drop (set) an object from a player's
+ * inventory onto the map tile.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Allows a player to place an object (resource) from their inventory onto
+ * their current map position.
+ * Updates the player's inventory, the map tile resource counts, and the
+ * global map inventory.
+ * Handles event notifications and triggers updates for map density and
+ * player inventory.
+ * Sends confirmation or error messages to the player depending on success.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

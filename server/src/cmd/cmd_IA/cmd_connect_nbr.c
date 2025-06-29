@@ -5,6 +5,17 @@
 ** cmd_connect_nbr.c
 */
 
+/**
+ * @file cmd_connect_nbr.c
+ * @brief Handles the "connect_nbr" command to report free slots for a team.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Calculates and sends to the player the number of free connection slots
+ * remaining for their team based on the maximum allowed minus used slots.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

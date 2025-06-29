@@ -5,6 +5,18 @@
 ** graphic
 */
 
+/**
+ * @file cmd_graphic.c
+ * @brief Handles the graphical client connection for the Zappy server.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * This file implements the "graphic" command, allowing a client to register
+ * as a graphical client. Upon successful registration, initial game state
+ * information is sent to the client to synchronize its view with the server.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

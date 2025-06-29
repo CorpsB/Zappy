@@ -5,6 +5,18 @@
 ** cmd_fork.c
 */
 
+/**
+ * @file cmd_fork.c
+ * @brief Handles the "fork" command to spawn new eggs for the player's team.
+ * @author Noé Carain
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Increases the maximum slots of the player's team, creates an egg at
+ * the player's
+ * position, and sends an acknowledgment to the player.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

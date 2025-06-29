@@ -5,6 +5,22 @@
 ** cdm_bct.c
 */
 
+/**
+ * @file cmd_bct.c
+ * @brief Implements the "bct" graphical command for the Zappy server.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * This file contains the logic for handling the "bct" command, which
+ * allows graphical clients to query the resources present at a specific
+ * tile on the game map.
+ * The coordinates provided by the client are parsed and validated before
+ * sending a response formatted according to the protocol:
+ * "bct <y> <x> <food> <linemate> <deraumere> <sibur> <mendiane>
+ * <phiras> <thystame>"
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

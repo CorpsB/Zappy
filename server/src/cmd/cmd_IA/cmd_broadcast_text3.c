@@ -5,6 +5,17 @@
 ** cmd_broadcast_text3.c
 */
 
+/**
+ * @file broadcast_text3.c
+ * @brief Utility functions for validating players involved in broadcasts.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Contains helper functions to check if the sender is valid (alive),
+ * and to determine which clients are valid receivers for broadcast messages.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

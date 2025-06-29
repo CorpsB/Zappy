@@ -5,6 +5,19 @@
 ** cmd_tna.c
 */
 
+/**
+ * @file cmd_tna.c
+ * @brief Implements the "tna" graphical command for the Zappy server.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Handles the "tna" command which lists all team names registered
+ * on the server.
+ * For each team, the server sends a message:
+ * "tna <team_name>"
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

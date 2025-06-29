@@ -5,6 +5,22 @@
 ** cmd_look_next
 */
 
+/**
+ * @file cmd_look_next.c
+ * @brief Functions to build the string representation of tiles in the player's
+ * line of sight.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Provides utility functions to convert map tiles into descriptive strings,
+ * handle coordinate wrapping on the map edges, and build lines of
+ * visible tiles
+ * according to the player's direction and level of vision.
+ * The core functionality assembles detailed contents of each tile in view,
+ * including players, eggs, food, and various resources.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

@@ -5,6 +5,22 @@
 ** cmd_broadcast_text.c
 */
 
+/**
+ * @file broadcast_text.c
+ * @brief Implements player message broadcasting with directional sound
+ * calculation.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Handles the "broadcast" command allowing a player to send messages
+ * to all
+ * other players. Calculates the direction of the message relative to
+ * each receiver
+ * based on map wrapping and player positions, then sends the message
+ * with direction.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

@@ -5,6 +5,22 @@
 ** cmd_look.c
 */
 
+/**
+ * @file look.c
+ * @brief Implements the "look" command to provide a player with a
+ * view of their surroundings.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Builds and sends a detailed description of tiles visible to the player,
+ * including counts of players, eggs, food, and resources on each tile.
+ * Handles map wrapping and constructs the response string according to
+ * the player's level of vision, formatted as a JSON-like array.
+ * Utility functions support counting entities per tile and appending tokens
+ * to build the response string dynamically.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

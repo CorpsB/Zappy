@@ -5,6 +5,17 @@
 ** cmd_msz.c
 */
 
+/**
+ * @file cmd_msz.c
+ * @brief Implements the "msz" graphical command for the Zappy server.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * This file handles the "msz" command, which provides the dimensions of the
+ * map (width and height) to graphical clients upon request.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

@@ -5,6 +5,20 @@
 ** cmd_player
 */
 
+/**
+ * @file cmd_player.c
+ * @brief Implements player connection management and information sending.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Handles adding a player to a team if slots are available and manages
+ * the player's connection state.
+ * Sends the total number of connected clients and server map dimensions
+ * to the player upon successful connection.
+ * Includes error handling for team capacity and slot availability.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

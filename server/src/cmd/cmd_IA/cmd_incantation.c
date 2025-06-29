@@ -5,6 +5,20 @@
 ** cmd_incantation.c
 */
 
+/**
+ * @file cmd_incantation.c
+ * @brief Handles the incantation command for player level advancement.
+ * @details
+ * Implements logic to check incantation conditions, freeze involved players,
+ * consume resources on the tile, manage incantation success or failure,
+ * notify players, and trigger relevant game events.
+ * Key functions include checking player positions and levels,
+ * starting and ending incantations, and updating player states.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

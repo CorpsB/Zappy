@@ -5,6 +5,19 @@
 ** cm_broadcast_text2.c
 */
 
+/**
+ * @file broadcast_text2.c
+ * @brief Creates and manages the broadcast distance maps for sound
+ * propagation.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Provides functions to allocate, initialize, and free the 2D maps used for
+ * calculating broadcast distances on the game map, supporting wrapping and
+ * recursion.
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

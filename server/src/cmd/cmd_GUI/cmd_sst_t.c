@@ -5,6 +5,19 @@
 ** cmd_sst_t.c
 */
 
+/**
+ * @file cmd_sst.c
+ * @brief Implements the "sst" graphical command for the Zappy server.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Handles the "sst" command which sets the game frequency (ticks per second).
+ * Parses and validates the frequency argument, then updates the server's
+ * frequency setting accordingly.
+ * If the argument is invalid, the server replies "ko\n".
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
