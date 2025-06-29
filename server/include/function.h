@@ -932,9 +932,10 @@ int get_raw_direction(int **map, server_t *srv, player_t *rcv);
  * @param map The 2D broadcast map.
  * @param srv Pointer to the server structure.
  * @param sender Pointer to the player sending the broadcast.
+ * @param receiver Pointer to the player receiving the broadcast.
 */
 void propagate_sound_map(int **map, server_t *srv,
-    player_t *sender);
+    player_t *sender, player_t *receiver);
 
 /**
  * @brief Frees the memory of a broadcast map.

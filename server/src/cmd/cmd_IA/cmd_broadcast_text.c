@@ -43,7 +43,8 @@ static void propagate_sound_map_tile(int **map, server_t *srv,
     int right[2] = { pos[0] + 1, pos[1] };
 
     safe_pos_update(srv, &pos[0], &pos[1]);
-    if (!(val < map[pos[1]][pos[0]] && map[pos[1]][pos[0]] != -1))
+    if (map[pos[1]][pos[0]] != -1 && (val >= map[pos[1]][pos[0]] ||
+    map[pos[1]][pos[0]] < 1))
         return;
     map[pos[1]][pos[0]] = val;
     propagate_sound_map_tile(map, srv, up, val + 1);
@@ -53,11 +54,11 @@ static void propagate_sound_map_tile(int **map, server_t *srv,
 }
 
 void propagate_sound_map(int **map, server_t *srv,
-    player_t *sender)
+    player_t *sender, player_t *receiver)
 {
     int sender_pos[2] = {sender->position[0], sender->position[1]};
 
-    map[sender_pos[1]][sender_pos[0]] = 0;
+    map[receiver->position[1]][receiver->position[0]] = -2;
     propagate_sound_map_tile(map, srv, sender_pos, 0);
 }
 
@@ -100,10 +101,13 @@ int get_raw_direction(int **map, server_t *srv, player_t *rcv)
 
 int adjust_to_player_dir(int raw, player_t *pl)
 {
-    int idx_raw = raw - 1;
-    int idx_rot = (idx_raw - pl->direction * 2 + 8) % 8;
+    int dir = pl->direction;
 
-    return idx_rot + 1;
+    if (dir == EAST)
+        dir = WEST;
+    else if (dir == WEST)
+        dir = EAST;
+    return ((raw - 1 - ((dir - 1) * 2) + 8) % 8) + 1;
 }
 
 /**

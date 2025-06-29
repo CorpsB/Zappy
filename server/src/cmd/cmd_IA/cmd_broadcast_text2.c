@@ -56,7 +56,7 @@ void send_directional_message(server_t *srv, player_t *snd,
     map = create_broadcast_map(srv);
     if (!map)
         return;
-    propagate_sound_map(map, srv, snd);
+    propagate_sound_map(map, srv, snd, rcv);
     raw = get_raw_direction(map, srv, rcv);
     adj = adjust_to_player_dir(raw, rcv);
     if (asprintf(&buffer, "message %d, %s\n", adj, msg) == -1)
