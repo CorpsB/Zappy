@@ -298,4 +298,6 @@ struct client {
     char *cmd;
 };
 
+extern bool sigint;
+
 #endif /* !STRUCTURE_H_ */

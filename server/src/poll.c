@@ -213,6 +213,8 @@ void run_server(server_t *server)
         while (clock->accumulator >= 1.0)
             clock->accumulator -= 1.0;
         count++;
+        if (sigint)
+            break;
     }
     if (clock)
         free(clock);

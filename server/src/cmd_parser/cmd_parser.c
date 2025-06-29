@@ -23,6 +23,14 @@
 #include "include/cmd.h"
 #include "include/cmd_parser_table.h"
 
+static void free_cmd(char *cmd)
+{
+    if (cmd) {
+        free(cmd);
+        cmd = NULL;
+    }
+}
+
 static bool is_new_player(server_t *server, int index, char *cmd)
 {
     for (teams_t *team = server->teams; team != NULL; team = team->next)
@@ -144,6 +152,7 @@ void cmd_parser(server_t *server, int index, char *cmd)
         free_table(args);
         return;
     }
+    free_cmd(cmd);
     if (server->poll.client_list[index].whoAmI == GUI) {
         parse_gui_client(server, index, args);
         free_table(args);

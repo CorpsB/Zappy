@@ -9,6 +9,8 @@
 #include "include/function.h"
 #include "include/structure.h"
 
+bool sigint;
+
 /**
  * @brief Print help message to stdout.
  * @return Always returns 0.
@@ -106,6 +108,14 @@ static void need_debug(server_t *server, char **av)
     }
 }
 
+void sigint_handler(int sig)
+{
+    (void)sig;
+    sigint = true;
+    if (printf("[WARNING] - SIGINT SIGNAL SEND.") == -1)
+        exit(84);
+}
+
 /**
  * @brief Main entry point of the server.
  * @param ac Argument count.
@@ -117,6 +127,7 @@ int main(int ac, char **av)
 {
     server_t *server = add_server();
 
+    sigint = false;
     if (ac == 1 || (ac == 2 && strncmp(av[1], "-h", 2) == 0))
         return print_help();
     need_debug(server, av);
@@ -126,6 +137,7 @@ int main(int ac, char **av)
     srand(time(NULL));
     map_generator(server);
     debug_print_resource_map(server);
+    signal(SIGINT, sigint_handler);
     run_server(server);
     free_server(server);
     return 0;
