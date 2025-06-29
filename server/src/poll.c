@@ -45,6 +45,19 @@ static void add_client(server_t *serv, int socket, whoAmI_t state)
     see_poll(serv->poll, 2, serv->poll.connected_client);
 }
 
+static bool is_win_per_team(server_t *, teams_t *team)
+{
+    int count = 0;
+
+    for (player_t *pl = team->player; pl != NULL; pl = pl->next) {
+        if (pl->lvl >= 8)
+            count++;
+    }
+    if (count >= 6)
+        return true;
+    return false;
+}
+
 /**
  * @brief Check if a winning condition has been met.
  * Iterates through all teams to determine if a team has won the game.
@@ -54,7 +67,7 @@ static void add_client(server_t *serv, int socket, whoAmI_t state)
 static bool is_game_over(server_t *server)
 {
     for (teams_t *teams = server->teams; teams != NULL; teams = teams->next) {
-        if (teams->win) {
+        if (is_win_per_team(server, teams)) {
             event_seg(server, teams->name);
             return true;
         }
@@ -190,8 +203,10 @@ static void action_per_turn(server_t *server, int count)
     player_cmd_execution(server);
     if (count % 20 == 0) {
         map_update(server);
-        logger(server, "RESSOURCE ++", DEBUG, false);
+        logger(server, "RELOAD MAP IVNETORY", DEBUG, false);
     }
+    if (count == 200)
+        logger(server, "Super Nils ! Super pour l'appareil photo !", DEBUG, true);
 }
 
 void run_server(server_t *server)
