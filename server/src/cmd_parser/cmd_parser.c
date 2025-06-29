@@ -23,6 +23,10 @@
 #include "include/cmd.h"
 #include "include/cmd_parser_table.h"
 
+/**
+ * @brief Frees the given command string.
+ * @param cmd The command string to free.
+*/
 static void free_cmd(char *cmd)
 {
     if (cmd) {
@@ -31,6 +35,14 @@ static void free_cmd(char *cmd)
     }
 }
 
+/**
+ * @brief Checks if the given command matches a known team name.
+ * @param server The server structure.
+ * @param index The index of the client in the pollfd list.
+ * @param cmd The received command.
+ * @return true if the command matches a team name and the player
+ * is handled, false otherwise.
+*/
 static bool is_new_player(server_t *server, int index, char *cmd)
 {
     for (teams_t *team = server->teams; team != NULL; team = team->next)
@@ -41,6 +53,14 @@ static bool is_new_player(server_t *server, int index, char *cmd)
     return false;
 }
 
+/**
+ * @brief Handles the authentication of an unknown client.
+ * @param server The server structure.
+ * @param index The index of the client in the pollfd list.
+ * @param cmd The received command.
+ * @return true if the client is recognized as a GUI or new player,
+ * false otherwise.
+*/
 static bool unknown_client(server_t *server, int index, char *cmd)
 {
     if (strncmp(cmd, "GRAPHIC", 7) == 0) {
@@ -55,6 +75,14 @@ static bool unknown_client(server_t *server, int index, char *cmd)
     return false;
 }
 
+/**
+ * @brief Parses the command of an unknown client.
+ * @param server The server structure.
+ * @param index The index of the client in the pollfd list.
+ * @param cmd The received command.
+ * @details If the client is not recognized, sends a "ko" message
+ * and logs the attempt.
+*/
 static void parse_unknown_client(server_t *server, int index, char *cmd)
 {
     if (!unknown_client(server, index, cmd)) {
@@ -66,6 +94,13 @@ static void parse_unknown_client(server_t *server, int index, char *cmd)
     }
 }
 
+/**
+ * @brief Checks the arguments of a GUI command and executes it if valid.
+ * @param server The server structure.
+ * @param index The index of the client in the pollfd list.
+ * @param args The array of command arguments.
+ * @param i The index of the command in the GUI command table.
+*/
 static void gui_args_checker(server_t *server, int index, char **args,
     int i)
 {
@@ -76,6 +111,13 @@ static void gui_args_checker(server_t *server, int index, char **args,
     }
 }
 
+/**
+ * @brief Parses a command sent by a GUI client.
+ * @param server The server structure.
+ * @param index The index of the client in the pollfd list.
+ * @param args The array of command arguments.
+ * @details If the command is unknown, sends an "suc" event to the GUI client.
+*/
 static void parse_gui_client(server_t *server, int index, char **args)
 {
     if (!args[0]) {
@@ -93,6 +135,14 @@ static void parse_gui_client(server_t *server, int index, char **args)
     event_suc(server, index, args);
 }
 
+/**
+ * @brief Sends a debug message to a player client when
+ * incorrect arguments are detected.
+ * @param server The server structure.
+ * @param index The index of the client in the pollfd list.
+ * @param args The array of command arguments.
+ * @param i The index of the command in the player command table.
+*/
 static void send_debug_message(server_t *server, int index,
     char **args, int i)
 {
@@ -110,6 +160,15 @@ static void send_debug_message(server_t *server, int index,
     send_str(server, server->poll.pollfds[index].fd, buffer, true);
 }
 
+/**
+ * @brief Checks the arguments of a player command and executes it if valid.
+ * @param server The server structure.
+ * @param index The index of the client in the pollfd list.
+ * @param args The array of command arguments.
+ * @param i The index of the command in the player command table.
+ * @details Sends a "ko" message if arguments are invalid and debug
+ * mode is enabled.
+*/
 static void player_args_checker(server_t *server, int index,
     char **args, int i)
 {
@@ -124,6 +183,13 @@ static void player_args_checker(server_t *server, int index,
         send_debug_message(server, index, args, i);
 }
 
+/**
+ * @brief Parses a command sent by a player client.
+ * @param server The server structure.
+ * @param index The index of the client in the pollfd list.
+ * @param args The array of command arguments.
+ * @details If the command is unknown, sends a "ko" message to the player.
+*/
 static void parse_player_client(server_t *server, int index, char **args)
 {
     if (!args[0]) {

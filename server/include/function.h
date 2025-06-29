@@ -183,6 +183,15 @@ char **str_to_array(char *str, char *separator);
  * @param server Pointer to the server structure.
 */
 void run_server(server_t *server);
+
+/**
+ * @brief Main command parser for all types of clients.
+ * @param server The server structure.
+ * @param index The index of the client in the pollfd list.
+ * @param cmd The received command.
+ * @details Redirects the command to the appropriate parser
+ * based on client type (UNKNOWN, GUI, PLAYER).
+*/
 void cmd_parser(server_t *server, int index, char *cmd);
 
 //EGGS
