@@ -26,8 +26,6 @@ void init_server(server_t *server)
     server->poll.sockaddr.sin_family = AF_INET;
     server->poll.sockaddr.sin_port = htons(server->port);
     server->poll.sockaddr.sin_addr.s_addr = INADDR_ANY;
-    server->poll.connected_client = 0;
-    server->poll.client_index = 0;
     if (bind(server->poll.socket, (struct sockaddr *)&server->poll.sockaddr,
         size) == -1)
         logger(server, "SOCKET BIND", PERROR, true);
@@ -53,6 +51,8 @@ void server_actual_map(server_t *server)
     server->actual_map_inventory.thystame = 0;
     server->poll.pollfds = NULL;
     server->poll.client_list = NULL;
+    server->poll.connected_client = 0;
+    server->poll.client_index = 0;
 }
 
 server_t *add_server(void)
