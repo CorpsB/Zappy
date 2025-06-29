@@ -7,19 +7,19 @@
 
 /**
  * @file NetConfig.hpp
- * @brief Déclaration de la classe NetConfig pour la configuration réseau du client Zappy.
+ * @brief Declaration of the NetConfig class for Zappy client's network configuration.
  *
- * Cette classe gère la configuration réseau du client, notamment l'adresse IP
- * et le port du serveur. Elle offre une interface simple pour définir et
- * valider ces paramètres, à partir de la ligne de commande ou manuellement.
+ * This class manages the client's network configuration, including the server's IP
+ * address and port. It provides a simple interface to set and validate these parameters,
+ * either manually or by parsing command-line arguments.
  *
- * Elle encapsule également la validation des entrées utilisateur via des expressions
- * régulières (regex) pour l’adresse IP, et s’assure que le port est dans les bornes valides.
+ * It also encapsulates validation of user input using regular expressions (regex)
+ * for the IP address, and ensures the port number falls within a valid range.
  *
- * Constantes :
- * - `BUFFER_SIZE` : taille maximale de lecture d’un message.
- * - `MAX_PORT` : port maximal autorisé (65535).
- * - `MAX_PORT_SIZE` : taille max pour la représentation texte d’un port.
+ * Constants:
+ * - `BUFFER_SIZE`: maximum size for reading a message.
+ * - `MAX_PORT`: maximum allowed port value (65535).
+ * - `MAX_PORT_SIZE`: maximum length for a port in string form.
  *
  * @author Thomas Camuset
  * @date 2025

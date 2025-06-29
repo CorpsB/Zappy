@@ -7,15 +7,15 @@
 
 /**
  * @file Client.hpp
- * @brief Déclaration de la classe Client du projet Zappy.
+ * @brief Declaration of the Client class for the Zappy project.
  *
- * Cette classe représente le client principal du jeu Zappy. Elle gère
- * l'ensemble de la communication réseau avec le serveur : initialisation
- * de la socket, lecture/écriture, gestion de la connexion, et boucle de jeu.
+ * This class represents the main client of the Zappy game. It handles
+ * all network communication with the server: socket initialization,
+ * reading/writing, connection management, and the main execution loop.
  *
- * Le Client encapsule également la configuration réseau (`NetConfig`) et
- * fournit une interface simple pour interagir avec le serveur de jeu
- * en utilisant une instance unique (singleton).
+ * The Client also encapsulates network configuration (`NetConfig`) and
+ * provides a simple interface to interact with the game server
+ * using a unique instance (singleton pattern).
  *
  * @author Thomas Camuset
  * @date 2025

@@ -16,8 +16,8 @@
 // pour pouvoir afficher des trucs sur la window
 class Event {
     public:
-        Event();
-        ~Event();
+        Event() {};
+        ~Event() {};
 
         int getEvent(sf::RenderWindow &window);
     private:
