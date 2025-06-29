@@ -193,7 +193,7 @@ static void action_per_turn(server_t *server, int count)
     player_cmd_execution(server);
     if (count % 20 == 0) {
         map_update(server);
-        logger(server, "RELOAD MAP IVNETORY", DEBUG, false);
+        logger(server, "RELOAD MAP IVENTORY", DEBUG, false);
     }
 }
 

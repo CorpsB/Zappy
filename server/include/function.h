@@ -906,8 +906,8 @@ void send_same_tile_message(server_t *srv, player_t *rcv,
  * @param rcv Pointer to the receiving player.
  * @param msg The message to send.
 */
-void send_directional_message(server_t *srv, player_t *snd,
-    player_t *rcv, const char *msg);
+void send_directional_message(server_t *srv,
+    player_t *rcv, const char *msg, int **map);
 
 /**
  * @brief Adjusts the raw direction based on the receiver's orientation.
@@ -933,8 +933,7 @@ int get_raw_direction(int **map, server_t *srv, player_t *rcv);
  * @param sender Pointer to the player sending the broadcast.
  * @param receiver Pointer to the player receiving the broadcast.
 */
-void propagate_sound_map(int **map, server_t *srv,
-    player_t *sender, player_t *receiver);
+void propagate_sound_map(int **map, server_t *srv, player_t *sender);
 
 /**
  * @brief Frees the memory of a broadcast map.
@@ -957,5 +956,7 @@ void free_broadcast_map(server_t *srv, int **map);
 int **create_broadcast_map(server_t *srv);
 void send_str(server_t *server, int fd, char *message, bool need_free);
 void complete_client_data(server_t *serv, int socket, whoAmI_t state);
+bool check_sender(player_t *snd);
+bool is_valid_rcv(server_t *srv, player_t *rcv, player_t *snd, int i);
 
 #endif /* !FUCNTION_H_ */
