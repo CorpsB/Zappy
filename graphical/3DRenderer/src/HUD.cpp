@@ -11,7 +11,7 @@ namespace Renderer {
 
     Hud::Hud()
     {
-        std::array<std::string, 4> orientation = {"NORTH", "WEST", "SOUTH", "EAST"};
+        orientation = {"NORTH", "WEST", "SOUTH", "EAST"};
         colorResources = {
             sf::Color::Yellow,
             sf::Color {96, 96, 96},
