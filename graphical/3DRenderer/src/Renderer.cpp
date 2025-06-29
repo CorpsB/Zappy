@@ -42,7 +42,26 @@ namespace Renderer {
     static std::array<std::string, 4> orientation = {"NORTH", "WEST", "SOUTH", "EAST"};
     static sf::RectangleShape escapeMenuBg;
     static std::pair<int, int> currentTile;
+
+    bool buttonToggle = false;
+    bool buttonIsPressed = false;
+    bool escapeMenuToggle = false;
+    bool escapeWasPressed = false;
+    bool zToggle = false;
+    bool zWasPressed = false;
+    bool sToggle = false;
+    bool sWasPressed = false;
+    bool qToggle = false;
+    bool qWasPressed = false;
+    bool dToggle = false;
+    bool dWasPressed = false;
+    bool tabToggle = false;
+    bool tabWasPressed = false;
+
     Update _update;
+    InputHandler _inputhandler;
+    Camera _camera;
+    Clipper _clipper;
 
     bool initRenderer(sf::RenderWindow &window) {
         // window = new sf::RenderWindow(sf::VideoMode(width, height), title);
@@ -146,28 +165,15 @@ namespace Renderer {
     }
 
     void update(float dt) {
-        processInput(dt);
+        _camera.cameraMovement(dt);
         cooldownAction -= dt;
-        if (zToggle) {
-            if (currentTile.first < map_size_x - 1)
-                currentTile.first += 1;
-            zToggle = false;
-        }
-        if (sToggle) {
-            if (currentTile.first > 0)
-                currentTile.first -= 1;
-            sToggle = false;
-        }
-        if (qToggle) {
-            if (currentTile.second < map_size_y - 1)
-                currentTile.second += 1;
-            qToggle = false;
-        }
-        if (dToggle) {
-            if (currentTile.second > 0)
-                currentTile.second -= 1;
-            dToggle = false;
-        }
+        _inputhandler.switchInput(tabToggle, tabWasPressed, sf::Keyboard::Tab);
+        _inputhandler.switchInput(escapeMenuToggle, escapeWasPressed, sf::Keyboard::Escape);
+        _inputhandler.switchInput(zToggle, zWasPressed, sf::Keyboard::Z);
+        _inputhandler.switchInput(sToggle, sWasPressed, sf::Keyboard::S);
+        _inputhandler.switchInput(qToggle, qWasPressed, sf::Keyboard::Q);
+        _inputhandler.switchInput(dToggle, dWasPressed, sf::Keyboard::D);
+        _update.changeSelectedTile(zToggle, sToggle, qToggle, dToggle, currentTile, map_size_x, map_size_y);
         // Values in valuesForSynchro :
         // int -> client id
         // Vec3 -> body position
@@ -256,12 +262,12 @@ namespace Renderer {
         std::fill(depthBuffer.begin(), depthBuffer.end(), std::numeric_limits<float>::max());
 
         Mat4x4 matProj = Mat4x4::makeProjection(90.0f, float(w) / float(h), 0.1f, 1000.0f);
-        Mat4x4 matView = quickInverse(
-            pointAt(
-                cameraPosition,
-                { cameraPosition.x + static_cast<float>(std::sin(cameraYaw   * M_PI / 180.0f)),
-                  cameraPosition.y + static_cast<float>(std::sin(cameraPitch * M_PI / 180.0f)),
-                  cameraPosition.z + static_cast<float>(std::cos(cameraYaw   * M_PI / 180.0f)) },
+        Mat4x4 matView = _camera.quickInverse(
+            _camera.pointAt(
+                _camera.getPosition(),
+                { _camera.getPosition().x + static_cast<float>(std::sin(_camera.getYaw()   * M_PI / 180.0f)),
+                  _camera.getPosition().y + static_cast<float>(std::sin(_camera.getPitch() * M_PI / 180.0f)),
+                  _camera.getPosition().z + static_cast<float>(std::cos(_camera.getYaw()   * M_PI / 180.0f)) },
                 { 0, 1, 0 }
             )
         );
@@ -329,7 +335,7 @@ namespace Renderer {
                 std::list<Triangle> trisToRaster;
                 Triangle clipped[2];
                 triViewed.color = finalColor;
-                int nClipped = clipAgainstPlane({0,0,0.1f}, {0,0,1}, triViewed, clipped[0], clipped[1]);
+                int nClipped = _clipper.clipAgainstPlane({0,0,0.1f}, {0,0,1}, triViewed, clipped[0], clipped[1]);
                 for (int i = 0; i < nClipped; ++i)
                     trisToRaster.push_back(clipped[i]);
 
