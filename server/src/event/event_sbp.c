@@ -5,6 +5,23 @@
 ** event_sbp
 */
 
+/**
+ * @file event_sbp.c
+ * @brief Implements the incorrect argument error notification event ("sbp")
+ * for graphical clients.
+ * Provides feedback when a GUI client sends a command with an invalid number
+ * or format of arguments.
+ * Includes optional debug information if enabled on the server.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Sends an "sbp" message to the concerned GUI client to indicate invalid
+ * command arguments.
+ * If debug mode is enabled, detailed information about the command and
+ * argument mismatch is logged.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

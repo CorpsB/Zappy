@@ -5,6 +5,20 @@
 ** event_bct.c
 */
 
+/**
+ * @file event_bct.c
+ * @brief Implements events to send map tile resource updates to
+ * graphical clients.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Provides functions to send the current resource content of the entire
+ * map or individual tiles
+ * to all connected graphical clients, following the "bct" protocol format.
+ * These updates keep the GUI synchronized with the server's map state.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

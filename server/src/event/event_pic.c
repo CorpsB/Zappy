@@ -5,6 +5,18 @@
 ** event_pic
 */
 
+/**
+ * @file event_pic.c
+ * @brief Implements the event for player beginning an incantation ("pic").
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Sends a "pic" message with player position and level,
+ * and appends other players' IDs who are involved and frozen at
+ * the same position and level.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

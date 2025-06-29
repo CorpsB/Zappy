@@ -5,6 +5,21 @@
 ** event_new_gui_enw.c
 */
 
+/**
+ * @file event_enw.c
+ * @brief Implements events related to egg creation and notification to
+ * graphical clients.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Handles sending notifications about eggs ("enw" messages) to all connected
+ * graphical clients.
+ * Includes sending individual egg info, sending all eggs on new GUI
+ * connection,
+ * and broadcasting new egg creation.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

@@ -5,6 +5,19 @@
 ** event_pdi.c
 */
 
+/**
+ * @file event_pdi.c
+ * @brief Implements player death notification events for graphical clients.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Sends a "pdi" message to all GUI clients indicating a player has died.
+ * Optionally sends a "dead" message directly to the player socket if
+ * specified.
+ * Also supports sending death notification by client index.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

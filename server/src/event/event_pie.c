@@ -5,6 +5,20 @@
 ** event_pie
 */
 
+/**
+ * @file event_pie.c
+ * @brief Implements the incantation result notification event ("pie") for
+ * graphical clients.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Sends a "pie" message to all GUI clients to indicate the result of an
+ * incantation at a specific position.
+ * The message specifies the coordinates and whether the incantation
+ * succeeded (1) or failed (0).
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

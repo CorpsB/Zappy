@@ -5,6 +5,18 @@
 ** event_pfk.c
 */
 
+/**
+ * @file event_pfk.c
+ * @brief Implements the player laying an egg event ("pfk") and triggers egg
+ * creation notification.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Sends a "pfk" message to all graphical clients when a player lays an egg.
+ * Then triggers the event_enw() to notify creation of the new egg.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

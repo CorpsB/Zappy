@@ -5,6 +5,20 @@
 ** event_pin.c
 */
 
+/**
+ * @file event_pin.c
+ * @brief Implements the player inventory notification event ("pin") for
+ * graphical clients.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Sends a "pin" message to all GUI clients containing detailed information
+ * about a player's position and inventory.
+ * The message includes player ID, position coordinates, and quantities of
+ * each resource carried by the player.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

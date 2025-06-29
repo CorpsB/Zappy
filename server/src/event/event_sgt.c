@@ -5,6 +5,21 @@
 ** event_sgt.c
 */
 
+/**
+ * @file event_sgt.c
+ * @brief Implements the time unit frequency notification event ("sgt") for
+ * graphical clients.
+ * Provides the current time unit frequency used in the game to all GUI
+ * clients.
+ * This frequency determines the speed of game actions.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Sends a "sgt" message to all GUI clients indicating the game's current
+ * frequency setting.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

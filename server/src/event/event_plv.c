@@ -5,6 +5,19 @@
 ** event_plv
 */
 
+/**
+ * @file event_plv.c
+ * @brief Implements player level notification events ("plv")
+ * for graphical clients.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Sends a "plv" message to all GUI clients indicating a player's level.
+ * Also provides a function to send this information for all connected
+ * players.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

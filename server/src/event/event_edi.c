@@ -5,6 +5,18 @@
 ** event_edi.c
 */
 
+/**
+ * @file event_edi.c
+ * @brief Implements the event to notify graphical clients that an egg
+ * has hatched.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Sends the "edi" event with the egg ID to all GUI clients,
+ * informing them that an egg has hatched and transformed into a player.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
