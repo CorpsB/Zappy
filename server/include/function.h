@@ -53,7 +53,7 @@ void see_inventory(server_t *server, resources_t inv, int fd);
  * @param players Pointer to the head of the player linked list.
  * @param fd File descriptor where output will be printed.
 */
-void see_all_players(player_t *players, int fd);
+void see_all_players(server_t *server, player_t *players, int fd);
 //server
 
 /**
@@ -123,7 +123,7 @@ void add_teams(server_t *server, char *name);
  * @param team Pointer to the team node.
  * @param fd File descriptor to print to.
 */
-void see_one_team(teams_t *team, int fd);
+void see_one_team(server_t *server, teams_t *team, int fd);
 
 /**
  * @brief Print a list of all teams and their details.

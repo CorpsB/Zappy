@@ -36,7 +36,6 @@ void add_eggs(server_t *server, unsigned int creator_id, teams_t *teams,
     node->position[1] = pos[1];
     node->creator_id = creator_id;
     node->next = teams->egg;
-    event_enw(server, NULL, node);
     teams->egg = node;
     server->eggs_count++;
 }

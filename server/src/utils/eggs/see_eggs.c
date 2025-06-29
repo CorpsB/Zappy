@@ -22,7 +22,7 @@ static void see_one_egg(server_t *server, const eggs_t *egg, int fd)
 {
     if (dprintf(fd, "\t[EGG] id=%u | creator=%u | pos=(%u,%u)\n",
         egg->id, egg->creator_id, egg->position[0], egg->position[1]) == -1)
-        logger(server, "DPRINTF", PERROR, true)
+        logger(server, "DPRINTF", PERROR, true);
 }
 
 void see_all_eggs(server_t *server, eggs_t *eggs, int fd)
@@ -37,7 +37,7 @@ void see_all_eggs(server_t *server, eggs_t *eggs, int fd)
     if (dprintf(fd, "\t\t[EGGS]:\n") == -1)
         logger(server, "DPRINTF", PERROR, true);
     for (eggs_t *cur = eggs; cur; cur = cur->next)
-        see_one_egg(cur, fd);
+        see_one_egg(server, cur, fd);
     if (dprintf(fd, "==============\n") == -1)
         logger(server, "DPRINTF", PERROR, true);
 }
