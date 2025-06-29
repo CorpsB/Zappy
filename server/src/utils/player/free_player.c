@@ -15,6 +15,9 @@
 */
 void free_a_player(player_t *player)
 {
+    for (int i = 0; i < 11; i++)
+        if (player->cmd[i])
+            free(player->cmd[i]);
     if (player)
         free(player);
 }

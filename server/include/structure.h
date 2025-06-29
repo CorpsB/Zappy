@@ -192,6 +192,7 @@ struct server {
     resources_t **map;
     /// Linked list of all teams participating in the game.
     teams_t *teams;
+    zappy_clock_t *clock;
 };
 
 

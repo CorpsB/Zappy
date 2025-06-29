@@ -59,8 +59,10 @@ void send_directional_message(server_t *srv, player_t *snd,
     propagate_sound_map(map, srv, snd);
     raw = get_raw_direction(map, srv, rcv);
     adj = adjust_to_player_dir(raw, rcv);
-    if (asprintf(&buffer, "message %d, %s\n", adj, msg) == -1)
+    if (asprintf(&buffer, "message %d, %s\n", adj, msg) == -1) {
+        free_broadcast_map(srv, map);
         logger(srv, "ASPRINTF : BROADCAST", PERROR, true);
+    }
     send_str(srv, rcv->socket_fd, buffer, true);
     free_broadcast_map(srv, map);
 }

@@ -9,6 +9,13 @@
 #include "include/function.h"
 #include "include/structure.h"
 
+static void emergency_end(server_t *server)
+{
+    write(2, "[EMERGENCY END] - Cannot use logger func.\n", 42);
+    free_server(server);
+    exit(84);
+}
+
 /**
  * @brief Free the server and exit the program if is_end is true.
  * @param server Pointer to the server structure.
@@ -39,32 +46,43 @@ static void debug_logger(server_t *server, char *message, logs_t log)
         return;
     }
     if (log == ERROR)
-        asprintf(&buffer, "[ERROR] - %s\n", message);
+        if (asprintf(&buffer, "[ERROR] - %s\n", message) == -1)
+            emergency_end(server);
     if (log == PERROR)
-        asprintf(&buffer, "[ERROR] - %s: %s\n", message, strerror(errno));
+        if (asprintf(&buffer, "[ERROR] - %s: %s\n", message, strerror(errno)) == -1)
+            emergency_end(server);
     if (log == DEBUG)
-        asprintf(&buffer, "[DEBUG] - %s\n", message);
+        if (asprintf(&buffer, "[DEBUG] - %s\n", message) == -1)
+            emergency_end(server);
     if (log == INFO)
-        asprintf(&buffer, "[INFO] - %s\n", message);
+        if (asprintf(&buffer, "[INFO] - %s\n", message) == -1)
+            emergency_end(server);
     if (buffer)
-        send_str(server, server->debug_fd, buffer, true);
+        dprintf(server->debug_fd, "%s\n", buffer);
 }
+
 
 void logger(server_t *server, char *message, logs_t log, bool is_end)
 {
     char *buffer = NULL;
 
     if (log == ERROR)
-        asprintf(&buffer, "[ERROR] - %s\n", message);
+        if (asprintf(&buffer, "[ERROR] - %s\n", message) == -1)
+            emergency_end(server);
     if (log == PERROR)
-        asprintf(&buffer, "[ERROR] - %s: %s\n", message, strerror(errno));
+        if (asprintf(&buffer, "[ERROR] - %s: %s\n", message, strerror(errno)) == -1)
+            emergency_end(server);
     if (log == DEBUG)
-        asprintf(&buffer, "[DEBUG] - %s\n", message);
+        if (asprintf(&buffer, "[DEBUG] - %s\n", message) == -1)
+            emergency_end(server);
     if (log == INFO)
-        asprintf(&buffer, "[INFO] - %s\n", message);
+        if (asprintf(&buffer, "[INFO] - %s\n", message) == -1)
+            emergency_end(server);
     if (buffer)
         write(2, buffer, strlen(buffer));
     if (server->debug)
         debug_logger(server, message, log);
+    if (buffer)
+        free(buffer);
     need_stop(server, is_end);
 }

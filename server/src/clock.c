@@ -43,5 +43,6 @@ zappy_clock_t *init_clock(server_t *server, size_t freq)
     clock->freq = freq;
     clock->accumulator = 0.0;
     clock_gettime(CLOCK_MONOTONIC, &clock->last_tick);
+    server->clock = clock;
     return clock;
 }

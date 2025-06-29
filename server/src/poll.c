@@ -205,7 +205,8 @@ static void action_per_turn(server_t *server, int count)
         map_update(server);
         logger(server, "RELOAD MAP IVNETORY", DEBUG, false);
     }
-    if (count == 200)
+    printf("%d\n", count);
+    if (count == 1000)
         logger(server, "Super Nils ! Super pour l'appareil photo !", DEBUG, true);
 }
 
@@ -215,7 +216,7 @@ void run_server(server_t *server)
 
     init_server(server);
     add_client(server, server->poll.socket, LISTEN);
-    for (int count = 0; !is_game_over(server); count++) {
+    for (int count = 0; !is_game_over(server);) {
         update_clock(clock, server);
         if (clock->accumulator < 1.0) {
             poll_func(server, clock);
@@ -224,6 +225,7 @@ void run_server(server_t *server)
         action_per_turn(server, count);
         while (clock->accumulator >= 1.0)
             clock->accumulator -= 1.0;
+        count++;
     }
     if (clock)
         free(clock);
