@@ -37,14 +37,17 @@ static unsigned int found_player_on_tile(server_t *server, player_t *pl)
     unsigned int count = 0;
     player_t *tmp;
 
-    for (int i = 0; i < server->poll.connected_client; i++) {
+    for (int i = 0; i < server->poll.connected_client; ++i) {
         if (server->poll.client_list[i].whoAmI != PLAYER)
             continue;
         tmp = server->poll.client_list[i].player;
-        if (!tmp->is_dead && tmp->is_freeze && is_same_pos(pl, tmp))
-            return -1;
-        if (tmp->lvl == pl->lvl && !tmp->is_dead && is_same_pos(pl, tmp))
-            count++;
+
+        if (tmp->is_dead || !is_same_pos(pl, tmp))
+            continue;
+
+        /* On NE saute PAS les is_freeze ici */
+        if (tmp->lvl == pl->lvl)
+            ++count;
     }
     return count;
 }
@@ -68,7 +71,8 @@ static bool check_condition(server_t *server, player_t *pl)
         map.sibur < requirement[pl->lvl -1].sibur ||
         map.mendiane < requirement[pl->lvl -1].mendiane ||
         map.phiras < requirement[pl->lvl -1].phiras ||
-        map.thystame < requirement[pl->lvl -1].thystame)
+        map.thystame < requirement[pl->lvl -1].thystame ||
+        pl->is_freeze)
         return false;
     return true;
 }
@@ -87,6 +91,8 @@ bool start_incantation(server_t *server, player_t *pl)
         tmp = server->poll.client_list[i].player;
         if (!tmp->is_dead && tmp->lvl == pl->lvl && is_same_pos(tmp, pl)) {
             tmp->is_freeze = true;
+            tmp->time = 300;               /* ← nouveau */
+            tmp->is_waiting = (tmp == pl); /* seul le lanceur attend vraiment */
             send_str(server, tmp->socket_fd, "Elevation underway\n", false);
         }
     }
@@ -126,14 +132,14 @@ static void elevation_failed(server_t *server, int index)
 static void delete_stuff(server_t *server, int index)
 {
     player_t *pl = server->poll.client_list[index].player;
-    resources_t map = server->map[pl->position[1]][pl->position[0]];
+    resources_t *map = &server->map[pl->position[1]][pl->position[0]];
 
-    map.deraumere -= requirement[pl->lvl - 1].deraumere;
-    map.linemate -= requirement[pl->lvl - 1].linemate;
-    map.mendiane -= requirement[pl->lvl - 1].mendiane;
-    map.phiras -= requirement[pl->lvl - 1].phiras;
-    map.sibur -= requirement[pl->lvl - 1].sibur;
-    map.thystame -= requirement[pl->lvl - 1].thystame;
+    map->deraumere -= requirement[pl->lvl - 1].deraumere;
+    map->linemate -= requirement[pl->lvl - 1].linemate;
+    map->mendiane -= requirement[pl->lvl - 1].mendiane;
+    map->phiras -= requirement[pl->lvl - 1].phiras;
+    map->sibur -= requirement[pl->lvl - 1].sibur;
+    map->thystame -= requirement[pl->lvl - 1].thystame;
 }
 
 static void notify_success(server_t *server, player_t *player)

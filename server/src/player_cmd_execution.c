@@ -55,8 +55,17 @@ void player_cmd_execution(server_t *server)
         if (server->poll.client_list[i].whoAmI != PLAYER)
             continue;
         pl = server->poll.client_list[i].player;
-        if (pl->is_dead || pl->is_freeze)
+        if (pl->is_dead)
             continue;
+        pl->time = pl->time > 0 ? pl->time - 1 : pl->time;
+        if (pl->is_freeze) {
+            if (pl->is_waiting && pl->time == 0) { 
+                cmd_parser(server, i, pl->cmd[0]);
+                delete_cmd(server, pl);
+                pl->is_waiting = false;
+            }
+            continue;
+        }
         if (pl->time == 0 && pl->is_waiting && pl->cmd[0] != NULL) {
             cmd_parser(server, i, pl->cmd[0]);
             delete_cmd(server, pl);
@@ -67,6 +76,5 @@ void player_cmd_execution(server_t *server)
             pl->is_waiting = true;
             continue;
         }
-        pl->time = pl->time > 0 ? pl->time - 1 : pl->time;
     }
 }
