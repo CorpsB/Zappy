@@ -15,6 +15,5 @@ void event_pbc(server_t *server, player_t *player, char *message)
 
     if (asprintf(&buffer, "pbc #%u %s", player->id, message) == -1)
         logger(server, "PBC", ERROR, true);
-    buffer[strlen(buffer) - 1] = '\0';
     send_to_all_gui(server, buffer);
 }

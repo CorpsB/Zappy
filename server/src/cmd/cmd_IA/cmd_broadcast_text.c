@@ -138,6 +138,7 @@ void cmd_broadcast_text(server_t *srv, int idx, char **args)
         if (args[i + 1])
             msg = append_token(msg, " ", srv);
     }
+    msg[strlen(msg) - 1] = '\0';
     for (int i = 0; i < srv->poll.connected_client; ++i)
         if (srv->poll.client_list[i].whoAmI == PLAYER &&
             srv->poll.client_list[i].player != snd &&
@@ -145,5 +146,6 @@ void cmd_broadcast_text(server_t *srv, int idx, char **args)
             send_broadcast_to_rcv(srv, snd,
                 srv->poll.client_list[i].player, msg);
     event_pbc(srv, snd, msg);
+    send_str(srv, snd->socket_fd, "ok\n", false);
     free(msg);
 }
