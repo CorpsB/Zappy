@@ -159,6 +159,7 @@ static void eat_per_teams(server_t *server, teams_t *teams)
         if ((int)tmp->cycle_before_death - 1 <= 0 &&
         tmp->inventory.food == 0) {
             tmp->is_dead = true;
+            tmp->is_freeze = false;
             event_pdi(server, tmp, true);
             continue;
         }

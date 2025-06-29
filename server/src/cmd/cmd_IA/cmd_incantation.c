@@ -30,9 +30,10 @@ static bool is_same_pos(player_t *first, player_t *second)
  * an ongoing incantation.
  * @param server The server structure.
  * @param pl The reference player.
+ * @param freezed If true, counts freezed players. Otherwise, counts unfreezed.
  * @return The number of matching players, or -1 if an incantation is active.
 */
-static int found_player_on_tile(server_t *server, player_t *pl)
+static int found_player_on_tile(server_t *server, player_t *pl, bool freezed)
 {
     unsigned int count = 0;
     player_t *tmp;
@@ -41,39 +42,36 @@ static int found_player_on_tile(server_t *server, player_t *pl)
         if (server->poll.client_list[i].whoAmI != PLAYER)
             continue;
         tmp = server->poll.client_list[i].player;
-        if (!tmp->is_dead && tmp->is_freeze && is_same_pos(pl, tmp))
+        if (tmp->is_dead || !is_same_pos(pl, tmp) || tmp->lvl != pl->lvl)
+            continue;
+        if (!freezed && tmp->is_freeze)
             return -1;
-        if (tmp->lvl == pl->lvl && !tmp->is_dead && is_same_pos(pl, tmp))
+        if ((freezed && tmp->is_freeze) || !freezed)
             count++;
     }
     return count;
 }
-
 
 /**
  * @brief Check if all conditions for an incantation are met.
  * Verifies required resources on the tile and the number of players.
  * @param server The server structure.
  * @param pl The player attempting the incantation.
+ * @param freezed If true, check freezed players. Otherwise, fail and return.
  * @return true if all conditions are satisfied, false otherwise.
 */
-static bool check_condition(server_t *server, player_t *pl)
+static bool check_condition(server_t *server, player_t *pl, bool freezed)
 {
     resources_t map = server->map[pl->position[1]][pl->position[0]];
-    int nbr = found_player_on_tile(server, pl);
 
-    if (pl->lvl >= 8)
-        return false;
-    if (nbr < 0)
-        return false;
-    if (nbr < (int) requirement[pl->lvl -1].lvl ||
-        map.linemate < requirement[pl->lvl -1].linemate ||
-        map.deraumere < requirement[pl->lvl -1].deraumere ||
-        map.sibur < requirement[pl->lvl -1].sibur ||
-        map.mendiane < requirement[pl->lvl -1].mendiane ||
-        map.phiras < requirement[pl->lvl -1].phiras ||
-        map.thystame < requirement[pl->lvl -1].thystame ||
-        pl->is_freeze)
+    if (pl->lvl >= 8 || found_player_on_tile(server, pl, freezed) <
+    (int)requirement[pl->lvl - 1].lvl ||
+    map.linemate < requirement[pl->lvl - 1].linemate ||
+    map.deraumere < requirement[pl->lvl - 1].deraumere ||
+    map.sibur < requirement[pl->lvl - 1].sibur ||
+    map.mendiane < requirement[pl->lvl - 1].mendiane ||
+    map.phiras < requirement[pl->lvl - 1].phiras ||
+    map.thystame < requirement[pl->lvl - 1].thystame)
         return false;
     return true;
 }
@@ -82,7 +80,7 @@ bool start_incantation(server_t *server, player_t *pl)
 {
     player_t *tmp;
 
-    if (!check_condition(server, pl)) {
+    if (!check_condition(server, pl, false)) {
         send_str(server, pl->socket_fd, "ko\n", false);
         return false;
     }
@@ -116,8 +114,7 @@ static void elevation_failed(server_t *server, int index)
         if (server->poll.client_list[i].whoAmI != PLAYER)
             continue;
         tmp = server->poll.client_list[i].player;
-        if (tmp->lvl == pl->lvl && is_same_pos(tmp, pl) && !tmp->is_dead
-            && tmp->is_freeze) {
+        if (is_same_pos(tmp, pl) && !tmp->is_dead && tmp->is_freeze) {
             tmp->is_freeze = false;
             send_str(server, tmp->socket_fd, "ko\n", false);
         }
@@ -179,7 +176,7 @@ static void end_incantation(server_t *server, int index, char **)
 {
     player_t *pl = server->poll.client_list[index].player;
 
-    if (!check_condition(server, pl))
+    if (!check_condition(server, pl, true))
         return elevation_failed(server, index);
     delete_stuff(server, index);
     upgrade_players_on_tile(server, pl);
