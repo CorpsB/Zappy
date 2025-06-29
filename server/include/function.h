@@ -902,9 +902,9 @@ void send_same_tile_message(server_t *srv, player_t *rcv,
  * then sends a formatted message following the protocol:
  * "message <direction>, <msg>".
  * @param srv Pointer to the server structure.
- * @param snd Pointer to the sending player.
  * @param rcv Pointer to the receiving player.
  * @param msg The message to send.
+ * @param map The precomputed broadcast map containing distances.
 */
 void send_directional_message(server_t *srv,
     player_t *rcv, const char *msg, int **map);
@@ -954,9 +954,46 @@ void free_broadcast_map(server_t *srv, int **map);
  * @return A pointer to the allocated 2D map, or NULL on failure.
 */
 int **create_broadcast_map(server_t *srv);
+
+/**
+ * @brief Sends a string to a given file descriptor.
+ * Sends the full message to the provided socket/file descriptor,
+ * handling partial writes if necessary. Optionally frees the message.
+ * @param server Pointer to the server structure.
+ * @param fd The file descriptor to write to.
+ * @param message The message to send.
+ * @param need_free If true, frees the message after sending.
+ */
 void send_str(server_t *server, int fd, char *message, bool need_free);
+
+/**
+ * @brief Initializes poll and client data for a newly connected client.
+ * Fills the corresponding slot in the pollfd and client_list arrays
+ * for the new client with default values and provided state.
+ * @param serv Pointer to the server structure.
+ * @param socket The socket descriptor for the new client.
+ * @param state The client type (PLAYER, GUI, etc.).
+*/
 void complete_client_data(server_t *serv, int socket, whoAmI_t state);
+
+/**
+ * @brief Checks if the sender is valid for broadcasting.
+ * A sender is considered invalid if they are NULL or dead.
+ * @param snd Pointer to the sending player.
+ * @return true if sender is invalid, false otherwise.
+*/
 bool check_sender(player_t *snd);
+
+/**
+ * @brief Checks if a player is a valid receiver for a broadcast.
+ * A valid receiver must be a player, not dead, different from the sender,
+ * and properly initialized.
+ * @param srv Pointer to the server structure.
+ * @param rcv Pointer to the receiving player.
+ * @param snd Pointer to the sending player.
+ * @param i Index of the client in the client list.
+ * @return true if receiver is valid, false otherwise.
+*/
 bool is_valid_rcv(server_t *srv, player_t *rcv, player_t *snd, int i);
 
 #endif /* !FUCNTION_H_ */
