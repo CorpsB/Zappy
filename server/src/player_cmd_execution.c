@@ -18,9 +18,8 @@
 */
 static void delete_cmd(server_t *, player_t *pl)
 {
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++)
         pl->cmd[i] = pl->cmd[i + 1];
-    }
     pl->cmd[10] = NULL;
 }
 

@@ -55,8 +55,10 @@ static void propagate_sound_map_tile(int **map, server_t *srv,
 void propagate_sound_map(int **map, server_t *srv,
     player_t *sender)
 {
-    map[sender->position[1]][sender->position[0]] = 0;
-    propagate_sound_map_tile(map, srv, (int *)sender->position, 0);
+    int sender_pos[2] = {sender->position[0], sender->position[1]};
+
+    map[sender_pos[1]][sender_pos[0]] = 0;
+    propagate_sound_map_tile(map, srv, sender_pos, 0);
 }
 
 /**
