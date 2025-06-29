@@ -27,14 +27,14 @@ bool ai::entity::AI::collectItem(const std::string &look, const std::string &nam
     if (pos != 0)
         return true;
     if ((name == "food" && _food_level >= MAX_FOOD_THRESHOLD) || _level == 8 ||
-    (name != "food" && _inventory.getItem(name) >= recipe_qty * 2 + 1) || is_players)
+    (name != "food" && _inventory.getItem(name) > recipe_qty * 3 + 1) || is_players)
         return true;
     return doKoAction("Take " + name);
 }
 
 bool ai::entity::AI::collectAllItems(const std::string &look)
 {
-    const bool is_player = countItemOnTile(0, look, "player") > 0;
+    const bool is_player = countItemOnTile(0, look, "player") > 1;
 
     return collectItem(look, "food", _food_level, is_player) &&
     collectItem(look, "linemate", RECIPES[_level - 1].linemate, is_player) &&
