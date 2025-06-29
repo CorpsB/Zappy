@@ -31,9 +31,6 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 
-//-Cette classe sera utilisée pour gérer les différentes instructions du serveur
-//-Il y aura probablement besoin de faire un enum avec toutes les instructions possibles
-// pour pouvoir afficher des trucs sur la window
 class Event {
     public:
         Event() {};
