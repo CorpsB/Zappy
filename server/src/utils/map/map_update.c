@@ -225,13 +225,13 @@ static void ressource_update(server_t *server, r_ressource_t type)
 */
 static bool is_update_complete(server_t *server)
 {
-    if (server->actual_map_inventory.food == server->goal.food &&
-        server->actual_map_inventory.linemate == server->goal.linemate &&
-        server->actual_map_inventory.deraumere == server->goal.deraumere &&
-        server->actual_map_inventory.sibur == server->goal.sibur &&
-        server->actual_map_inventory.mendiane == server->goal.mendiane &&
-        server->actual_map_inventory.phiras == server->goal.phiras &&
-        server->actual_map_inventory.thystame == server->goal.thystame) {
+    if (server->actual_map_inventory.food >= server->goal.food &&
+        server->actual_map_inventory.linemate >= server->goal.linemate &&
+        server->actual_map_inventory.deraumere >= server->goal.deraumere &&
+        server->actual_map_inventory.sibur >= server->goal.sibur &&
+        server->actual_map_inventory.mendiane >= server->goal.mendiane &&
+        server->actual_map_inventory.phiras >= server->goal.phiras &&
+        server->actual_map_inventory.thystame >= server->goal.thystame) {
         return true;
         }
     return false;
