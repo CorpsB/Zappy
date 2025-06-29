@@ -5,6 +5,21 @@
 ** cmd_set_object.c
 */
 
+/**
+ * @file cmd_take_object.c
+ * @brief Implements the command to pick up (take) an object from
+ * the current map tile into a player's inventory.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Enables a player to collect a resource from the tile they stand on,
+ * updating both the tile and the player's inventory.
+ * Adjusts the global map inventory accordingly and triggers relevant
+ * event notifications.
+ * Sends success or failure messages to the player.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
@@ -32,19 +47,19 @@ static int get_ressource(server_t *server, int y, int x, r_ressource_t type)
 static void del_ressource(server_t *server, int y, int x, r_ressource_t type)
 {
     if (type == FOOD)
-        server->map[y][x].food = 0;
+        server->map[y][x].food -= 1;
     if (type == LINEMATE)
-        server->map[y][x].linemate = 0;
+        server->map[y][x].linemate -= 1;
     if (type == DERAUMERE)
-        server->map[y][x].deraumere = 0;
+        server->map[y][x].deraumere -= 1;
     if (type == SIBUR)
-        server->map[y][x].sibur = 0;
+        server->map[y][x].sibur -= 1;
     if (type == MENDIANE)
-        server->map[y][x].mendiane = 0;
+        server->map[y][x].mendiane -= 1;
     if (type == PHIRAS)
-        server->map[y][x].phiras = 0;
+        server->map[y][x].phiras -= 1;
     if (type == THYSTAME)
-        server->map[y][x].thystame = 0;
+        server->map[y][x].thystame -= 1;
 }
 
 static void del_map_inventory(server_t *server, r_ressource_t type)
@@ -88,41 +103,41 @@ static void event(server_t *srv, player_t *pl, r_ressource_t obj)
 {
     event_pgt(srv, pl->id, obj);
     event_pin(srv, pl);
-    event_bct_per_tile(srv, pl->position[0], pl->position[1]);
+    event_bct_per_tile(srv, pl->position[1], pl->position[0]);
 }
 
 static void take_obj(server_t *srv, r_ressource_t obj, int index)
 {
     player_t *pl = srv->poll.client_list[index].player;
-    int nbr = get_ressource(srv, pl->position[0], pl->position[1], obj);
+    int nbr = get_ressource(srv, pl->position[1], pl->position[0], obj);
     int *pos = malloc(sizeof(int) * 2);
 
     if (!pos)
         logger(srv, "MALLOC : POS", PERROR, true);
     if (nbr <= 0) {
-        dprintf(pl->socket_fd, "ko\n");
+        send_str(srv, pl->socket_fd, "ko\n", false);
         return;
     }
     pos[0] = pl->position[0];
     pos[1] = pl->position[1];
     player_add_ressource(srv, pl, obj);
-    del_ressource(srv, pl->position[0], pl->position[1], obj);
+    del_ressource(srv, pl->position[1], pl->position[0], obj);
     change_arround(srv, pos, obj, density_table[obj].repartition_value * -1);
     del_map_inventory(srv, obj);
     event(srv, pl, obj);
     if (pos)
         free(pos);
-    dprintf(pl->socket_fd, "ok\n");
+    send_str(srv, pl->socket_fd, "ok\n", false);
 }
 
 void cmd_take_object(server_t *server, int index, char **args)
 {
-    for (int i = FOOD; i < THYSTAME; i++) {
+    for (int i = FOOD; i <= THYSTAME; i++) {
         if (strncmp(args[1], density_table[i].name,
             strlen(density_table[i].name)) == 0) {
                 take_obj(server, (r_ressource_t)i, index);
                 return;
             }
     }
-    dprintf(server->poll.pollfds[index].fd, "ko\n");
+    send_str(server, server->poll.pollfds[index].fd, "ko\n", false);
 }

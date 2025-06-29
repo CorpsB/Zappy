@@ -5,11 +5,22 @@
 ** see_teams
 */
 
+/**
+ * @file see_teams.c
+ * @brief Debug utilities to display information about teams in the server.
+ *
+ * Provides functions to print the state of all teams, including players
+ * and eggs, to a specified file descriptor for debugging purposes.
+ *
+ * @author Noé Carabin
+ * @date 2025
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
 
-void see_one_team(teams_t *team, int fd)
+void see_one_team(server_t *server, teams_t *team, int fd)
 {
     if (!team)
         return;
@@ -17,14 +28,14 @@ void see_one_team(teams_t *team, int fd)
     dprintf(fd, "\tSlots used: %d\n", team->slots_used);
     dprintf(fd, "\tWin: %s\n", team->win ? "true" : "false");
     dprintf(fd, "\tEliminated: %s\n", team->eliminated ? "true" : "false");
-    see_all_eggs(team->egg, fd);
-    see_all_players(team->player, fd);
+    see_all_eggs(server, team->egg, fd);
+    see_all_players(server, team->player, fd);
 }
 
-void see_teams(teams_t *teams, int fd)
+void see_teams(server_t *server, teams_t *teams, int fd)
 {
     dprintf(fd, "====== TEAMS LIST ======\n");
     for (teams_t *current = teams; current != NULL; current = current->next)
-        see_one_team(current, fd);
+        see_one_team(server, current, fd);
     dprintf(fd, "\n======= END =======\n");
 }

@@ -5,6 +5,18 @@
 ** event_pdr
 */
 
+/**
+ * @file event_pdr.c
+ * @brief Implements the event for player dropping a resource notification.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Sends a "pdr" message to all GUI clients to notify that a player
+ * dropped a resource.
+ * The resource type is specified by an enum.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

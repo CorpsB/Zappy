@@ -5,6 +5,20 @@
 ** event_bct.c
 */
 
+/**
+ * @file event_bct.c
+ * @brief Implements events to send map tile resource updates to
+ * graphical clients.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Provides functions to send the current resource content of the entire
+ * map or individual tiles
+ * to all connected graphical clients, following the "bct" protocol format.
+ * These updates keep the GUI synchronized with the server's map state.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
@@ -21,13 +35,17 @@
  * @param y Y coordinate of the tile.
  * @param tile Pointer to the resources structure of the tile.
 */
-static void send_bct_tile(int fd, int x, int y, resources_t *tile)
+static void send_bct_tile(int fd, int y, int x, server_t *server)
 {
-    dprintf(fd,
-        "bct %d %d %u %u %u %u %u %u %u\n", y, x, tile->food, tile->linemate,
-        tile->deraumere, tile->sibur, tile->mendiane, tile->phiras,
-        tile->thystame
-    );
+    char *buffer = NULL;
+
+    if (asprintf(&buffer, "bct %u %u %u %u %u %u %u %u %u\n",
+        x, y, server->map[y][x].food, server->map[y][x].linemate,
+        server->map[y][x].deraumere, server->map[y][x].sibur,
+        server->map[y][x].mendiane, server->map[y][x].phiras,
+        server->map[y][x].thystame) == -1)
+        logger(server, "BCT PER TILE", ERROR, true);
+    send_str(server, fd, buffer, true);
 }
 
 /**
@@ -41,7 +59,7 @@ static void send_full_map(int fd, server_t *server)
 {
     for (int y = 0; y < (int)server->height; y++) {
         for (int x = 0; x < (int)server->width; x++)
-            send_bct_tile(fd, x, y, &server->map[y][x]);
+            send_bct_tile(fd, y, x, server);
     }
 }
 
@@ -68,7 +86,7 @@ void event_bct_per_tile(server_t *server, int y, int x)
     resources_t tile = server->map[y][x];
 
     if (asprintf(&buffer, "bct %u %u %u %u %u %u %u %u %u",
-        y, x, tile.food, tile.linemate,
+        x, y, tile.food, tile.linemate,
         tile.deraumere, tile.sibur, tile.mendiane, tile.phiras,
         tile.thystame) == -1)
         logger(server, "BCT PER TILE", ERROR, true);

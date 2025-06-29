@@ -5,6 +5,17 @@
 ** event_pex
 */
 
+/**
+ * @file event_pex.c
+ * @brief Implements player level-up (expulsion) notification event.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Sends a "pex" message to all GUI clients indicating a player
+ * performed an expulsion action.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

@@ -5,6 +5,18 @@
 ** event_pbc
 */
 
+/**
+ * @file event_pbc.c
+ * @brief Implements the event for broadcasting a player's message
+ * to all graphical clients.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Sends a "pbc" message to all connected GUI clients including
+ * the player ID and message content.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

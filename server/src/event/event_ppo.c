@@ -5,6 +5,21 @@
 ** event_ppo.c
 */
 
+/**
+ * @file event_ppo.c
+ * @brief Implements the player position notification event ("ppo")
+ * for graphical clients.
+ * Sends player coordinates and direction information to all GUI clients,
+ * allowing real-time map updates.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Sends a "ppo" message to all GUI clients containing a player's ID,
+ * position, and direction.
+ * Typically used to update the graphical representation of player movements.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

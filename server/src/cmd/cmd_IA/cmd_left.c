@@ -5,6 +5,19 @@
 ** cmd_left.c
 */
 
+/**
+ * @file cmd_left.c
+ * @brief Implements the "left" command to rotate a player 90 degrees
+ * counterclockwise.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Rotates the player left by updating their direction counterclockwise
+ * (NORTH → WEST → SOUTH → EAST → NORTH).
+ * Sends an acknowledgment "ok" response and triggers position update events.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
@@ -45,5 +58,5 @@ void cmd_left(server_t *server, int index, char **args)
         return;
     rotate_left(p);
     event_ppo(server, p);
-    dprintf(server->poll.pollfds[index].fd, "ok\n");
+    send_str(server, server->poll.pollfds[index].fd, "ok\n", false);
 }

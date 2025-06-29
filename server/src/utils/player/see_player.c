@@ -5,6 +5,26 @@
 ** see_player
 */
 
+/**
+ * @file see_player.c
+ * @brief Functions to inspect and print player information for debugging.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+ *
+ * @details
+ * This file defines helper functions to display details about players,
+ * primarily for debugging or server-side inspection.
+ *
+ * Functions include:
+ * - `see_direction()` – Prints the player's facing direction.
+ * - `see_a_player()` – Prints all details of a single player.
+ * - `see_all_players()` – Iterates through a team and prints each player.
+ *
+ * These outputs are intended for use with file descriptors (e.g., sockets,
+ * logs, or STDOUT), and integrate with the server's logging/debugging system.
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
@@ -37,7 +57,7 @@ void see_direction(direction_t dir, int fd)
  * @param player Pointer to the player to print.
  * @param fd File descriptor where output will be printed.
 */
-void see_a_player(player_t *player, int fd)
+void see_a_player(server_t *server, player_t *player, int fd)
 {
     if (!player) {
         dprintf(fd, "  [NULL player]\n");
@@ -54,10 +74,10 @@ void see_a_player(player_t *player, int fd)
         dprintf(fd, "  Team name        : %s\n", player->team->name);
     else
         dprintf(fd, "  Team name        : (null)\n");
-    see_inventory(player->inventory, fd);
+    see_inventory(server, player->inventory, fd);
 }
 
-void see_all_players(player_t *players, int fd)
+void see_all_players(server_t *server, player_t *players, int fd)
 {
     int i = 0;
 
@@ -68,7 +88,7 @@ void see_all_players(player_t *players, int fd)
     }
     while (players) {
         dprintf(fd, "Player #%d:\n", i);
-        see_a_player(players, fd);
+        see_a_player(server, players, fd);
         players = players->next;
         i++;
     }

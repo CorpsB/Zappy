@@ -5,6 +5,17 @@
 ** event_msz
 */
 
+/**
+ * @file event_msz.c
+ * @brief Implements the event to send the map size to graphical clients.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Sends the map size using the "msz" protocol message to all
+ * connected GUI clients.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

@@ -5,6 +5,18 @@
 ** see_server
 */
 
+/**
+ * @file see_server.c
+ * @brief Display debug information about the server state.
+ *
+ * This file contains functions to display internal state details of the
+ * server, including its parameters, poll structure, and teams. It is useful
+ * for debugging.
+ *
+ * @author Noé Carabin
+ * @date 2025
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
@@ -25,7 +37,7 @@ void see_server(struct server *server, int fd)
     dprintf(fd, "\tdebug_fd     : \t\t%d\n\n", server->debug_fd);
     dprintf(fd, "====== END SERVER ======\n\n");
     see_poll(server->poll, fd, server->poll.connected_client);
-    see_teams(server->teams, fd);
+    see_teams(server, server->teams, fd);
 }
 
 void debug_server(server_t *server)

@@ -5,6 +5,19 @@
 ** search_eggs.c
 */
 
+/**
+ * @file search_eggs.c
+ * @brief Provides functionality to search for an egg by its ID across all
+ * teams.
+ * @author Noé Carabin (CorpsB)
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Implements a lookup mechanism to locate a specific egg by its unique
+ * identifier. It traverses all teams and their respective egg lists,
+ * returning the matching egg structure if found.
+ */
+
 #include "include/include.h"
 #include "include/structure.h"
 

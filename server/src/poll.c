@@ -5,6 +5,24 @@
 ** poll
 */
 
+/**
+ * @file poll.c
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06-29
+ * @brief Handles polling and client lifecycle in the Zappy server.
+ *
+ * This file implements the core polling loop of the server. It manages:
+ * - Accepting new client connections.
+ * - Reading input from clients.
+ * - Handling disconnections.
+ * - Processing timed events (e.g., food consumption, command execution).
+ * - Determining game-over state.
+ *
+ * It uses the `poll()` system call to efficiently manage multiple clients,
+ * combined with a custom game clock to drive turn-based logic.
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
@@ -15,28 +33,37 @@
  * @param socket Socket descriptor of the new client.
  * @param state Initial state of the client (UNKNOWN, PLAYER, GUI, etc.).
 */
-static void add_client(server_t *server, int socket, whoAmI_t state)
+static void add_client(server_t *serv, int socket, whoAmI_t state)
 {
-    server->poll.pollfds = realloc(
-        server->poll.pollfds,
-        sizeof(struct pollfd) * (server->poll.connected_client + 1));
-    server->poll.client_list = realloc(
-        server->poll.client_list,
-        sizeof(client_t) * (server->poll.connected_client + 1));
-    if (!server->poll.pollfds || !server->poll.client_list)
-        logger(server, "REALLOC", PERROR, true);
-    server->poll.pollfds[server->poll.connected_client].fd = socket;
-    server->poll.pollfds[server->poll.connected_client].events = POLLIN;
-    server->poll.pollfds[server->poll.connected_client].revents = 0;
-    server->poll.client_list[server->poll.connected_client].whoAmI = state;
-    server->poll.client_list[server->poll.connected_client].player = NULL;
+    serv->poll.pollfds = realloc(
+        serv->poll.pollfds,
+        sizeof(struct pollfd) * (serv->poll.connected_client + 1));
+    serv->poll.client_list = realloc(
+        serv->poll.client_list,
+        sizeof(client_t) * (serv->poll.connected_client + 1));
+    if (!serv->poll.pollfds || !serv->poll.client_list)
+        logger(serv, "REALLOC", PERROR, true);
+    complete_client_data(serv, socket, state);
     if (state == UNKNOWN)
-        dprintf(server->poll.pollfds[server->poll.connected_client].fd,
-            "WELCOME\n");
-    server->poll.client_index++;
-    server->poll.connected_client++;
-    logger(server, "NEW CLIENT", DEBUG, false);
-    see_poll(server->poll, 2, server->poll.connected_client);
+        send_str(serv, serv->poll.pollfds[serv->poll.connected_client].fd,
+            "WELCOME\n", false);
+    serv->poll.client_index++;
+    serv->poll.connected_client++;
+    logger(serv, "NEW CLIENT", DEBUG, false);
+    see_poll(serv->poll, 2, serv->poll.connected_client);
+}
+
+static bool is_win_per_team(server_t *, teams_t *team)
+{
+    int count = 0;
+
+    for (player_t *pl = team->player; pl != NULL; pl = pl->next) {
+        if (pl->lvl >= 8)
+            count++;
+    }
+    if (count >= 6)
+        return true;
+    return false;
 }
 
 /**
@@ -48,7 +75,7 @@ static void add_client(server_t *server, int socket, whoAmI_t state)
 static bool is_game_over(server_t *server)
 {
     for (teams_t *teams = server->teams; teams != NULL; teams = teams->next) {
-        if (teams->win) {
+        if (is_win_per_team(server, teams)) {
             event_seg(server, teams->name);
             return true;
         }
@@ -82,35 +109,6 @@ static bool del_client(server_t *server, int index)
     if (!server->poll.pollfds || !server->poll.client_list)
         logger(server, "REALLOC", PERROR, true);
     return true;
-}
-
-/**
- * @brief Add a command to the player's command queue.
- * If the command queue is full, the player receives a "suc" response.
- * Non-player clients have their command handled immediately.
- * @param server Pointer to the server structure.
- * @param cmd Command string.
- * @param index Index of the client in the poll list.
-*/
-static void add_cmd(server_t *server, char *cmd, int index)
-{
-    player_t *pl;
-
-    if (server->poll.client_list[index].whoAmI != PLAYER) {
-        cmd_parser(server, index, cmd);
-        return;
-    }
-    pl = server->poll.client_list[index].player;
-    if (pl->cmd[9] != NULL) {
-        dprintf(pl->socket_fd, "suc\n");
-        return;
-    }
-    for (int k = 0; k < 10; k++) {
-        if (!pl->cmd[k]) {
-            pl->cmd[k] = strdup(cmd);
-            return;
-        }
-    }
 }
 
 /**
@@ -182,6 +180,7 @@ static void eat_per_teams(server_t *server, teams_t *teams)
         if ((int)tmp->cycle_before_death - 1 <= 0 &&
         tmp->inventory.food == 0) {
             tmp->is_dead = true;
+            tmp->is_freeze = false;
             event_pdi(server, tmp, true);
             continue;
         }
@@ -212,7 +211,7 @@ static void action_per_turn(server_t *server, int count)
     player_cmd_execution(server);
     if (count % 20 == 0) {
         map_update(server);
-        logger(server, "RESSOURCE ++", DEBUG, false);
+        logger(server, "RELOAD MAP IVENTORY", DEBUG, false);
     }
 }
 
@@ -222,7 +221,7 @@ void run_server(server_t *server)
 
     init_server(server);
     add_client(server, server->poll.socket, LISTEN);
-    for (int count = 0; !is_game_over(server); count++) {
+    for (int count = 0; !is_game_over(server);) {
         update_clock(clock, server);
         if (clock->accumulator < 1.0) {
             poll_func(server, clock);
@@ -231,6 +230,9 @@ void run_server(server_t *server)
         action_per_turn(server, count);
         while (clock->accumulator >= 1.0)
             clock->accumulator -= 1.0;
+        count++;
+        if (sigint)
+            break;
     }
     if (clock)
         free(clock);

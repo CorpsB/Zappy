@@ -5,6 +5,20 @@
 ** cmd_incantation.c
 */
 
+/**
+ * @file cmd_incantation.c
+ * @brief Handles the incantation command for player level advancement.
+ * @details
+ * Implements logic to check incantation conditions, freeze involved players,
+ * consume resources on the tile, manage incantation success or failure,
+ * notify players, and trigger relevant game events.
+ * Key functions include checking player positions and levels,
+ * starting and ending incantations, and updating player states.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
@@ -30,9 +44,10 @@ static bool is_same_pos(player_t *first, player_t *second)
  * an ongoing incantation.
  * @param server The server structure.
  * @param pl The reference player.
+ * @param freezed If true, counts freezed players. Otherwise, counts unfreezed.
  * @return The number of matching players, or -1 if an incantation is active.
 */
-static unsigned int found_player_on_tile(server_t *server, player_t *pl)
+static int found_player_on_tile(server_t *server, player_t *pl, bool freezed)
 {
     unsigned int count = 0;
     player_t *tmp;
@@ -41,9 +56,11 @@ static unsigned int found_player_on_tile(server_t *server, player_t *pl)
         if (server->poll.client_list[i].whoAmI != PLAYER)
             continue;
         tmp = server->poll.client_list[i].player;
-        if (!tmp->is_dead && tmp->is_freeze && is_same_pos(pl, tmp))
+        if (tmp->is_dead || !is_same_pos(pl, tmp) || tmp->lvl != pl->lvl)
+            continue;
+        if (!freezed && tmp->is_freeze)
             return -1;
-        if (tmp->lvl == pl->lvl && !tmp->is_dead && is_same_pos(pl, tmp))
+        if ((freezed && tmp->is_freeze) || !freezed)
             count++;
     }
     return count;
@@ -54,21 +71,21 @@ static unsigned int found_player_on_tile(server_t *server, player_t *pl)
  * Verifies required resources on the tile and the number of players.
  * @param server The server structure.
  * @param pl The player attempting the incantation.
+ * @param freezed If true, check freezed players. Otherwise, fail and return.
  * @return true if all conditions are satisfied, false otherwise.
 */
-static bool check_condition(server_t *server, player_t *pl)
+static bool check_condition(server_t *server, player_t *pl, bool freezed)
 {
-    resources_t map = server->map[pl->position[0]][pl->position[1]];
+    resources_t map = server->map[pl->position[1]][pl->position[0]];
 
-    if (pl->lvl >= 8)
-        return false;
-    if (found_player_on_tile(server, pl) < requirement[pl->lvl -1].lvl ||
-        map.linemate < requirement[pl->lvl -1].linemate ||
-        map.deraumere < requirement[pl->lvl -1].deraumere ||
-        map.sibur < requirement[pl->lvl -1].sibur ||
-        map.mendiane < requirement[pl->lvl -1].mendiane ||
-        map.phiras < requirement[pl->lvl -1].phiras ||
-        map.thystame < requirement[pl->lvl -1].thystame)
+    if (pl->lvl >= 8 || found_player_on_tile(server, pl, freezed) <
+    (int)requirement[pl->lvl - 1].lvl ||
+    map.linemate < requirement[pl->lvl - 1].linemate ||
+    map.deraumere < requirement[pl->lvl - 1].deraumere ||
+    map.sibur < requirement[pl->lvl - 1].sibur ||
+    map.mendiane < requirement[pl->lvl - 1].mendiane ||
+    map.phiras < requirement[pl->lvl - 1].phiras ||
+    map.thystame < requirement[pl->lvl - 1].thystame)
         return false;
     return true;
 }
@@ -77,8 +94,8 @@ bool start_incantation(server_t *server, player_t *pl)
 {
     player_t *tmp;
 
-    if (!check_condition(server, pl)) {
-        dprintf(pl->socket_fd, "ko\n");
+    if (!check_condition(server, pl, false)) {
+        send_str(server, pl->socket_fd, "ko\n", false);
         return false;
     }
     for (int i = 0; i < server->poll.connected_client; i++) {
@@ -87,7 +104,9 @@ bool start_incantation(server_t *server, player_t *pl)
         tmp = server->poll.client_list[i].player;
         if (!tmp->is_dead && tmp->lvl == pl->lvl && is_same_pos(tmp, pl)) {
             tmp->is_freeze = true;
-            dprintf(tmp->socket_fd, "Elevation underway\n");
+            tmp->time = 300;
+            tmp->is_waiting = (tmp == pl);
+            send_str(server, tmp->socket_fd, "Elevation underway\n", false);
         }
     }
     event_pic(server, pl);
@@ -109,10 +128,9 @@ static void elevation_failed(server_t *server, int index)
         if (server->poll.client_list[i].whoAmI != PLAYER)
             continue;
         tmp = server->poll.client_list[i].player;
-        if (tmp->lvl == pl->lvl && is_same_pos(tmp, pl) && !tmp->is_dead
-            && tmp->is_freeze) {
+        if (is_same_pos(tmp, pl) && !tmp->is_dead && tmp->is_freeze) {
             tmp->is_freeze = false;
-            dprintf(tmp->socket_fd, "ko\n");
+            send_str(server, tmp->socket_fd, "ko\n", false);
         }
     }
     event_pie(server, pl, false);
@@ -126,14 +144,39 @@ static void elevation_failed(server_t *server, int index)
 static void delete_stuff(server_t *server, int index)
 {
     player_t *pl = server->poll.client_list[index].player;
-    resources_t map = server->map[pl->position[0]][pl->position[1]];
+    resources_t *map = &server->map[pl->position[1]][pl->position[0]];
 
-    map.deraumere -= requirement[pl->lvl - 1].deraumere;
-    map.linemate -= requirement[pl->lvl - 1].linemate;
-    map.mendiane -= requirement[pl->lvl - 1].mendiane;
-    map.phiras -= requirement[pl->lvl - 1].phiras;
-    map.sibur -= requirement[pl->lvl - 1].sibur;
-    map.thystame -= requirement[pl->lvl - 1].thystame;
+    map->deraumere -= requirement[pl->lvl - 1].deraumere;
+    map->linemate -= requirement[pl->lvl - 1].linemate;
+    map->mendiane -= requirement[pl->lvl - 1].mendiane;
+    map->phiras -= requirement[pl->lvl - 1].phiras;
+    map->sibur -= requirement[pl->lvl - 1].sibur;
+    map->thystame -= requirement[pl->lvl - 1].thystame;
+}
+
+static void notify_success(server_t *server, player_t *player)
+{
+    char *buffer = NULL;
+
+    player->lvl++;
+    player->is_freeze = false;
+    event_plv(server, player);
+    if (asprintf(&buffer, "Current level: %u\n", player->lvl) == -1)
+        logger(server, "ASPRINTF : INCANTATION", PERROR, true);
+    send_str(server, player->socket_fd, buffer, true);
+}
+
+static void upgrade_players_on_tile(server_t *server, player_t *pl)
+{
+    player_t *tmp;
+
+    for (int i = 0; i < server->poll.connected_client; i++) {
+        if (server->poll.client_list[i].whoAmI != PLAYER)
+            continue;
+        tmp = server->poll.client_list[i].player;
+        if (tmp->lvl == pl->lvl && is_same_pos(tmp, pl) && !tmp->is_dead)
+            notify_success(server, tmp);
+    }
 }
 
 /**
@@ -146,24 +189,11 @@ static void delete_stuff(server_t *server, int index)
 static void end_incantation(server_t *server, int index, char **)
 {
     player_t *pl = server->poll.client_list[index].player;
-    player_t *tmp;
 
-    if (!check_condition(server, pl)) {
-        elevation_failed(server, index);
-        return;
-    }
+    if (!check_condition(server, pl, true))
+        return elevation_failed(server, index);
     delete_stuff(server, index);
-    for (int i = 0; i < server->poll.connected_client; i++) {
-        if (server->poll.client_list[i].whoAmI != PLAYER)
-            continue;
-        tmp = server->poll.client_list[i].player;
-        if (tmp->lvl == pl->lvl && is_same_pos(tmp, pl) && !tmp->is_dead) {
-            tmp->lvl++;
-            tmp->is_freeze = false;
-            event_plv(server, tmp);
-            dprintf(tmp->socket_fd, "Current level: %u\n", tmp->lvl);
-        }
-    }
+    upgrade_players_on_tile(server, pl);
     event_pie(server, pl, true);
 }
 

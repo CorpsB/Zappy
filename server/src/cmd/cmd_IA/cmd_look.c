@@ -5,6 +5,22 @@
 ** cmd_look.c
 */
 
+/**
+ * @file look.c
+ * @brief Implements the "look" command to provide a player with a
+ * view of their surroundings.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Builds and sends a detailed description of tiles visible to the player,
+ * including counts of players, eggs, food, and resources on each tile.
+ * Handles map wrapping and constructs the response string according to
+ * the player's level of vision, formatted as a JSON-like array.
+ * Utility functions support counting entities per tile and appending tokens
+ * to build the response string dynamically.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
@@ -36,7 +52,7 @@ static unsigned int player_on_team(teams_t *t, int y, int x)
     unsigned int nb = 0;
 
     for (player_t *p = t->player; p; p = p->next)
-        if ((int)p->position[1] == x && (int)p->position[0] == y)
+        if ((int)p->position[0] == x && (int)p->position[1] == y)
             nb++;
     return nb;
 }
@@ -62,7 +78,7 @@ static unsigned int egg_on_team(teams_t *t, int y, int x)
     unsigned int nb = 0;
 
     for (eggs_t *e = t->egg; e; e = e->next)
-        if ((int)e->position[1] == x && (int)e->position[0] == y)
+        if ((int)e->position[0] == x && (int)e->position[1] == y)
             nb++;
     return nb;
 }
@@ -89,6 +105,8 @@ static char *build_look(server_t *srv, player_t *pl)
     char *out = strdup("[");
     char *tmp = NULL;
 
+    if (!out)
+        logger(srv, "STRDUP : LOOK OUT", PERROR, true);
     for (unsigned int lvl = 0; lvl <= pl->lvl; ++lvl) {
         tmp = build_line(srv, pl, (int)lvl);
         out = append_token(out, tmp, srv);
@@ -105,6 +123,7 @@ void cmd_look(server_t *srv, int idx, char **)
     player_t *pl = srv->poll.client_list[idx].player;
     char *msg = build_look(srv, pl);
 
-    dprintf(pl->socket_fd, "%s\n", msg);
+    if (dprintf(pl->socket_fd, "%s\n", msg) == -1)
+        logger(srv, "DPRINTF : LOOK", PERROR, true);
     free(msg);
 }

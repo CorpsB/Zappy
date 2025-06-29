@@ -5,6 +5,19 @@
 ** cmd_salut.c
 */
 
+/**
+ * @file cmd_forward.c
+ * @brief Implements the "forward" command to move a player one tile forward.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Moves the player one tile forward based on their current facing direction,
+ * handling wrapping around the edges of the map.
+ * Sends an acknowledgment "ok\n" to the client and triggers
+ * position update events.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
@@ -42,5 +55,5 @@ void cmd_forward(server_t *server, int index, char **args)
         return;
     move_player_forward(server, player);
     event_ppo(server, player);
-    dprintf(server->poll.pollfds[index].fd, "ok\n");
+    send_str(server, server->poll.pollfds[index].fd, "ok\n", false);
 }

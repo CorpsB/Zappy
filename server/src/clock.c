@@ -5,6 +5,20 @@
 ** clock
 */
 
+/**
+ * @file clock.c
+ * @brief Server clock management for time-based updates in Zappy.
+ *
+ * Handles initialization and updates of the server clock using `clock_gettime`
+ * with `CLOCK_MONOTONIC`, and manages the time accumulator based on a
+ * configurable frequency (ticks per second).
+ *
+ * Used to manage the game loop and event timing.
+ *
+ * @author Noé Carabin
+ * @date 2025
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
@@ -43,5 +57,6 @@ zappy_clock_t *init_clock(server_t *server, size_t freq)
     clock->freq = freq;
     clock->accumulator = 0.0;
     clock_gettime(CLOCK_MONOTONIC, &clock->last_tick);
+    server->clock = clock;
     return clock;
 }

@@ -5,9 +5,32 @@
 ** main
 */
 
+/**
+ * @file main.c
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06-29
+ * @brief Entry point of the Zappy server.
+ *
+ * This file contains the main function of the Zappy server.
+ * It is responsible for:
+ * - Parsing command-line arguments
+ * - Enabling debug mode if requested
+ * - Initializing the server structure
+ * - Generating the map and setting up the teams
+ * - Handling the SIGINT signal for graceful shutdown
+ * - Launching the main loop of the server
+ *
+ * The program can be launched with the `-h` option to display the help.
+ * This help details all required options like map size, teams, port,
+ * frequency, and number of clients per team.
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
+
+bool sigint;
 
 /**
  * @brief Print help message to stdout.
@@ -106,6 +129,14 @@ static void need_debug(server_t *server, char **av)
     }
 }
 
+void sigint_handler(int sig)
+{
+    (void)sig;
+    sigint = true;
+    if (printf("[WARNING] - SIGINT SIGNAL SEND.") == -1)
+        exit(84);
+}
+
 /**
  * @brief Main entry point of the server.
  * @param ac Argument count.
@@ -117,6 +148,7 @@ int main(int ac, char **av)
 {
     server_t *server = add_server();
 
+    sigint = false;
     if (ac == 1 || (ac == 2 && strncmp(av[1], "-h", 2) == 0))
         return print_help();
     need_debug(server, av);
@@ -126,6 +158,7 @@ int main(int ac, char **av)
     srand(time(NULL));
     map_generator(server);
     debug_print_resource_map(server);
+    signal(SIGINT, sigint_handler);
     run_server(server);
     free_server(server);
     return 0;

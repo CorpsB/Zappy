@@ -59,6 +59,6 @@
     #include <time.h>
     #include <sys/types.h> // parfois nécessaire selon la plateforme
     #include <sys/time.h>
-
+    #include <signal.h>
 
 #endif /* !INCLUDE_H_ */

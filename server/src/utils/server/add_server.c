@@ -5,16 +5,22 @@
 ** add_server
 */
 
+/**
+ * @file add_server.c
+ * @brief Functions to initialize and configure the server structure and
+ * socket.
+ *
+ * This file contains functions to allocate, initialize, and configure
+ * the `server_t` structure and set up the listening socket.
+ *
+ * @author Noé Carabin
+ * @date 2025
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
 
-/**
- * @brief Initialize the main server socket and bind it.
- * This function creates the listening socket, configures its parameters,
- * binds it to the specified port, and starts listening for connections.
- * @param server Pointer to the server structure.
-*/
 void init_server(server_t *server)
 {
     socklen_t size = sizeof(struct sockaddr_in);
@@ -26,8 +32,6 @@ void init_server(server_t *server)
     server->poll.sockaddr.sin_family = AF_INET;
     server->poll.sockaddr.sin_port = htons(server->port);
     server->poll.sockaddr.sin_addr.s_addr = INADDR_ANY;
-    server->poll.connected_client = 0;
-    server->poll.client_index = 0;
     if (bind(server->poll.socket, (struct sockaddr *)&server->poll.sockaddr,
         size) == -1)
         logger(server, "SOCKET BIND", PERROR, true);
@@ -42,7 +46,7 @@ void init_server(server_t *server)
  * initializes pollfds and client_list pointers to NULL.
  * @param server Pointer to the server structure to initialize.
 */
-void server_actual_map(server_t *server)
+static void server_actual_map(server_t *server)
 {
     server->actual_map_inventory.food = 0;
     server->actual_map_inventory.linemate = 0;
@@ -53,6 +57,18 @@ void server_actual_map(server_t *server)
     server->actual_map_inventory.thystame = 0;
     server->poll.pollfds = NULL;
     server->poll.client_list = NULL;
+    server->poll.connected_client = 0;
+    server->poll.client_index = 0;
+}
+
+void complete_client_data(server_t *serv, int socket, whoAmI_t state)
+{
+    serv->poll.pollfds[serv->poll.connected_client].fd = socket;
+    serv->poll.pollfds[serv->poll.connected_client].events = POLLIN;
+    serv->poll.pollfds[serv->poll.connected_client].revents = 0;
+    serv->poll.client_list[serv->poll.connected_client].whoAmI = state;
+    serv->poll.client_list[serv->poll.connected_client].player = NULL;
+    serv->poll.client_list[serv->poll.connected_client].cmd = NULL;
 }
 
 server_t *add_server(void)

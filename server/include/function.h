@@ -44,7 +44,7 @@
  * @param inv The resource inventory to display.
  * @param fd The file descriptor to write to.
 */
-void see_inventory(resources_t inv, int fd);
+void see_inventory(server_t *server, resources_t inv, int fd);
 
 /**
  * @brief Print information of all players in a linked list.
@@ -53,7 +53,7 @@ void see_inventory(resources_t inv, int fd);
  * @param players Pointer to the head of the player linked list.
  * @param fd File descriptor where output will be printed.
 */
-void see_all_players(player_t *players, int fd);
+void see_all_players(server_t *server, player_t *players, int fd);
 //server
 
 /**
@@ -123,7 +123,7 @@ void add_teams(server_t *server, char *name);
  * @param team Pointer to the team node.
  * @param fd File descriptor to print to.
 */
-void see_one_team(teams_t *team, int fd);
+void see_one_team(server_t *server, teams_t *team, int fd);
 
 /**
  * @brief Print a list of all teams and their details.
@@ -131,7 +131,7 @@ void see_one_team(teams_t *team, int fd);
  * @param teams Pointer to the head of the team linked list.
  * @param fd File descriptor to print to.
 */
-void see_teams(teams_t *teams, int fd);
+void see_teams(server_t *server, teams_t *teams, int fd);
 
 /**
  * @brief Free an entire linked list of teams.
@@ -183,6 +183,15 @@ char **str_to_array(char *str, char *separator);
  * @param server Pointer to the server structure.
 */
 void run_server(server_t *server);
+
+/**
+ * @brief Main command parser for all types of clients.
+ * @param server The server structure.
+ * @param index The index of the client in the pollfd list.
+ * @param cmd The received command.
+ * @details Redirects the command to the appropriate parser
+ * based on client type (UNKNOWN, GUI, PLAYER).
+*/
 void cmd_parser(server_t *server, int index, char *cmd);
 
 //EGGS
@@ -191,7 +200,7 @@ void cmd_parser(server_t *server, int index, char *cmd);
  * @param eggs Pointer to the head of the egg list.
 */
 void free_all_egs(eggs_t *eggs);
-void see_all_eggs(eggs_t *eggs, int fd);
+void see_all_eggs(server_t *server, eggs_t *eggs, int fd);
 /**
  * @brief Allocate a new egg and insert it at the head of a team list.
  *
@@ -456,9 +465,8 @@ void event_pfk(server_t *server, player_t *player);
  * @param server Pointer to the global server structure.
  * @param player Pointer to the player who laid the egg
  * (optional, can be NULL).
- * @param egg Pointer to the egg structure.
 */
-void event_enw(server_t *server, player_t *player, eggs_t *egg);
+void event_enw(server_t *server, player_t *player);
 
 /**
  * @brief Send "enw" messages for all existing eggs to all connected
@@ -492,7 +500,7 @@ void event_ebo(server_t *server, unsigned int egg_id);
  * @param fd File descriptor of the graphical client.
  * @param egg Pointer to the egg structure.
 */
-void send_enw(int fd, eggs_t *egg);
+void send_enw(server_t *server, int fd, eggs_t *egg);
 
 /**
  * @brief Creates a new egg associated with the given player.
@@ -841,8 +849,160 @@ void cmd_incantation(server_t *server, int index, char **args);
 */
 bool start_incantation(server_t *server, player_t *pl);
 
+/**
+ * @brief Triggers the "pic" (player incantation start) event for all
+ * GUI clients.
+ * Constructs the "pic" message with the incantation initiator's
+ * position, level, and ID.
+ * Adds the IDs of all other participating players on the same tile
+ * who meet the conditions.
+ * Sends the final message to all graphical clients.
+ * @param server Pointer to the server structure.
+ * @param player Pointer to the player initiating the incantation.
+*/
 void event_pic(server_t *server, player_t *player);
+
+/**
+ * @brief Triggers the "pie" (player incantation end) event
+ * for all GUI clients.
+ * Sends a message to all graphical clients indicating the result
+ * of the incantation
+ * on the specified tile, including the position and success state.
+ * @param server Pointer to the server structure.
+ * @param player Pointer to the player whose tile the event occurred on.
+ * @param succes Boolean indicating if the incantation succeeded (true)
+ * or failed (false).
+*/
 void event_pie(server_t *server, player_t *player, bool succes);
+
+/**
+ * @brief Initialize the main server socket and bind it.
+ * This function creates the listening socket, configures its parameters,
+ * binds it to the specified port, and starts listening for connections.
+ * @param server Pointer to the server structure.
+*/
 void init_server(server_t *server);
+
+/**
+ * @brief Add a command to the player's command queue.
+ * If the command queue is full, the player receives a "suc" response.
+ * Non-player clients have their command handled immediately.
+ * @param server Pointer to the server structure.
+ * @param cmd Command string.
+ * @param index Index of the client in the poll list.
+*/
+void add_cmd(server_t *server, char *cmd, int index);
+
+/**
+ * @brief Sends a broadcast message to a player located on the same
+ * tile as the sender.
+ * The message follows the protocol format: "message 0, <msg>".
+ * @param srv Pointer to the server structure.
+ * @param rcv Pointer to the receiving player.
+ * @param msg The message to send.
+*/
+void send_same_tile_message(server_t *srv, player_t *rcv,
+    const char *msg);
+
+/**
+ * @brief Sends a directional broadcast message to a player.
+ * Calculates the direction from the sender to the receiver
+ * based on map topology and player orientation,
+ * then sends a formatted message following the protocol:
+ * "message <direction>, <msg>".
+ * @param srv Pointer to the server structure.
+ * @param rcv Pointer to the receiving player.
+ * @param msg The message to send.
+ * @param map The precomputed broadcast map containing distances.
+*/
+void send_directional_message(server_t *srv,
+    player_t *rcv, const char *msg, int **map);
+
+/**
+ * @brief Adjusts the raw direction based on the receiver's orientation.
+ * @param raw The raw direction index.
+ * @param pl Pointer to the receiving player.
+ * @return The adjusted direction index (1 to 8).
+*/
+int adjust_to_player_dir(int raw, player_t *pl);
+
+/**
+ * @brief Computes the raw direction index from the sender to the receiver.
+ * @param map The 2D broadcast map.
+ * @param srv Pointer to the server structure.
+ * @param rcv Pointer to the receiving player.
+ * @return The raw direction index (1 to 8).
+*/
+int get_raw_direction(int **map, server_t *srv, player_t *rcv);
+
+/**
+ * @brief Initializes sound propagation from the sender's position.
+ * @param map The 2D broadcast map.
+ * @param srv Pointer to the server structure.
+ * @param sender Pointer to the player sending the broadcast.
+ * @param receiver Pointer to the player receiving the broadcast.
+*/
+void propagate_sound_map(int **map, server_t *srv, player_t *sender);
+
+/**
+ * @brief Frees the memory of a broadcast map.
+ * @param srv Pointer to the server structure.
+ * @param map The 2D int array to free.
+*/
+void free_broadcast_map(server_t *srv, int **map);
+
+/**
+ * @brief Creates a 2D int map initialized for broadcast propagation.
+ *
+ * The map dimensions correspond to the server's map size, and
+ * all values are initialized to -1.
+ * If allocation fails at any point, previously allocated memory
+ * is freed and NULL is returned.
+ *
+ * @param srv Pointer to the server structure.
+ * @return A pointer to the allocated 2D map, or NULL on failure.
+*/
+int **create_broadcast_map(server_t *srv);
+
+/**
+ * @brief Sends a string to a given file descriptor.
+ * Sends the full message to the provided socket/file descriptor,
+ * handling partial writes if necessary. Optionally frees the message.
+ * @param server Pointer to the server structure.
+ * @param fd The file descriptor to write to.
+ * @param message The message to send.
+ * @param need_free If true, frees the message after sending.
+ */
+void send_str(server_t *server, int fd, char *message, bool need_free);
+
+/**
+ * @brief Initializes poll and client data for a newly connected client.
+ * Fills the corresponding slot in the pollfd and client_list arrays
+ * for the new client with default values and provided state.
+ * @param serv Pointer to the server structure.
+ * @param socket The socket descriptor for the new client.
+ * @param state The client type (PLAYER, GUI, etc.).
+*/
+void complete_client_data(server_t *serv, int socket, whoAmI_t state);
+
+/**
+ * @brief Checks if the sender is valid for broadcasting.
+ * A sender is considered invalid if they are NULL or dead.
+ * @param snd Pointer to the sending player.
+ * @return true if sender is invalid, false otherwise.
+*/
+bool check_sender(player_t *snd);
+
+/**
+ * @brief Checks if a player is a valid receiver for a broadcast.
+ * A valid receiver must be a player, not dead, different from the sender,
+ * and properly initialized.
+ * @param srv Pointer to the server structure.
+ * @param rcv Pointer to the receiving player.
+ * @param snd Pointer to the sending player.
+ * @param i Index of the client in the client list.
+ * @return true if receiver is valid, false otherwise.
+*/
+bool is_valid_rcv(server_t *srv, player_t *rcv, player_t *snd, int i);
 
 #endif /* !FUCNTION_H_ */

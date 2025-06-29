@@ -5,6 +5,20 @@
 ** event_tna.c
 */
 
+/**
+ * @file event_tna.c
+ * @brief Implements the team names notification event ("tna")
+ * for graphical clients.
+ * Provides the list of all registered teams in the game to GUI clients,
+ * typically sent when a new graphical client connects.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Sends a "tna" message for each existing team to all GUI clients,
+ * containing the team's name.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

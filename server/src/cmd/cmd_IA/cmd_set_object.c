@@ -5,6 +5,23 @@
 ** cmd_set_object.c
 */
 
+/**
+ * @file cmd_set_object.c
+ * @brief Implements the command to drop (set) an object from a player's
+ * inventory onto the map tile.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Allows a player to place an object (resource) from their inventory onto
+ * their current map position.
+ * Updates the player's inventory, the map tile resource counts, and the
+ * global map inventory.
+ * Handles event notifications and triggers updates for map density and
+ * player inventory.
+ * Sends confirmation or error messages to the player depending on success.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
@@ -71,26 +88,26 @@ static void map_add_ressource(server_t *server, int *pos,
     r_ressource_t type, int quanity)
 {
     if (type == FOOD)
-        server->map[pos[0]][pos[1]].food += quanity;
+        server->map[pos[1]][pos[0]].food += quanity;
     if (type == LINEMATE)
-        server->map[pos[0]][pos[1]].linemate += quanity;
+        server->map[pos[1]][pos[0]].linemate += quanity;
     if (type == DERAUMERE)
-        server->map[pos[0]][pos[1]].deraumere += quanity;
+        server->map[pos[1]][pos[0]].deraumere += quanity;
     if (type == SIBUR)
-        server->map[pos[0]][pos[1]].sibur += quanity;
+        server->map[pos[1]][pos[0]].sibur += quanity;
     if (type == MENDIANE)
-        server->map[pos[0]][pos[1]].mendiane += quanity;
+        server->map[pos[1]][pos[0]].mendiane += quanity;
     if (type == PHIRAS)
-        server->map[pos[0]][pos[1]].phiras += quanity;
+        server->map[pos[1]][pos[0]].phiras += quanity;
     if (type == THYSTAME)
-        server->map[pos[0]][pos[1]].thystame += quanity;
+        server->map[pos[1]][pos[0]].thystame += quanity;
 }
 
 static void event(server_t *server, player_t *pl, r_ressource_t obj)
 {
     event_pdr(server, pl->id, obj);
     event_pin(server, pl);
-    event_bct_per_tile(server, pl->position[0], pl->position[1]);
+    event_bct_per_tile(server, pl->position[1], pl->position[0]);
 }
 
 static void set_obj(server_t *server, r_ressource_t obj, int index)
@@ -102,7 +119,7 @@ static void set_obj(server_t *server, r_ressource_t obj, int index)
     if (!pos)
         logger(server, "MALLOC : POSITION", PERROR, true);
     if (nbr <= 0) {
-        dprintf(pl->socket_fd, "ko\n");
+        send_str(server, pl->socket_fd, "ko\n", false);
         return;
     }
     pos[0] = pl->position[0];
@@ -114,7 +131,7 @@ static void set_obj(server_t *server, r_ressource_t obj, int index)
     event(server, pl, obj);
     if (pos)
         free(pos);
-    dprintf(pl->socket_fd, "ok\n");
+    send_str(server, pl->socket_fd, "ok\n", false);
 }
 
 void cmd_set_object(server_t *server, int index, char **args)
@@ -126,5 +143,5 @@ void cmd_set_object(server_t *server, int index, char **args)
                 return;
             }
     }
-    dprintf(server->poll.pollfds[index].fd, "ko\n");
+    send_str(server, server->poll.pollfds[index].fd, "ko\n", false);
 }

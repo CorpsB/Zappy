@@ -5,6 +5,24 @@
 ** add_player
 */
 
+/**
+ * @file add_player.c
+ * @brief Player creation and initialization logic for the Zappy server.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+ *
+ * @details
+ * This file handles the logic for adding a new player to the game:
+ * - Allocating and initializing a new `player_t` node.
+ * - Setting the player's starting position, direction, team, and inventory.
+ * - Attaching the player to the corresponding poll slot and team.
+ * - Emitting the `pnw` event to notify the GUI.
+ *
+ * It also manages player ID attribution, initial level and food,
+ * and links the new player to the team's player list.
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
@@ -68,7 +86,6 @@ static player_t *init_player_node(server_t *server, int index,
     node->id = server->player_count;
     node->position[0] = pos[0];
     node->position[1] = pos[1];
-    printf("%u/%u\n", pos[0], pos[1]);
     node->is_freeze = false;
     node->team = teams;
     node->is_dead = false;

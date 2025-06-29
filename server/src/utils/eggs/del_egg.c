@@ -5,6 +5,18 @@
 ** del_egg
 */
 
+/**
+ * @file del_egg.c
+ * @brief Implements egg removal from a team's egg list.
+ * @author Noé Carabin (CorpsB)
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Provides functionality to delete an egg from the linked list of a team.
+ * Handles both the head case (`delete_first`) and any other position.
+ * Ensures proper memory deallocation and maintains list integrity.
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

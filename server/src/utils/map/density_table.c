@@ -5,6 +5,19 @@
 ** ressources
 */
 
+/**
+ * @file ressources.c
+ * @brief Defines the density table used for resource distribution in Zappy.
+ * @author Noé Carabin (CorpsB)
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Contains the static density table `density_table` which specifies the
+ * spawn rate (density) and influence value for each type of resource.
+ * This table is essential for the procedural generation and distribution
+ * of resources on the map during server initialization or refresh.
+ */
+
 #include "include/density_table.h"
 
 /**

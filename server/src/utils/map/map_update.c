@@ -5,6 +5,22 @@
 ** map_update
 */
 
+/**
+ * @file map_update.c
+ * @brief Handles the resource distribution logic on the game map in Zappy.
+ * @author Noé Carabin
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * This file is responsible for updating the in-game map with resources,
+ * ensuring that the current resource distribution matches the defined
+ * target goals. It works by selecting the cells with the least influence
+ * (repartition value) for each resource type, placing a resource there,
+ * and then propagating influence to surrounding cells using a weighted
+ * diffusion algorithm. This system simulates a natural-like distribution
+ * while preserving control over density and spread.
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
@@ -93,40 +109,35 @@ static void complete_table(server_t *server, r_ressource_t type, int min,
 */
 static void draw_circle(int *pos, r_ressource_t type, server_t *server, int *d)
 {
-    int x = pos[1] + d[0];
-    int y = pos[0] + d[1];
+    int x = pos[0] + d[0];
+    int y = pos[1] + d[1];
     int dist;
-    int influence;
+    int influ;
 
     if (x < 0 || y < 0 || x >= (int)server->width || y >= (int)server->height)
         return;
     dist = abs(d[0]) + abs(d[1]);
-    influence = d[2] - dist;
-    if (influence <= 0)
+    influ = abs(d[2]) - dist;
+    if (influ <= 0)
         return;
-    server->map[y][x].repartition_map[type] += influence;
+    server->map[y][x].repartition_map[type] += (d[2] < 0 ? -influ : influ);
 }
 
-//C'est un grand pas pour le coding-style, mais un petit pas pour continue;
 void change_arround(server_t *srv, int *pos, r_ressource_t type, int weight)
 {
-    int r = weight;
-    int dx = -r;
+    int r;
     int d[3];
 
-    if (weight <= 0)
+    if (weight == 0)
         return;
+    r = abs(weight);
     d[2] = weight;
-    for (int dy = -r; dy <= r; dx++) {
-        if (dx > r) {
-            dx = -r;
-            dy++;
+    for (int dy = -r; dy <= r; ++dy) {
+        for (int dx = -r; dx <= r; ++dx) {
+            d[0] = dx;
+            d[1] = dy;
+            draw_circle(pos, type, srv, d);
         }
-        if (dy > r)
-            break;
-        d[0] = dy;
-        d[1] = dx;
-        draw_circle(pos, type, srv, d);
     }
 }
 
@@ -134,19 +145,19 @@ static void add_ressources_on_map(server_t *server, r_ressource_t type,
     int *pos)
 {
     if (type == FOOD)
-    server->map[pos[0]][pos[1]].food++;
+    server->map[pos[1]][pos[0]].food++;
     if (type == LINEMATE)
-        server->map[pos[0]][pos[1]].linemate++;
+        server->map[pos[1]][pos[0]].linemate++;
     if (type == DERAUMERE)
-        server->map[pos[0]][pos[1]].deraumere++;
+        server->map[pos[1]][pos[0]].deraumere++;
     if (type == SIBUR)
-        server->map[pos[0]][pos[1]].sibur++;
+        server->map[pos[1]][pos[0]].sibur++;
     if (type == MENDIANE)
-        server->map[pos[0]][pos[1]].mendiane++;
+        server->map[pos[1]][pos[0]].mendiane++;
     if (type == PHIRAS)
-        server->map[pos[0]][pos[1]].phiras++;
+        server->map[pos[1]][pos[0]].phiras++;
     if (type == THYSTAME)
-        server->map[pos[0]][pos[1]].thystame++;
+        server->map[pos[1]][pos[0]].thystame++;
 }
 
 /**
@@ -164,13 +175,13 @@ static void spawn_ressource(server_t *server, r_ressource_t type,
     int *table, int size)
 {
     int r = rand() % size;
-    int pos[2] = {table[r * 2], table[r * 2 + 1]};
+    int pos[2] = {table[r * 2 + 1], table[r * 2]};
     int weight = density_table[type].repartition_value;
 
-    server->map[pos[0]][pos[1]].repartition_map[type] += weight;
+    server->map[pos[1]][pos[0]].repartition_map[type] += weight;
     change_arround(server, pos, type, weight - 1);
     add_ressources_on_map(server, type, pos);
-    event_bct_per_tile(server, pos[0], pos[1]);
+    event_bct_per_tile(server, pos[1], pos[0]);
 }
 
 /**
@@ -211,7 +222,6 @@ static void ressource_update(server_t *server, r_ressource_t type)
     int size = search_map_information(server, type, &min);
     int *table = malloc(sizeof(int) * (size * 2));
 
-    logger(server, "RELOAD", DEBUG, false);
     if (!table)
         logger(server, "MALLOC", PERROR, true);
     update_map_inventory(server, type);
@@ -230,13 +240,13 @@ static void ressource_update(server_t *server, r_ressource_t type)
 */
 static bool is_update_complete(server_t *server)
 {
-    if (server->actual_map_inventory.food == server->goal.food &&
-        server->actual_map_inventory.linemate == server->goal.linemate &&
-        server->actual_map_inventory.deraumere == server->goal.deraumere &&
-        server->actual_map_inventory.sibur == server->goal.sibur &&
-        server->actual_map_inventory.mendiane == server->goal.mendiane &&
-        server->actual_map_inventory.phiras == server->goal.phiras &&
-        server->actual_map_inventory.thystame == server->goal.thystame) {
+    if (server->actual_map_inventory.food >= server->goal.food &&
+        server->actual_map_inventory.linemate >= server->goal.linemate &&
+        server->actual_map_inventory.deraumere >= server->goal.deraumere &&
+        server->actual_map_inventory.sibur >= server->goal.sibur &&
+        server->actual_map_inventory.mendiane >= server->goal.mendiane &&
+        server->actual_map_inventory.phiras >= server->goal.phiras &&
+        server->actual_map_inventory.thystame >= server->goal.thystame) {
         return true;
         }
     return false;

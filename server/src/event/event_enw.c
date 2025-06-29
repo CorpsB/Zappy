@@ -5,15 +5,35 @@
 ** event_new_gui_enw.c
 */
 
+/**
+ * @file event_enw.c
+ * @brief Implements events related to egg creation and notification to
+ * graphical clients.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Handles sending notifications about eggs ("enw" messages) to all connected
+ * graphical clients.
+ * Includes sending individual egg info, sending all eggs on new GUI
+ * connection,
+ * and broadcasting new egg creation.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
 
-void send_enw(int fd, eggs_t *egg)
+void send_enw(server_t *server, int fd, eggs_t *egg)
 {
-    dprintf(fd, "enw #%u #%d %u %u\n", egg->id, egg->creator_id,
-        egg->position[0], egg->position[1]
-    );
+    char *buffer = NULL;
+
+    if (!egg || !server)
+        return;
+    if (asprintf(&buffer, "enw #%u #%d %u %u\n",
+        egg->id, egg->creator_id, egg->position[0], egg->position[1]) == -1)
+        logger(server, "ASPRINTF : ENW", PERROR, true);
+    send_str(server, fd, buffer, true);
 }
 
 /**
@@ -24,41 +44,34 @@ void send_enw(int fd, eggs_t *egg)
  * @param fd File descriptor of the graphical client.
  * @param server Pointer to the global server structure.
 */
-static void send_all_eggs(int fd, server_t *server)
+static void send_all_eggs(server_t *server, int fd)
 {
     teams_t *team;
     eggs_t *egg;
 
-    team = server->teams;
-    egg = NULL;
-    while (team) {
-        egg = team->egg;
-        while (egg) {
-            send_enw(fd, egg);
-            egg = egg->next;
-        }
-        team = team->next;
+    if (!server)
+        return;
+    for (team = server->teams; team; team = team->next) {
+        for (egg = team->egg; egg; egg = egg->next)
+            send_enw(server, fd, egg);
     }
 }
 
-void event_enw(server_t *server, player_t *player, eggs_t *egg)
+void event_enw(server_t *server, player_t *player)
 {
     char *buffer = NULL;
-    int id;
 
-    if (!server || !egg)
-        return;
-    id = player ? (int)player->id : egg->creator_id;
     if (asprintf(&buffer, "enw #%u #%d %u %u",
-        egg->id, id, egg->position[0], egg->position[1]) == -1)
+        server->eggs_count - 1, player->id, player->position[0],
+        player->position[1]) == -1)
         logger(server, "ENW", ERROR, true);
     send_to_all_gui(server, buffer);
 }
 
 void event_new_gui_enw(server_t *server)
 {
-    client_t *cl = NULL;
-    int fd = 0;
+    client_t *cl;
+    int fd;
 
     if (!server)
         return;
@@ -67,6 +80,6 @@ void event_new_gui_enw(server_t *server)
         if (cl->whoAmI != GUI)
             continue;
         fd = server->poll.pollfds[i].fd;
-        send_all_eggs(fd, server);
+        send_all_eggs(server, fd);
     }
 }

@@ -5,6 +5,19 @@
 ** cmd_inventory
 */
 
+/**
+ * @file cmd_inventory.c
+ * @brief Implements the "inventory" command to send player's inventory
+ * contents.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Retrieves the quantities of all resource types in the player's inventory,
+ * formats them into a string, and sends this information back to the
+ * player's client.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
@@ -13,6 +26,7 @@ void cmd_inventory(server_t *server, int index, const char **args)
 {
     player_t *player;
     char buf[160];
+    char *buffer = NULL;
 
     (void)args;
     if (!server || !server->poll.client_list ||
@@ -26,5 +40,7 @@ void cmd_inventory(server_t *server, int index, const char **args)
         player->inventory.deraumere, player->inventory.sibur,
         player->inventory.mendiane, player->inventory.phiras,
         player->inventory.thystame);
-    dprintf(player->socket_fd, "%s", buf);
+    if (asprintf(&buffer, "%s", buf) == -1)
+        logger(server, "ASPRINTF : INVENTORY", PERROR, true);
+    send_str(server, player->socket_fd, buffer, true);
 }

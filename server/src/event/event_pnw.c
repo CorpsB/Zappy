@@ -5,6 +5,20 @@
 ** event_pnw.c
 */
 
+/**
+ * @file event_pnw.c
+ * @brief Implements the player connection notification event ("pnw")
+ * for graphical clients.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Sends a "pnw" message to all GUI clients when a new player connects to
+ * the game.
+ * The message contains the player's ID, position, direction, level, and
+ * team name.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

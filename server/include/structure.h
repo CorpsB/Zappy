@@ -192,6 +192,7 @@ struct server {
     resources_t **map;
     /// Linked list of all teams participating in the game.
     teams_t *teams;
+    zappy_clock_t *clock;
 };
 
 
@@ -294,6 +295,9 @@ struct eggs {
 struct client {
     player_t *player;
     whoAmI_t whoAmI;
+    char *cmd;
 };
+
+extern bool sigint;
 
 #endif /* !STRUCTURE_H_ */

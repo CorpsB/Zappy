@@ -5,6 +5,20 @@
 ** cmd_pin.c
 */
 
+/**
+ * @file cmd_pin.c
+ * @brief Implements the "pin" graphical command for the Zappy server.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * This file handles the "pin" command, which allows a graphical client
+ * to request the inventory and position of a specific player.
+ * The server responds with a message formatted according to the protocol:
+ * "pin <player_id> <x> <y> <food> <linemate> <deraumere> <sibur>
+ * <mendiane> <phiras> <thystame>"
+*/
+
 #include "include/include.h"
 #include "include/structure.h"
 #include "include/function.h"
@@ -14,14 +28,18 @@
 /**
  * @brief Sends inventory of a player to GUI.
  */
-static void send_pin(int fd, const player_t *p)
+static void send_pin(server_t *server, int fd, const player_t *p)
 {
-    dprintf(fd, "pin %u %u %u %u %u %u %u %u %u %u\n",
+    char *buffer = NULL;
+
+    if (asprintf(&buffer, "pin %u %u %u %u %u %u %u %u %u %u\n",
         p->id, p->position[0], p->position[1],
         p->inventory.food, p->inventory.linemate,
         p->inventory.deraumere, p->inventory.sibur,
         p->inventory.mendiane, p->inventory.phiras,
-        p->inventory.thystame);
+        p->inventory.thystame) == -1)
+        logger(server, "ASPRINTF : PIN", PERROR, true);
+    send_str(server, fd, buffer, true);
 }
 
 static int find_gui_command_index(const char *name)
@@ -52,5 +70,5 @@ void cmd_pin(server_t *server, int index, char **args)
     p = find_player_by_id(server, (unsigned int)id);
     if (!p)
         return event_sbp(server, index, args, i);
-    send_pin(fd, p);
+    send_pin(server, fd, p);
 }

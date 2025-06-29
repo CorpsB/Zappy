@@ -5,6 +5,20 @@
 ** cmd_right.c
 */
 
+/**
+ * @file cmd_right.c
+ * @brief Implements the "right" command to rotate a player 90 degrees
+ * clockwise.
+ * @author Thibaut Louis
+ * @version 1.0
+ * @date 2025-06
+ * @details
+ * Rotates the player's facing direction clockwise through the sequence:
+ * NORTH → EAST → SOUTH → WEST → NORTH.
+ * Sends an "ok" response and triggers the appropriate update event.
+ * Ensures the command is ignored if the player is dead or invalid.
+*/
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
@@ -45,5 +59,5 @@ void cmd_right(server_t *server, int index, char **args)
         return;
     rotate_right(p);
     event_ppo(server, p);
-    dprintf(server->poll.pollfds[index].fd, "ok\n");
+    send_str(server, server->poll.pollfds[index].fd, "ok\n", false);
 }

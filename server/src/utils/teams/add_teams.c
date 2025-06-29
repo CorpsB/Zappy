@@ -5,6 +5,19 @@
 ** add_teams
 */
 
+/**
+ * @file add_teams.c
+ * @brief Team management: add a new team to the server.
+ *
+ * This file contains the logic to dynamically allocate and initialize a new
+ * team structure, including its metadata and linked lists for players and
+ * eggs.
+ * The new team is prepended to the existing team list of the server.
+ *
+ * @author Noé Carabin
+ * @date 2025
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"

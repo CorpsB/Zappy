@@ -5,19 +5,20 @@
 ** free_server
 */
 
+/**
+ * @file free_server.c
+ * @brief Free memory and resources used by the server.
+ *
+ * This file provides functions to free the allocated memory
+ * for the server, including the map, teams, and poll structures.
+ *
+ * @author Noé Carabin
+ * @date 2025
+ */
+
 #include "include/include.h"
 #include "include/function.h"
 #include "include/structure.h"
-
-/**
- * @brief Free memory allocated for a single map unit.
- * @param map Pointer to the resources_t structure representing a map tile.
-*/
-static void free_map_unit(resources_t *map)
-{
-    if (map)
-        free(map);
-}
 
 /**
  * @brief Free the entire map grid.
@@ -27,18 +28,17 @@ static void free_map_unit(resources_t *map)
 */
 static void free_map(server_t *server, resources_t **map)
 {
-    return;
-    for (unsigned int x = 0; x < server->height; x++) {
-        for (unsigned int y = 0; y < server->height; y++) {
-            free_map_unit(&map[x][y]);
-        }
-    }
+    for (unsigned int i = 0; i < server->height; i++)
+        free(map[i]);
+    free(map);
 }
 
 void free_server(server_t *server)
 {
     if (!server)
         return;
+    if (server->clock)
+        free(server->clock);
     free_map(server, server->map);
     free_all_teams(server->teams);
     free_poll(server);

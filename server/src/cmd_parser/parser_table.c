@@ -24,6 +24,15 @@
 #include "include/cmd.h"
 #include "include/cmd_parser_table.h"
 
+/**
+ * @brief Array of player commands with their associated
+ * functions and parameters.
+ * Each command includes:
+ * - The command name as sent by the player.
+ * - The function pointer handling the command.
+ * - The expected number of arguments (-1 means variable arguments).
+ * - The time cost (in ticks) to execute the command.
+*/
 const player_command_t player_command_table[] = {
     {"Forward", cmd_forward, 1, 7},
     {"Right", cmd_right, 1, 7},
@@ -40,6 +49,14 @@ const player_command_t player_command_table[] = {
     {NULL, NULL, 0, 0}
 };
 
+/**
+ * @brief Array of GUI commands with their associated
+ * functions and parameters.
+ * Each command includes:
+ * - The command name as sent by the GUI client.
+ * - The function pointer handling the command.
+ * - The expected number of arguments.
+*/
 const gui_command_t gui_command_table[] = {
     {"msz", cmd_msz, 1},
     {"bct", cmd_bct, 3},
