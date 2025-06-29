@@ -49,32 +49,44 @@ class NetConfig {
         ~NetConfig() = default;
 
         /**
-         * @brief Returns the ip address as a std::string
-         * @return IP address
+         * @brief Retrieves the currently configured IP address.
+         *
+         * @return A constant reference to the IP address string.
          */
         const std::string &getIp() const;
         /**
-         * @brief Returns the port as a std::string
-         * @return Port
+         * @brief Retrieves the currently configured port number.
+         *
+         * @return A constant reference to the port number.
          */
         const int &getPort() const;
 
         /**
-         * @brief Set the IP address
-         * @param ip IP address to set
+         * @brief Sets the IP address for the client.
+         *
+         * Stores the given string as the new IP address for network connection.
+         *
+         * @param ip The IP address to set (as a string).
          */
         void setIp(const std::string &ip);
         /**
-         * @brief Set the port value
-         * @param port Port to set
+         * @brief Sets the port number for the client.
+         *
+         * Stores the given integer as the port to use when connecting to the server.
+         *
+         * @param port The port number to set.
          */
         void setPort(const int &port);
 
         /**
-         * @brief Parse starting arguments
-         * @param ac Number of arguments
-         * @param av List of arguments
-         * @return Returns 'true' if the parsing was successful or 'false' otherwise
+         * @brief Parses command-line arguments to extract the IP address and port.
+         *
+         * Accepts `-h <ip>` for host and `-p <port>` for port number. Ensures validity using
+         * internal parsing functions. Logs specific error messages if invalid or missing arguments are found.
+         *
+         * @param ac Argument count (from main).
+         * @param av Argument values (from main).
+         * @return False if arguments are valid and stored, true if any parsing error occurred.
          */
         bool parseArgs(int ac, char **av);
     private:
@@ -82,15 +94,21 @@ class NetConfig {
         int _port;
 
         /**
-         * @brief Parse the real pattern of an IP address
-         * @param ip IP address (std::string)
-         * @return Returns 'true' if the parsing was successful or 'false' otherwise
+         * @brief Validates and sets the given IP address.
+         *
+         * Uses a regular expression to ensure the provided IP address is a valid IPv4 format.
+         *
+         * @param ip The IP address string to validate and store.
+         * @return True if the IP is invalid, false if it is valid and stored.
          */
         bool _parseIp(const std::string &ip);
         /**
-         * @brief Parse the real pattern of a Port
-         * @param port Port (std::string)
-         * @return Returns 'true' if the parsing was successful or 'false' otherwise
+         * @brief Validates and sets the given port number.
+         *
+         * Uses regex and size checks to ensure the port is numeric and within the allowed range (0–65535).
+         *
+         * @param port The port number as a string to validate and store.
+         * @return True if the port is invalid, false if it is valid and stored.
          */
         bool _parsePort(const std::string &port);
 };
