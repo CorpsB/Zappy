@@ -5,6 +5,16 @@
 ** WorkerManager
 */
 
+/**
+ * @file WorkerManager.cpp
+ * @brief Implementation of WorkerManager singleton methods not documented in header.
+ * @author Jason KOENIG
+ * @version 1.0
+ * @date 29/06/2025
+ *
+ * @see WorkerManager.hpp
+ */
+
 #include "WorkerManager.hpp"
 
 ai::worker::WorkerManager::WorkerManager() : _id(0)

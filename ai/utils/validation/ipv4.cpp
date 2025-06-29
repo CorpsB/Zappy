@@ -5,9 +5,24 @@
 ** ipv4
 */
 
+/**
+ * @file ipv4.cpp
+ * @brief Helper for validating IPv4 addresses.
+ * @author Jason KOENIG
+ * @version 1.0
+ * @date 29/06/2025
+ *
+ * @see ai::utils::validation::ipv4
+ */
+
 #include "../utils.hpp"
 #include <sstream>
 
+/**
+ * @brief Checks internal IPv4 formatting rules on each segment.
+ * @param ip The IPv4 string to inspect.
+ * @return true if ip consists of exactly four numeric segments in [0,255], false otherwise.
+ */
 static bool assert_ipv4(const std::string &ip)
 {
     std::stringstream ss(ip);

@@ -5,6 +5,16 @@
 ** Error
 */
 
+/**
+ * @file Error.cpp
+ * @brief Implements the Error exception class methods.
+ * @author Jason KOENIG
+ * @version 1.0
+ * @date 29/06/2025
+ *
+ * @see Error.hpp
+ */
+
 #include "Error.hpp"
 
 ai::utils::exception::Error::Error(const std::string &where, const std::string &what) :

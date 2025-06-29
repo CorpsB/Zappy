@@ -5,6 +5,15 @@
 ** action
 */
 
+/**
+ * @file action.cpp
+ * @brief Implementation of random and goal-based AI actions.  
+ * @date 29/06/2025
+ * @author Jason KOENIG
+ *
+ * @see AI.hpp
+ */
+
 #include "../AI.hpp"
 #include <chrono>
 #include <thread>

@@ -5,6 +5,16 @@
 ** goal
 */
 
+/**
+ * @file goal.cpp
+ * @brief Implements goal determination helpers for AI decision logic.  
+ * @author Jason KOENIG
+ * @version 1.0
+ * @date 29/06/2025
+ *
+ * @see AI.hpp
+ */
+
 #include "../AI.hpp"
 
 const ai::entity::ElevationRecipe ai::entity::AI::RECIPES[7] = {

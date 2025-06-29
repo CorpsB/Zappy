@@ -5,6 +5,16 @@
 ** SoundSystem
 */
 
+/**
+ * @file SoundSystem.cpp
+ * @brief Implements SoundSystem methods for managing and interpreting sound events.  
+ * @author Jason KOENIG
+ * @version 1.0
+ * @date 29/06/2025
+ *
+ * @see SoundSystem.hpp
+ */
+
 #include "SoundSystem.hpp"
 #include "../../utils/utils.hpp"
 #include <regex>

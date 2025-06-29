@@ -5,6 +5,16 @@
 ** Logger
 */
 
+/**
+ * @file Logger.cpp
+ * @brief Implements Logger methods not documented in header.  
+ * @author Jason KOENIG
+ * @version 1.0
+ * @date 29/06/2025
+ *
+ * @see Logger.hpp
+ */
+
 #include "Logger.hpp"
 #include <iostream>
 #include <thread>

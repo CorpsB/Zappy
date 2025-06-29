@@ -5,11 +5,24 @@
 ** help
 */
 
+/**
+ * @file help.cpp
+ * @brief Print help command.
+ * @author Jason KOENIG
+ * @version 1.0
+ * @date 29/06/2025
+ * 
+ * @see parser.hpp
+ */
+
 #include <iostream>
 
+/**
+ * @brief Prints usage instructions for the Zappy client.
+ */
 void print_help_message()
 {
-    std::cout << "Usage: ./zappy_client -p PORT -n NAME [options]" << std::endl << std::endl
+    std::cout << "Usage: ./zappy_ai -p PORT -n NAME [options]" << std::endl << std::endl
         << "    -p, --port <int>       Port number" << std::endl
         << "    -n, --name <string>    Name of the team" << std::endl << std::endl
         << "    [options]" << std::endl
