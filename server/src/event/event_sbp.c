@@ -11,7 +11,7 @@
 #include "include/cmd.h"
 #include "include/cmd_parser_table.h"
 
-static void send_sbp(server_t *server, int index, char **args, int i)
+static void send_sbp(server_t *server, int , char **args, int i)
 {
     char *buffer = NULL;
 
@@ -32,8 +32,6 @@ static void send_sbp(server_t *server, int index, char **args, int i)
 
 void event_sbp(server_t *server, int index, char **args, int i)
 {
-    char *buffer = NULL;
-
     if (!server)
         return;
     send_str(server, server->poll.pollfds[index].fd, "sbp\n", false);
