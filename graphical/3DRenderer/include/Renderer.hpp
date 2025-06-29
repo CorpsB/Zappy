@@ -44,6 +44,7 @@ namespace Renderer {
             void addToActiveRotations(int index, RotationState rotation);
             void addToPendingMovements(int index, MovementState move);
             void addToResourcesOnTiles(int index, std::array<int, 7> resources);
+            void addToHistInstruc(std::string instruc, sf::Color color);
         private:
         // Variables to be get and modified
             std::unordered_map<int, MovementState> activeMovements;
@@ -54,6 +55,7 @@ namespace Renderer {
             // We need it to display it even though it's not really supposed to be here
             std::unordered_map<int, std::array<int, 7>> _resourcesOnTiles;
             bool resourcesChange;
+            std::deque<std::tuple<std::string, sf::Color>> histInstruc;
 
         // "static" variables
             sf::Image backBuffer;
@@ -97,6 +99,7 @@ namespace Renderer {
             InputHandler _inputhandler;
             Camera _camera;
             Clipper _clipper;
+            Hud _hud;
     };
 
     // extern std::unordered_map<int, MovementState> activeMovements;

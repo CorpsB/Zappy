@@ -231,7 +231,7 @@ void Interpreter::_pnw(const std::smatch &m)
 
     oss << "T" << playerId << ": connected at {x: " << x
         << ", y: " << y << ", o: " << orienToStr[static_cast<int>(orientation)] << "}";
-    Renderer::histInstruc.emplace_back(oss.str(), colorIt->second);
+    _renderer.get()->addToHistInstruc(oss.str(), colorIt->second);
 }
 
 void Interpreter::_ppo(const std::smatch &m)
@@ -267,7 +267,7 @@ void Interpreter::_ppo(const std::smatch &m)
 
     oss << "T" << playerId << ": moved to {x: " << x << ", y: " << y
         << ", o: " << orienToStr[static_cast<int>(orientation)] << "}";
-    Renderer::histInstruc.emplace_back(oss.str(), color);
+    _renderer.get()->addToHistInstruc(oss.str(), color);
 
     float targetAngle = Renderer::compassToAngle(orientation);
 
@@ -303,7 +303,7 @@ void Interpreter::_ppo(const std::smatch &m)
             if (e.clientId == playerId && e.type == Renderer::PartType::BODY) {
                 e.position.x = x * tileSize;
                 e.position.z = y * tileSize;
-                Renderer::histInstruc.emplace_back("/!\\ ~~ T" + std::to_string(playerId) + ": Recalibration ~~ /!\\", color);
+                _renderer.get()->addToHistInstruc("/!\\ ~~ T" + std::to_string(playerId) + ": Recalibration ~~ /!\\", color);
                 return;
             }
         }
@@ -354,7 +354,7 @@ void Interpreter::_plv(const std::smatch &m)
             std::ostringstream oss;
 
             oss << "T" << playerId << ": became level " << level;
-            Renderer::histInstruc.emplace_back(oss.str(), color);
+            _renderer.get()->addToHistInstruc(oss.str(), color);
         } else {
             ++it;
         }
@@ -390,7 +390,7 @@ void Interpreter::_pex(const std::smatch &m)
             Renderer::spawn(Renderer::EntityType::STL, Renderer::PartType::BODY, playerId,
             {e.position.x, e.position.y, e.position.z}, e.color, "./bonus/Assets/Expulsion.stl",
             e.orientation);
-            Renderer::histInstruc.push_back(std::make_tuple("T" + std::to_string(playerId) + " is launching EXPULSION", e.color));
+            _renderer.get()->addToHistInstruc("T" + std::to_string(playerId) + " is launching EXPULSION", e.color);
             break;
         }
     }
@@ -411,9 +411,9 @@ void Interpreter::_pbc(const std::smatch &m)
     std::ostringstream oss;
 
     oss << "T" << playerId << ": broadcast \"" << data << "\"";
-    Renderer::histInstruc.emplace_back(oss.str(), color);
+    _renderer.get()->addToHistInstruc(oss.str(), color);
 
-    // Renderer::histInstruc.push_back(std::make_tuple("T" + std::to_string(playerId) + ": broadcast \"" + data + "\"", color));
+    // _renderer.get()->addToHistInstrucd::make_tuple("T" + std::to_string(playerId) + ": broadcast \"" + data + "\"", color));
 }
 
 void Interpreter::_pic(const std::smatch &m)
@@ -446,7 +446,7 @@ void Interpreter::_pic(const std::smatch &m)
     std::ostringstream oss;
 
     oss << "T" << firstPlayerId << ": start incantation at {x: " << x << ", y: " << y << "}";
-    Renderer::histInstruc.emplace_back(oss.str(), color);
+    _renderer.get()->addToHistInstruc(oss.str(), color);
 }
 
 void Interpreter::_pie(const std::smatch &m)
@@ -468,7 +468,7 @@ void Interpreter::_pie(const std::smatch &m)
     std::ostringstream oss;
 
     oss << "SERVER: incantation at {x:" << x << ", y:" << y << "} ended";
-    Renderer::histInstruc.emplace_back(oss.str(), sf::Color::White);
+    _renderer.get()->addToHistInstruc(oss.str(), sf::Color::White);
 }
 
 void Interpreter::_pfk(const std::smatch &m)
@@ -480,7 +480,7 @@ void Interpreter::_pfk(const std::smatch &m)
             std::ostringstream oss;
 
             oss << "T" << playerId << " layed an egg";
-            Renderer::histInstruc.emplace_back(oss.str(), e.color);
+            _renderer.get()->addToHistInstruc(oss.str(), e.color);
             return;
         }
     }
@@ -508,7 +508,7 @@ void Interpreter::_pdr(const std::smatch &m)
     std::ostringstream oss;
 
     oss << "T" << playerId << ": drops " << resourcesName[resourceNumber];
-    Renderer::histInstruc.emplace_back(oss.str(), color);
+    _renderer.get()->addToHistInstruc(oss.str(), color);
 }
 
 void Interpreter::_pgt(const std::smatch &m)
@@ -533,7 +533,7 @@ void Interpreter::_pgt(const std::smatch &m)
     std::ostringstream oss;
 
     oss << "T" << playerId << ": takes " << resourcesName[resourceNumber];
-    Renderer::histInstruc.emplace_back(oss.str(), color);
+    _renderer.get()->addToHistInstruc(oss.str(), color);
 }
 
 
@@ -568,7 +568,7 @@ void Interpreter::_pdi(const std::smatch &m)
     std::ostringstream oss;
 
     oss << "T" << playerId << ": died";
-    Renderer::histInstruc.emplace_back(oss.str(), color);
+    _renderer.get()->addToHistInstruc(oss.str(), color);
 }
 
 void Interpreter::_enw(const std::smatch &m)
@@ -599,7 +599,7 @@ void Interpreter::_ebo(const std::smatch &m)
             std::ostringstream oss;
 
             oss << "Egg #" << eggId << " hatched !";
-            Renderer::histInstruc.emplace_back(oss.str(), it->color);
+            _renderer.get()->addToHistInstruc(oss.str(), it->color);
             it = Renderer::sceneEntities.erase(it);
             return;
         } else {
@@ -617,7 +617,7 @@ void Interpreter::_edi(const std::smatch &m)
             std::ostringstream oss;
 
             oss << "Egg #" << eggId << " died...";
-            Renderer::histInstruc.emplace_back(oss.str(), it->color);
+            _renderer.get()->addToHistInstruc(oss.str(), it->color);
             it = Renderer::sceneEntities.erase(it);
             return;
         } else {
