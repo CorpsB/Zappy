@@ -21,16 +21,18 @@ void event_sbp(server_t *server, int index, char **args, int i)
     logger(server, "INVALID ARGS OR ARGS NUMBER FOR THIS COMMAND",
         INFO, false);
     if (server->debug) {
-        printf("CMD : %s\tARGS SIZE : %u\tEXPECTED SIZE : %u\n\n",
+        if (printf("CMD : %s\tARGS SIZE : %u\tEXPECTED SIZE : %u\n\n",
             gui_command_table[i].name,
             table_size(args),
-            gui_command_table[i].argument_nbr);
+            gui_command_table[i].argument_nbr) == -1)
+            logger(server, "PRINTF : SBP", PERROR, true);
         if (asprintf(&buffer,
             "CMD : %s\t ARGS SIZE : %u\tEXPECTED SIZE : %u\n\n",
             gui_command_table[i].name,
             table_size(args),
             gui_command_table[i].argument_nbr) == -1)
             logger(server, "ASPRINTF : SBP DEBUG", PERROR, true);
-        send_str(server, server->debug_fd, buffer, true);
+        if (dprintf(server->debug_fd, "%s\n", buffer) == -1)
+            logger(server, "DPRINTF : SBP", PERROR, true);
     }
 }

@@ -89,6 +89,8 @@ static char *build_look(server_t *srv, player_t *pl)
     char *out = strdup("[");
     char *tmp = NULL;
 
+    if (!out)
+        logger(srv, "STRDUP : LOOK OUT", PERROR, true);
     for (unsigned int lvl = 0; lvl <= pl->lvl; ++lvl) {
         tmp = build_line(srv, pl, (int)lvl);
         out = append_token(out, tmp, srv);
@@ -105,6 +107,7 @@ void cmd_look(server_t *srv, int idx, char **)
     player_t *pl = srv->poll.client_list[idx].player;
     char *msg = build_look(srv, pl);
 
-    dprintf(pl->socket_fd, "%s\n", msg);
+    if (dprintf(pl->socket_fd, "%s\n", msg) == -1)
+        logger(srv, "DPRINTF : LOOK", PERROR, true);
     free(msg);
 }

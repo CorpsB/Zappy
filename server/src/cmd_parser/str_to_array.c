@@ -104,20 +104,3 @@ int table_size(char **table)
     for (; table[i] != NULL; i++);
     return i;
 }
-
-/**
- * @brief Remove the trailing newline or carriage return from a string.
- * Supports both Unix ('\n') and Windows ('\r\n') style line endings.
- * @param str The string to modify.
-*/
-void remove_newline(char *str)
-{
-    size_t len = strlen(str);
-
-    if (!str)
-        return;
-    if (len > 0 && (str[len - 1] == '\n' || str[len - 1] == '\r'))
-        str[len - 1] = '\0';
-    if (len > 1 && (str[len - 2] == '\r'))
-        str[len - 2] = '\0';
-}

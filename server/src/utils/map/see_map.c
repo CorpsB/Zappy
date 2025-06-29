@@ -87,12 +87,15 @@ static void print_repartition_map(const server_t *server,
 void debug_print_resource_map(server_t *server)
 {
     for (r_ressource_t res_type = FOOD; res_type <= THYSTAME; res_type++) {
-        printf("===== RESOURCE: %s =====\n",
-            density_table[res_type].name);
+        if (printf("===== RESOURCE: %s =====\n",
+            density_table[res_type].name) == -1)
+            logger(server, "PRINTF", PERROR, true);
         print_tile_quantity(server, res_type);
-        printf("\n--- Repartition Map (%s) ---\n",
-            density_table[res_type].name);
+        if (printf("\n--- Repartition Map (%s) ---\n",
+            density_table[res_type].name) == -1)
+            logger(server, "PRINTF", PERROR, true);
         print_repartition_map(server, res_type);
-        printf("\n");
+        if (printf("\n") == -1)
+            logger(server, "PRINTF", PERROR, true);
     }
 }

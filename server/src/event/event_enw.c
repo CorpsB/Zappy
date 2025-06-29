@@ -42,16 +42,12 @@ static void send_all_eggs(server_t *server, int fd)
     }
 }
 
-void event_enw(server_t *server, player_t *player, eggs_t *egg)
+void event_enw(server_t *server, player_t *player)
 {
     char *buffer = NULL;
-    int id;
 
-    if (!server || !egg)
-        return;
-    id = player ? (int)player->id : egg->creator_id;
     if (asprintf(&buffer, "enw #%u #%d %u %u",
-        egg->id, id, egg->position[0], egg->position[1]) == -1)
+        server->eggs_count - 1, player->id, player->position[0], player->position[1]) == -1)
         logger(server, "ENW", ERROR, true);
     send_to_all_gui(server, buffer);
 }

@@ -67,7 +67,8 @@ static void debug_logger(server_t *server, char *message, logs_t log)
     }
     buffer = get_error_message(server, message, log);
     if (buffer)
-        dprintf(server->debug_fd, "%s\n", buffer);
+        if (dprintf(server->debug_fd, "%s\n", buffer) == -1)
+            emergency_end(server);
 }
 
 void logger(server_t *server, char *message, logs_t log, bool is_end)

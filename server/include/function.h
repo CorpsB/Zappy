@@ -44,7 +44,7 @@
  * @param inv The resource inventory to display.
  * @param fd The file descriptor to write to.
 */
-void see_inventory(resources_t inv, int fd);
+void see_inventory(server_t *server, resources_t inv, int fd);
 
 /**
  * @brief Print information of all players in a linked list.
@@ -131,7 +131,7 @@ void see_one_team(teams_t *team, int fd);
  * @param teams Pointer to the head of the team linked list.
  * @param fd File descriptor to print to.
 */
-void see_teams(teams_t *teams, int fd);
+void see_teams(server_t *server, teams_t *teams, int fd);
 
 /**
  * @brief Free an entire linked list of teams.
@@ -191,7 +191,7 @@ void cmd_parser(server_t *server, int index, char *cmd);
  * @param eggs Pointer to the head of the egg list.
 */
 void free_all_egs(eggs_t *eggs);
-void see_all_eggs(eggs_t *eggs, int fd);
+void see_all_eggs(server_t *server, eggs_t *eggs, int fd);
 /**
  * @brief Allocate a new egg and insert it at the head of a team list.
  *
@@ -456,9 +456,8 @@ void event_pfk(server_t *server, player_t *player);
  * @param server Pointer to the global server structure.
  * @param player Pointer to the player who laid the egg
  * (optional, can be NULL).
- * @param egg Pointer to the egg structure.
 */
-void event_enw(server_t *server, player_t *player, eggs_t *egg);
+void event_enw(server_t *server, player_t *player);
 
 /**
  * @brief Send "enw" messages for all existing eggs to all connected

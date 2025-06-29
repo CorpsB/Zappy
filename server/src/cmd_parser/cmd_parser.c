@@ -90,9 +90,10 @@ static void send_debug_message(server_t *server, int index,
 {
     char *buffer = NULL;
 
-    printf("CMD : %s\tARGS SIZE : %u\tEXPECTED SIZE : %u\n\n",
+    if (printf("CMD : %s\tARGS SIZE : %u\tEXPECTED SIZE : %u\n\n",
         player_command_table[i].name, table_size(args),
-        player_command_table[i].argument_nbr);
+        player_command_table[i].argument_nbr) == -1)
+            logger(server, "PRINTF CMD PARSER", PERROR, true);
     if (asprintf(&buffer,
         "CMD : %s\t ARGS SIZE : %u\tEXPECTED SIZE : %u\n\n",
         player_command_table[i].name, table_size(args),

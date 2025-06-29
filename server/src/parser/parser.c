@@ -11,9 +11,10 @@
 
 int parse_port(char *str, server_t *server, int i)
 {
-    int nbr = atoi(str);
+    char *endptr;
+    long nbr = strtol(str, &endptr, 10);
 
-    if (nbr <= 0) {
+    if (*endptr != '\0' || nbr <= 0) {
         logger(server, "A port cannot be NULL or negative.", ERROR, false);
         return -1;
     }
@@ -23,9 +24,10 @@ int parse_port(char *str, server_t *server, int i)
 
 int parse_width(char *str, server_t *server, int i)
 {
-    int nbr = atoi(str);
+    char *endptr;
+    long nbr = strtol(str, &endptr, 10);
 
-    if (nbr <= 0) {
+    if (*endptr != '\0' || nbr <= 0) {
         logger(server, "Width cannot be NULL or negative.", ERROR, false);
         return -1;
     }
@@ -35,9 +37,10 @@ int parse_width(char *str, server_t *server, int i)
 
 int parse_height(char *str, server_t *server, int i)
 {
-    int nbr = atoi(str);
+    char *endptr;
+    long nbr = strtol(str, &endptr, 10);
 
-    if (nbr <= 0) {
+    if (*endptr != '\0' || nbr <= 0) {
         logger(server, "Height cannot be NULL or negative.", ERROR, false);
         return -1;
     }
@@ -47,9 +50,10 @@ int parse_height(char *str, server_t *server, int i)
 
 int parse_client(char *str, server_t *server, int i)
 {
-    int nbr = atoi(str);
+    char *endptr;
+    long nbr = strtol(str, &endptr, 10);
 
-    if (nbr <= 0) {
+    if (*endptr != '\0' || nbr <= 0) {
         logger(server, "Client limit cannot be NULL or negative.",
             ERROR, false);
         return -1;
@@ -60,9 +64,10 @@ int parse_client(char *str, server_t *server, int i)
 
 int parse_frequency(char *str, server_t *server, int i)
 {
-    int nbr = atoi(str);
+    char *endptr;
+    long nbr = strtol(str, &endptr, 10);
 
-    if (nbr <= 0) {
+    if (*endptr != '\0' || nbr <= 0) {
         logger(server, "Frequency cannot be NULL or negative.", ERROR, false);
         return -1;
     }

@@ -37,6 +37,8 @@ static char *tile_to_str(server_t *srv, int y, int x)
     str = append_n_times(str, "thystame", srv->map[y][x].thystame, srv);
     if (!str)
         str = strdup("");
+    if (!str)
+        logger(srv, "STRDUP : LOOK", PERROR, true);
     return str;
 }
 
