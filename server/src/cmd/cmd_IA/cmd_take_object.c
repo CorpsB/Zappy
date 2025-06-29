@@ -132,7 +132,7 @@ static void take_obj(server_t *srv, r_ressource_t obj, int index)
 
 void cmd_take_object(server_t *server, int index, char **args)
 {
-    for (int i = FOOD; i < THYSTAME; i++) {
+    for (int i = FOOD; i <= THYSTAME; i++) {
         if (strncmp(args[1], density_table[i].name,
             strlen(density_table[i].name)) == 0) {
                 take_obj(server, (r_ressource_t)i, index);
