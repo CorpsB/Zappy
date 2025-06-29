@@ -52,12 +52,6 @@ static void propagate_sound_map_tile(int **map, server_t *srv,
     propagate_sound_map_tile(map, srv, down, val + 1);
 }
 
-/**
- * @brief Initializes sound propagation from the sender's position.
- * @param map The 2D broadcast map.
- * @param srv Pointer to the server structure.
- * @param sender Pointer to the player sending the broadcast.
-*/
 void propagate_sound_map(int **map, server_t *srv,
     player_t *sender)
 {
@@ -80,13 +74,6 @@ static int get_tile_dist(int **map, server_t *srv, int x, int y)
     return map[y][x];
 }
 
-/**
- * @brief Computes the raw direction index from the sender to the receiver.
- * @param map The 2D broadcast map.
- * @param srv Pointer to the server structure.
- * @param rcv Pointer to the receiving player.
- * @return The raw direction index (1 to 8).
-*/
 int get_raw_direction(int **map, server_t *srv, player_t *rcv)
 {
     int x = rcv->position[0];
@@ -109,12 +96,6 @@ int get_raw_direction(int **map, server_t *srv, player_t *rcv)
     return idx + 1;
 }
 
-/**
- * @brief Adjusts the raw direction based on the receiver's orientation.
- * @param raw The raw direction index.
- * @param pl Pointer to the receiving player.
- * @return The adjusted direction index (1 to 8).
-*/
 int adjust_to_player_dir(int raw, player_t *pl)
 {
     int idx_raw = raw - 1;
@@ -123,6 +104,17 @@ int adjust_to_player_dir(int raw, player_t *pl)
     return idx_rot + 1;
 }
 
+/**
+ * @brief Sends a broadcast message to a specific player.
+ * If the sender and receiver are on the same tile, sends
+ * a simple broadcast with direction 0.
+ * Otherwise, calculates the direction based on map topology
+ * and player orientation, then sends the directional message.
+ * @param srv Pointer to the server structure.
+ * @param snd Pointer to the sending player.
+ * @param rcv Pointer to the receiving player.
+ * @param msg The message to send.
+*/
 void send_broadcast_to_rcv(server_t *srv, player_t *snd,
     player_t *rcv, const char *msg)
 {

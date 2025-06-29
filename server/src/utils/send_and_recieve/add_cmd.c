@@ -70,14 +70,6 @@ static bool player_cmd(server_t *server, char *cmd, player_t *pl, int k)
     return false;
 }
 
-/**
- * @brief Add a command to the player's command queue.
- * If the command queue is full, the player receives a "suc" response.
- * Non-player clients have their command handled immediately.
- * @param server Pointer to the server structure.
- * @param cmd Command string.
- * @param index Index of the client in the poll list.
-*/
 void add_cmd(server_t *server, char *cmd, int index)
 {
     player_t *pl;
