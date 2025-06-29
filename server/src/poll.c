@@ -9,16 +9,6 @@
 #include "include/function.h"
 #include "include/structure.h"
 
-static void complete_client_data(server_t *serv, int socket, whoAmI_t state)
-{
-    serv->poll.pollfds[serv->poll.connected_client].fd = socket;
-    serv->poll.pollfds[serv->poll.connected_client].events = POLLIN;
-    serv->poll.pollfds[serv->poll.connected_client].revents = 0;
-    serv->poll.client_list[serv->poll.connected_client].whoAmI = state;
-    serv->poll.client_list[serv->poll.connected_client].player = NULL;
-    serv->poll.client_list[serv->poll.connected_client].cmd = NULL;
-}
-
 /**
  * @brief Add a new client to the server's poll and client list.
  * @param server Pointer to the server structure.
@@ -205,9 +195,6 @@ static void action_per_turn(server_t *server, int count)
         map_update(server);
         logger(server, "RELOAD MAP IVNETORY", DEBUG, false);
     }
-    printf("%d\n", count);
-    if (count == 1000)
-        logger(server, "Super Nils ! Super pour l'appareil photo !", DEBUG, true);
 }
 
 void run_server(server_t *server)

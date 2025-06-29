@@ -34,7 +34,7 @@ void init_server(server_t *server)
  * initializes pollfds and client_list pointers to NULL.
  * @param server Pointer to the server structure to initialize.
 */
-void server_actual_map(server_t *server)
+static void server_actual_map(server_t *server)
 {
     server->actual_map_inventory.food = 0;
     server->actual_map_inventory.linemate = 0;
@@ -47,6 +47,16 @@ void server_actual_map(server_t *server)
     server->poll.client_list = NULL;
     server->poll.connected_client = 0;
     server->poll.client_index = 0;
+}
+
+void complete_client_data(server_t *serv, int socket, whoAmI_t state)
+{
+    serv->poll.pollfds[serv->poll.connected_client].fd = socket;
+    serv->poll.pollfds[serv->poll.connected_client].events = POLLIN;
+    serv->poll.pollfds[serv->poll.connected_client].revents = 0;
+    serv->poll.client_list[serv->poll.connected_client].whoAmI = state;
+    serv->poll.client_list[serv->poll.connected_client].player = NULL;
+    serv->poll.client_list[serv->poll.connected_client].cmd = NULL;
 }
 
 server_t *add_server(void)
